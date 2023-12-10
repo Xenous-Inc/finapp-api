@@ -1,4 +1,4 @@
-module finapp-api
+module github.com/Xenous-Inc/finapp-api
 
 go 1.21.4
 
