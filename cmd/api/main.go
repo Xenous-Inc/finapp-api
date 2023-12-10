@@ -1,7 +1,7 @@
 package main
 
 import (
-	"finapp-api/internal/server"
+	"github.com/Xenous-Inc/finapp-api/internal/server"
 )
 
 func main() {
