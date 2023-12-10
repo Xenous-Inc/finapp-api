@@ -5,6 +5,8 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/Xenous-Inc/finapp-api/internal/router"
 )
 
 type Server struct {
@@ -13,13 +15,13 @@ type Server struct {
 	*http.Server
 }
 
-func NewServer(port uint16, host string) *Server {
+func NewServer(port uint16, host string, router *router.Router) *Server {
 	newServer := &Server{port: port, host: host}
 
 	// Declare Server config
 	server := &http.Server{
 		Addr:         fmt.Sprintf("%s:%d", host, port),
-		Handler:      newServer.RegisterRoutes(),
+		Handler:      router.RegisterRoutes(),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
 		WriteTimeout: 30 * time.Second,
