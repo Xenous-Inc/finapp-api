@@ -10,7 +10,7 @@ build:
 
 # Run the application
 run:
-	@go run cmd/api/main.go
+	@go run cmd/api/main.go -env-mode=development -config-path=environments/config.yaml
 
 # Test the application
 test:
