@@ -24,11 +24,11 @@ func NewClient(httpClient *http.Client, url string) *Client {
 }
 
 type GetGroupsInput struct {
-	groupTerm string
+	GroupTerm string
 }
 
 func (c *Client) GetGroups(input *GetGroupsInput) ([]dto.Group, error) {
-	path := fmt.Sprintf("search?type=group&term=%s", input.groupTerm)
+	path := fmt.Sprintf("search?type=group&term=%s", input.GroupTerm)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
 	res, err := req.Execute(c.httpClient)
 	if err != nil {

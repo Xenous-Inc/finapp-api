@@ -4,7 +4,7 @@ go 1.21.4
 
 require github.com/spf13/viper v1.18.1
 
-require github.com/dr3dnought/request_builder v0.0.0-20231210212755-1d530e987bda // indirect
+require github.com/dr3dnought/request_builder v0.0.0-20240103083619-bb7a14763412 // indirect
 
 require (
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
