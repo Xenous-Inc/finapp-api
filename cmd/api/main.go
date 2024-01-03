@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 
@@ -20,10 +21,19 @@ func main() {
 	groups, err := client.GetGroups(&ruzfaclient.GetGroupsInput{
 		GroupTerm: "ФФ22",
 	})
+	schedule, err := client.GetSchedule(&ruzfaclient.GetScheduleInput{
+		GroupId: "111144",
+		StartDate: "2023.12.11",
+		EndDate: "2023.12.11",
+	})
+	
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(groups)
+	_ = groups
+
+	fmt.Println(schedule[0].String())
+	//log.Println(schedule[0])
 
 	server.StartListening()
 }
