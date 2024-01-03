@@ -50,14 +50,13 @@ func (c *Client) GetGroups(input *GetGroupsInput) ([]dto.Group, error) {
 	return *groups, nil
 }
 
-type GetScheduleInput struct {
-	//start request
-	GroupId   string 
-	StartDate string 
-	EndDate   string 
+type GetGroupScheduleInput struct {
+	GroupId   string
+	StartDate string
+	EndDate   string
 }
 
-func (c *Client) GetSchedule(input *GetScheduleInput) ([]dto.Schedule, error) {
+func (c *Client) GetGroupSchedule(input *GetGroupScheduleInput) ([]dto.Schedule, error) {
 	path := fmt.Sprintf("schedule/group/%s?start=%s&finish=%s&lng=1", input.GroupId, input.StartDate, input.EndDate)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
 	res, err := req.Execute(c.httpClient)
@@ -65,14 +64,11 @@ func (c *Client) GetSchedule(input *GetScheduleInput) ([]dto.Schedule, error) {
 		return nil, clients.ErrRequest
 	}
 
-
-
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, clients.ErrInvalidEntity
 	}
 
-	//fmt.Print(string(body))
 	fmt.Println(res.StatusCode)
 	defer res.Body.Close()
 
@@ -84,4 +80,121 @@ func (c *Client) GetSchedule(input *GetScheduleInput) ([]dto.Schedule, error) {
 	}
 
 	return *schedule, nil
+}
+
+type GetTeacherInput struct {
+	TeacherTerm string
+}
+
+func (c *Client) GetTeacher(input *GetTeacherInput) ([]dto.Teacher, error) {
+	path := fmt.Sprintf("search?type=person&term=%s", input.TeacherTerm)
+	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
+	res, err := req.Execute(c.httpClient)
+	if err != nil {
+		return nil, clients.ErrRequest
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, clients.ErrInvalidEntity
+	}
+	defer res.Body.Close()
+
+	teachers := new([]dto.Teacher)
+	err = json.Unmarshal(body, teachers)
+	if err != nil {
+		return nil, clients.ErrInvalidEntity
+	}
+
+	return *teachers, nil
+}
+
+type GetTeacherScheduleInput struct {
+	Id        string
+	StartDate string
+	EndDate   string
+}
+
+func (c *Client) GetTeacherSchedule(input *GetTeacherScheduleInput) ([]dto.Schedule, error) {
+	path := fmt.Sprintf("schedule/person/%s?start=%s&finish=%s&lng=1", input.Id, input.StartDate, input.EndDate)
+	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
+	res, err := req.Execute(c.httpClient)
+	if err != nil {
+		return nil, clients.ErrRequest
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, clients.ErrInvalidEntity
+	}
+
+	fmt.Println(res.StatusCode)
+	defer res.Body.Close()
+
+	scheduleTeacher := new([]dto.Schedule)
+	err = json.Unmarshal(body, scheduleTeacher)
+	if err != nil {
+		fmt.Print(err)
+		return nil, clients.ErrValidation
+	}
+	return *scheduleTeacher, nil
+}
+
+type GetAuditoriumInput struct {
+	AuditoriumTerm string
+}
+
+func (c *Client) GetAuditorium(input *GetAuditoriumInput) ([]dto.Auditorium, error) {
+	path := fmt.Sprintf("search?&term=%s&type=auditorium", input.AuditoriumTerm)
+	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
+	res, err := req.Execute(c.httpClient)
+	if err != nil {
+		return nil, clients.ErrRequest
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, clients.ErrInvalidEntity
+	}
+	defer res.Body.Close()
+
+	auditoriums := new([]dto.Auditorium)
+	err = json.Unmarshal(body, auditoriums)
+	if err != nil {
+		return nil, clients.ErrInvalidEntity
+	}
+
+	return *auditoriums, nil
+}
+
+type GetAuditoriumScheduleInput struct {
+	Id        string
+	StartDate string
+	EndDate   string
+}
+
+func (c *Client) GetAuditoriumSchedule(input *GetAuditoriumScheduleInput) ([]dto.Schedule, error) {
+	path := fmt.Sprintf("schedule/auditorium/%s?start=%s&finish=%s&lng=1", input.Id, input.StartDate, input.EndDate)
+	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
+	res, err := req.Execute(c.httpClient)
+	if err != nil {
+		return nil, clients.ErrRequest
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, clients.ErrInvalidEntity
+	}
+
+	fmt.Println(res.StatusCode)
+	defer res.Body.Close()
+
+	scheduleAuditorium := new([]dto.Schedule)
+	err = json.Unmarshal(body, scheduleAuditorium)
+	if err != nil {
+		fmt.Print(err)
+		return nil, clients.ErrValidation
+	}
+
+	return *scheduleAuditorium, nil
 }
