@@ -1,6 +1,7 @@
 package di
 
 import (
+	"github.com/Xenous-Inc/finapp-api/internal/clients/ruzfaclient"
 	"github.com/Xenous-Inc/finapp-api/internal/router"
 	"github.com/Xenous-Inc/finapp-api/internal/server"
 	"github.com/Xenous-Inc/finapp-api/internal/utils/config"
@@ -20,15 +21,15 @@ func New(cfg *config.Config) *Container {
 	}
 }
 
-func (c *Container) GetServer() *server.Server {
+func (c *Container) GetServer(cl *ruzfaclient.Client) *server.Server {
 	return get(&c.server, func() *server.Server {
-		return server.NewServer(c.cfg.Port, c.cfg.Host, c.GetRouter())
+		return server.NewServer(c.cfg.Port, c.cfg.Host, c.GetRouter(cl))
 	})
 }
 
-func (c *Container) GetRouter() *router.Router {
+func (c *Container) GetRouter(cl *ruzfaclient.Client) *router.Router {
 	return get(&c.router, func() *router.Router {
-		return router.NewRouter()
+		return router.NewRouter(cl)
 	})
 }
 

@@ -1,0 +1,182 @@
+basePath: /
+definitions:
+  ruzfaclient.GetAuditoriumInput:
+    properties:
+      auditorium:
+        type: string
+    type: object
+  ruzfaclient.GetAuditoriumScheduleInput:
+    properties:
+      auditoriumId:
+        type: string
+      endDate:
+        type: string
+      startDate:
+        type: string
+    type: object
+  ruzfaclient.GetGroupScheduleInput:
+    properties:
+      endDate:
+        type: string
+      groupId:
+        type: string
+      startDate:
+        type: string
+    type: object
+  ruzfaclient.GetGroupsInput:
+    properties:
+      group:
+        type: string
+    type: object
+  ruzfaclient.GetTeacherInput:
+    properties:
+      teacher:
+        type: string
+    type: object
+  ruzfaclient.GetTeacherScheduleInput:
+    properties:
+      endDate:
+        type: string
+      startDate:
+        type: string
+      teacherId:
+        type: string
+    type: object
+host: localhost:5555
+info:
+  contact: {}
+  title: Finapp-api
+paths:
+  /finapp/api/auditorium:
+    post:
+      consumes:
+      - application/json
+      description: get auditorium
+      parameters:
+      - description: auditorium info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/ruzfaclient.GetAuditoriumInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: GetAuditorium
+      tags:
+      - TimeTable
+  /finapp/api/auditorium/schedule:
+    post:
+      consumes:
+      - application/json
+      description: get auditorium schedule
+      parameters:
+      - description: auditorium schedule info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/ruzfaclient.GetAuditoriumScheduleInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: GetAuditoriumSchedule
+      tags:
+      - TimeTable
+  /finapp/api/group:
+    post:
+      consumes:
+      - application/json
+      description: get group
+      parameters:
+      - description: group info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/ruzfaclient.GetGroupsInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: GetGroup
+      tags:
+      - TimeTable
+  /finapp/api/group/schedule:
+    post:
+      consumes:
+      - application/json
+      description: get groupSchedule
+      parameters:
+      - description: group schedule info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/ruzfaclient.GetGroupScheduleInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: GetGroupSchedule
+      tags:
+      - TimeTable
+  /finapp/api/teacher:
+    post:
+      consumes:
+      - application/json
+      description: get teacher
+      parameters:
+      - description: teacher info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/ruzfaclient.GetTeacherInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: GetTeacher
+      tags:
+      - TimeTable
+  /finapp/api/teacher/schedule:
+    post:
+      consumes:
+      - application/json
+      description: get teacherSchedule
+      parameters:
+      - description: teacher schedule info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/ruzfaclient.GetTeacherScheduleInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: GetTeacherSchedule
+      tags:
+      - TimeTable
+swagger: "2.0"
