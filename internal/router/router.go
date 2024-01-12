@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/Xenous-Inc/finapp-api/internal/clients/ruzfaclient"
+	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/swaggo/http-swagger"
@@ -14,11 +16,13 @@ import (
 
 type Router struct {
 	Client *ruzfaclient.Client
+	ClientOrgfaclient *orgfaclient.Client
 }
 
-func NewRouter(client *ruzfaclient.Client) *Router {
+func NewRouter(client *ruzfaclient.Client, clientOrgfaclient *orgfaclient.Client) *Router {
 	return &Router{
 		Client: client,
+		ClientOrgfaclient: clientOrgfaclient,
 	}
 }
 
@@ -32,7 +36,7 @@ func (s *Router) RegisterRoutes() http.Handler {
 
 	r.Get("/", s.pingHandler)
 
-	r.Post("/finapp/api/group", s.HandlerGetGroup)
+	r.Post("/finapp/api/group/", s.HandlerGetGroup)
 	r.Post("/finapp/api/group/schedule", s.HandlerGetGroupSchedule)
 
 	r.Post("/finapp/api/teacher", s.HandlerGetTeacher)
@@ -198,4 +202,46 @@ func (s *Router) HandlerGetAuditoriumSchedule(w http.ResponseWriter, r *http.Req
 	}
 
 	fmt.Fprintf(w, string(res))
+}
+
+//AUTH
+
+func (s *Router) HandlerAuth(w http.ResponseWriter, r *http.Request) {
+	var input *orgfaclient.LoginInput
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	auth, err := s.ClientOrgfaclient.Login(input)
+
+
+
+
+
+
+
+
+
+
+
+
+
+	r.ParseForm()
+	authForm := r.Form.Get("AUTH_FORM")
+	typ := r.Form.Get("TYPE")
+	userLogin := r.Form.Get("USER_LOGIN")
+	userPassword := r.Form.Get("USER_PASSWORD")
+
+	cookie, err := r.Cookie("PHPSESSID")
+
+
+
+	auth, err := s.ClientOrgfaclient.Login(&orgfaclient.LoginInput{
+		AuthForm:     authForm,
+		Typ:     typ,
+		Login: userLogin,
+		Password: userPassword,
+		Cookie: *cookie,
+	})
 }

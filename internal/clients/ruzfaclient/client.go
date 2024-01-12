@@ -198,3 +198,4 @@ func (c *Client) GetAuditoriumSchedule(input *GetAuditoriumScheduleInput) ([]dto
 
 	return *scheduleAuditorium, nil
 }
+
