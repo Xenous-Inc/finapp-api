@@ -24,7 +24,7 @@ func NewClient(httpClient *http.Client, url string) *Client {
 }
 
 type GetGroupsInput struct {
-	GroupTerm string `json:"group"`
+	GroupTerm string
 }
 
 func (c *Client) GetGroups(input *GetGroupsInput) ([]dto.Group, error) {
@@ -51,9 +51,9 @@ func (c *Client) GetGroups(input *GetGroupsInput) ([]dto.Group, error) {
 }
 
 type GetGroupScheduleInput struct {
-	GroupId   string `json:"groupId"`
-	StartDate string `json:"startDate"`
-	EndDate   string `json:"endDate"`
+	GroupId   string
+	StartDate string
+	EndDate   string
 }
 
 func (c *Client) GetGroupSchedule(input *GetGroupScheduleInput) ([]dto.Schedule, error) {
@@ -83,7 +83,7 @@ func (c *Client) GetGroupSchedule(input *GetGroupScheduleInput) ([]dto.Schedule,
 }
 
 type GetTeacherInput struct {
-	TeacherTerm string `json:"teacher"`
+	TeacherTerm string
 }
 
 func (c *Client) GetTeacher(input *GetTeacherInput) ([]dto.Teacher, error) {
@@ -110,9 +110,9 @@ func (c *Client) GetTeacher(input *GetTeacherInput) ([]dto.Teacher, error) {
 }
 
 type GetTeacherScheduleInput struct {
-	Id        string `json:"teacherId"`
-	StartDate string `json:"startDate"`
-	EndDate   string `json:"endDate"`
+	Id        string
+	StartDate string
+	EndDate   string
 }
 
 func (c *Client) GetTeacherSchedule(input *GetTeacherScheduleInput) ([]dto.Schedule, error) {
@@ -141,7 +141,7 @@ func (c *Client) GetTeacherSchedule(input *GetTeacherScheduleInput) ([]dto.Sched
 }
 
 type GetAuditoriumInput struct {
-	AuditoriumTerm string `json:"auditorium"`
+	AuditoriumTerm string
 }
 
 func (c *Client) GetAuditorium(input *GetAuditoriumInput) ([]dto.Auditorium, error) {
@@ -168,9 +168,9 @@ func (c *Client) GetAuditorium(input *GetAuditoriumInput) ([]dto.Auditorium, err
 }
 
 type GetAuditoriumScheduleInput struct {
-	Id        string `json:"auditoriumId"`
-	StartDate string `json:"startDate"`
-	EndDate   string `json:"endDate"`
+	Id        string
+	StartDate string
+	EndDate   string
 }
 
 func (c *Client) GetAuditoriumSchedule(input *GetAuditoriumScheduleInput) ([]dto.Schedule, error) {

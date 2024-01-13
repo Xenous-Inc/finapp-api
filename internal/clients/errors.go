@@ -9,3 +9,8 @@ var (
 	ErrValidation    = errors.New("Validation")
 	ErrNotFound      = errors.New("Entity not found")
 )
+
+type ErrorResponse struct {
+	Code int
+	Message string
+  }

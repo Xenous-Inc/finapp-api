@@ -16,7 +16,7 @@ const docTemplate = `{
     "basePath": "{{.BasePath}}",
     "paths": {
         "/finapp/api/auditorium": {
-            "post": {
+            "get": {
                 "description": "get auditorium",
                 "consumes": [
                     "application/json"
@@ -50,7 +50,7 @@ const docTemplate = `{
             }
         },
         "/finapp/api/auditorium/schedule": {
-            "post": {
+            "get": {
                 "description": "get auditorium schedule",
                 "consumes": [
                     "application/json"
@@ -84,7 +84,7 @@ const docTemplate = `{
             }
         },
         "/finapp/api/group": {
-            "post": {
+            "get": {
                 "description": "get group",
                 "consumes": [
                     "application/json"
@@ -117,8 +117,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/finapp/api/group/schedule": {
-            "post": {
+        "/finapp/api/group/schedule/{groupid}": {
+            "get": {
                 "description": "get groupSchedule",
                 "consumes": [
                     "application/json"
@@ -152,7 +152,7 @@ const docTemplate = `{
             }
         },
         "/finapp/api/teacher": {
-            "post": {
+            "get": {
                 "description": "get teacher",
                 "consumes": [
                     "application/json"
@@ -186,7 +186,7 @@ const docTemplate = `{
             }
         },
         "/finapp/api/teacher/schedule": {
-            "post": {
+            "get": {
                 "description": "get teacherSchedule",
                 "consumes": [
                     "application/json"
@@ -224,7 +224,7 @@ const docTemplate = `{
         "ruzfaclient.GetAuditoriumInput": {
             "type": "object",
             "properties": {
-                "auditorium": {
+                "auditoriumTerm": {
                     "type": "string"
                 }
             }
@@ -232,10 +232,10 @@ const docTemplate = `{
         "ruzfaclient.GetAuditoriumScheduleInput": {
             "type": "object",
             "properties": {
-                "auditoriumId": {
+                "endDate": {
                     "type": "string"
                 },
-                "endDate": {
+                "id": {
                     "type": "string"
                 },
                 "startDate": {
@@ -260,7 +260,7 @@ const docTemplate = `{
         "ruzfaclient.GetGroupsInput": {
             "type": "object",
             "properties": {
-                "group": {
+                "groupTerm": {
                     "type": "string"
                 }
             }
@@ -268,7 +268,7 @@ const docTemplate = `{
         "ruzfaclient.GetTeacherInput": {
             "type": "object",
             "properties": {
-                "teacher": {
+                "teacherTerm": {
                     "type": "string"
                 }
             }
@@ -279,10 +279,10 @@ const docTemplate = `{
                 "endDate": {
                     "type": "string"
                 },
-                "startDate": {
+                "id": {
                     "type": "string"
                 },
-                "teacherId": {
+                "startDate": {
                     "type": "string"
                 }
             }

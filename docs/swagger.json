@@ -8,7 +8,7 @@
     "basePath": "/",
     "paths": {
         "/finapp/api/auditorium": {
-            "post": {
+            "get": {
                 "description": "get auditorium",
                 "consumes": [
                     "application/json"
@@ -42,7 +42,7 @@
             }
         },
         "/finapp/api/auditorium/schedule": {
-            "post": {
+            "get": {
                 "description": "get auditorium schedule",
                 "consumes": [
                     "application/json"
@@ -76,7 +76,7 @@
             }
         },
         "/finapp/api/group": {
-            "post": {
+            "get": {
                 "description": "get group",
                 "consumes": [
                     "application/json"
@@ -109,8 +109,8 @@
                 }
             }
         },
-        "/finapp/api/group/schedule": {
-            "post": {
+        "/finapp/api/group/schedule/{groupid}": {
+            "get": {
                 "description": "get groupSchedule",
                 "consumes": [
                     "application/json"
@@ -144,7 +144,7 @@
             }
         },
         "/finapp/api/teacher": {
-            "post": {
+            "get": {
                 "description": "get teacher",
                 "consumes": [
                     "application/json"
@@ -178,7 +178,7 @@
             }
         },
         "/finapp/api/teacher/schedule": {
-            "post": {
+            "get": {
                 "description": "get teacherSchedule",
                 "consumes": [
                     "application/json"
@@ -216,7 +216,7 @@
         "ruzfaclient.GetAuditoriumInput": {
             "type": "object",
             "properties": {
-                "auditorium": {
+                "auditoriumTerm": {
                     "type": "string"
                 }
             }
@@ -224,10 +224,10 @@
         "ruzfaclient.GetAuditoriumScheduleInput": {
             "type": "object",
             "properties": {
-                "auditoriumId": {
+                "endDate": {
                     "type": "string"
                 },
-                "endDate": {
+                "id": {
                     "type": "string"
                 },
                 "startDate": {
@@ -252,7 +252,7 @@
         "ruzfaclient.GetGroupsInput": {
             "type": "object",
             "properties": {
-                "group": {
+                "groupTerm": {
                     "type": "string"
                 }
             }
@@ -260,7 +260,7 @@
         "ruzfaclient.GetTeacherInput": {
             "type": "object",
             "properties": {
-                "teacher": {
+                "teacherTerm": {
                     "type": "string"
                 }
             }
@@ -271,10 +271,10 @@
                 "endDate": {
                     "type": "string"
                 },
-                "startDate": {
+                "id": {
                     "type": "string"
                 },
-                "teacherId": {
+                "startDate": {
                     "type": "string"
                 }
             }

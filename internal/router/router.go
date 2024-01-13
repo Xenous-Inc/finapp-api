@@ -3,13 +3,15 @@ package router
 import (
 	"encoding/json"
 	"fmt"
+
 	"net/http"
 
+	_ "github.com/Xenous-Inc/finapp-api/docs"
+	"github.com/Xenous-Inc/finapp-api/internal/clients"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/ruzfaclient"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/swaggo/http-swagger"
-	_"github.com/Xenous-Inc/finapp-api/docs"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 type Router struct {
@@ -32,14 +34,14 @@ func (s *Router) RegisterRoutes() http.Handler {
 
 	r.Get("/", s.pingHandler)
 
-	r.Post("/finapp/api/group", s.HandlerGetGroup)
-	r.Post("/finapp/api/group/schedule", s.HandlerGetGroupSchedule)
+	r.Get("/finapp/api/group", s.HandlerGetGroup)
+	r.Get("/finapp/api/group/schedule/{groupid}", s.HandlerGetGroupSchedule)
 
-	r.Post("/finapp/api/teacher", s.HandlerGetTeacher)
-	r.Post("/finapp/api/teacher/schedule", s.HandlerGetTeacherSchedule)
+	r.Get("/finapp/api/teacher", s.HandlerGetTeacher)
+	r.Get("/finapp/api/teacher/schedule/{teacherid}", s.HandlerGetTeacherSchedule)
 
-	r.Post("/finapp/api/auditorium", s.HandlerGetAuditorium)
-	r.Post("/finapp/api/auditorium/schedule", s.HandlerGetAuditoriumSchedule)
+	r.Get("/finapp/api/auditorium", s.HandlerGetAuditorium)
+	r.Get("/finapp/api/auditorium/schedule/{auditoriumid}", s.HandlerGetAuditoriumSchedule)
 
 	return r
 }
@@ -51,20 +53,28 @@ func (s *Router) RegisterRoutes() http.Handler {
 // @Produce json
 // @Param input body ruzfaclient.GetGroupsInput true "group info"
 // @Success 200 {integer} integer 1
-// @Router /finapp/api/group [post]
+// @Router /finapp/api/group [get]
 func (s *Router) HandlerGetGroup(w http.ResponseWriter, r *http.Request) {
-	var input *ruzfaclient.GetGroupsInput
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+	term := r.URL.Query().Get("term")
+
+	groups, err := s.Client.GetGroups(&ruzfaclient.GetGroupsInput{
+		GroupTerm: term,
+	})
+
+	if err != nil {
+		fmt.Println(&clients.ErrorResponse{
+			Code:    http.StatusBadRequest,
+			Message: fmt.Sprintf("Get groups, %s", clients.ErrRequest),
+		})
 	}
-	
-	groups, err := s.Client.GetGroups(input)
 
 	res, err := json.Marshal(groups)
 
 	if err != nil {
-		fmt.Fprintf(w, "Unlucky:  %s", err)
+		fmt.Println(&clients.ErrorResponse{
+			Code:    http.StatusBadRequest,
+			Message: fmt.Sprintf("Get groups marshal, %s", clients.ErrRequest),
+		})
 	}
 
 	fmt.Fprintf(w, string(res))
@@ -77,20 +87,31 @@ func (s *Router) HandlerGetGroup(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param input body ruzfaclient.GetGroupScheduleInput true "group schedule info"
 // @Success 200 {integer} integer 1
-// @Router /finapp/api/group/schedule [post]
+// @Router /finapp/api/group/schedule/{groupid} [get]
 func (s *Router) HandlerGetGroupSchedule(w http.ResponseWriter, r *http.Request) {
-	var input *ruzfaclient.GetGroupScheduleInput
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+	startDate := r.URL.Query().Get("start")
+	endDate := r.URL.Query().Get("finish")
+	url := chi.URLParam(r, "groupid")
+	groupsSchedule, err := s.Client.GetGroupSchedule(&ruzfaclient.GetGroupScheduleInput{
+		GroupId:   url,
+		StartDate: startDate,
+		EndDate:   endDate,
+	})
+
+	if err != nil {
+		fmt.Println(&clients.ErrorResponse{
+			Code:    http.StatusBadRequest,
+			Message: fmt.Sprintf("Get groups schedule, %s", clients.ErrRequest),
+		})
 	}
-	
-	groupsSchedule, err := s.Client.GetGroupSchedule(input)
 
 	res, err := json.Marshal(groupsSchedule)
 
 	if err != nil {
-		fmt.Fprintf(w, "Unlucky:  %s", err)
+		fmt.Println(&clients.ErrorResponse{
+			Code:    http.StatusBadRequest,
+			Message: fmt.Sprintf("Get groups schedule marshal, %s", clients.ErrRequest),
+		})
 	}
 
 	fmt.Fprintf(w, string(res))
@@ -103,20 +124,27 @@ func (s *Router) HandlerGetGroupSchedule(w http.ResponseWriter, r *http.Request)
 // @Produce json
 // @Param input body ruzfaclient.GetTeacherInput true "teacher info"
 // @Success 200 {integer} integer 1
-// @Router /finapp/api/teacher [post]
+// @Router /finapp/api/teacher [get]
 func (s *Router) HandlerGetTeacher(w http.ResponseWriter, r *http.Request) {
-	var input *ruzfaclient.GetTeacherInput
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+	term := r.URL.Query().Get("term")
+	teacher, err := s.Client.GetTeacher(&ruzfaclient.GetTeacherInput{
+		TeacherTerm: term,
+	})
+
+	if err != nil {
+		fmt.Println(&clients.ErrorResponse{
+			Code:    http.StatusBadRequest,
+			Message: fmt.Sprintf("Get teacher, %s", clients.ErrRequest),
+		})
 	}
-	
-	teacher, err := s.Client.GetTeacher(input)
 
 	res, err := json.Marshal(teacher)
 
 	if err != nil {
-		fmt.Fprintf(w, "Unlucky:  %s", err)
+		fmt.Println(&clients.ErrorResponse{
+			Code:    http.StatusBadRequest,
+			Message: fmt.Sprintf("Get teacher marshal, %s", clients.ErrRequest),
+		})
 	}
 
 	fmt.Fprintf(w, string(res))
@@ -129,20 +157,31 @@ func (s *Router) HandlerGetTeacher(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param input body ruzfaclient.GetTeacherScheduleInput true "teacher schedule info"
 // @Success 200 {integer} integer 1
-// @Router /finapp/api/teacher/schedule [post]
+// @Router /finapp/api/teacher/schedule [get]
 func (s *Router) HandlerGetTeacherSchedule(w http.ResponseWriter, r *http.Request) {
-	var input *ruzfaclient.GetTeacherScheduleInput
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	
-	groupsSchedule, err := s.Client.GetTeacherSchedule(input)
-
-	res, err := json.Marshal(groupsSchedule)
+	startDate := r.URL.Query().Get("start")
+	endDate := r.URL.Query().Get("finish")
+	url := chi.URLParam(r, "teacherid")
+	teacherSchedule, err := s.Client.GetTeacherSchedule(&ruzfaclient.GetTeacherScheduleInput{
+		Id:        url,
+		StartDate: startDate,
+		EndDate:   endDate,
+	})
 
 	if err != nil {
-		fmt.Fprintf(w, "Unlucky:  %s", err)
+		fmt.Println(&clients.ErrorResponse{
+			Code:    http.StatusBadRequest,
+			Message: fmt.Sprintf("Get teacher schedule, %s", clients.ErrRequest),
+		})
+	}
+
+	res, err := json.Marshal(teacherSchedule)
+
+	if err != nil {
+		fmt.Println(&clients.ErrorResponse{
+			Code:    http.StatusBadRequest,
+			Message: fmt.Sprintf("Get teacher schedule marshal, %s", clients.ErrRequest),
+		})
 	}
 
 	fmt.Fprintf(w, string(res))
@@ -155,20 +194,27 @@ func (s *Router) HandlerGetTeacherSchedule(w http.ResponseWriter, r *http.Reques
 // @Produce json
 // @Param input body ruzfaclient.GetAuditoriumInput true "auditorium info"
 // @Success 200 {integer} integer 1
-// @Router /finapp/api/auditorium [post]
+// @Router /finapp/api/auditorium [get]
 func (s *Router) HandlerGetAuditorium(w http.ResponseWriter, r *http.Request) {
-	var input *ruzfaclient.GetAuditoriumInput
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+	term := r.URL.Query().Get("term")
+	auditorium, err := s.Client.GetAuditorium(&ruzfaclient.GetAuditoriumInput{
+		AuditoriumTerm: term,
+	})
+
+	if err != nil {
+		fmt.Println(&clients.ErrorResponse{
+			Code:    http.StatusBadRequest,
+			Message: fmt.Sprintf("Get auditorium, %s", clients.ErrRequest),
+		})
 	}
-	
-	auditorium, err := s.Client.GetAuditorium(input)
 
 	res, err := json.Marshal(auditorium)
 
 	if err != nil {
-		fmt.Fprintf(w, "Unlucky:  %s", err)
+		fmt.Println(&clients.ErrorResponse{
+			Code:    http.StatusBadRequest,
+			Message: fmt.Sprintf("Get auditorium marshal, %s", clients.ErrRequest),
+		})
 	}
 
 	fmt.Fprintf(w, string(res))
@@ -181,20 +227,31 @@ func (s *Router) HandlerGetAuditorium(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param input body ruzfaclient.GetAuditoriumScheduleInput true "auditorium schedule info"
 // @Success 200 {integer} integer 1
-// @Router /finapp/api/auditorium/schedule [post]
+// @Router /finapp/api/auditorium/schedule [get]
 func (s *Router) HandlerGetAuditoriumSchedule(w http.ResponseWriter, r *http.Request) {
-	var input *ruzfaclient.GetAuditoriumScheduleInput
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
+	startDate := r.URL.Query().Get("start")
+	endDate := r.URL.Query().Get("finish")
+	url := chi.URLParam(r, "auditoriumid")
+	auditoriumSchedule, err := s.Client.GetAuditoriumSchedule(&ruzfaclient.GetAuditoriumScheduleInput{
+		Id:        url,
+		StartDate: startDate,
+		EndDate:   endDate,
+	})
+
+	if err != nil {
+		fmt.Println(&clients.ErrorResponse{
+			Code:    http.StatusBadRequest,
+			Message: fmt.Sprintf("Get auditorium schedule, %s", clients.ErrRequest),
+		})
 	}
-	
-	auditoriumSchedule, err := s.Client.GetAuditoriumSchedule(input)
 
 	res, err := json.Marshal(auditoriumSchedule)
 
 	if err != nil {
-		fmt.Fprintf(w, "Unlucky:  %s", err)
+		fmt.Println(&clients.ErrorResponse{
+			Code:    http.StatusBadRequest,
+			Message: fmt.Sprintf("Get auditorium schedule marshal, %s", clients.ErrRequest),
+		})
 	}
 
 	fmt.Fprintf(w, string(res))
