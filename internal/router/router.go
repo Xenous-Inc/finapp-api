@@ -5,13 +5,14 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Xenous-Inc/finapp-api/internal/clients/ruzfaclient"
+	"github.com/Xenous-Inc/finapp-api/internal/clients"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient"
+	"github.com/Xenous-Inc/finapp-api/internal/clients/ruzfaclient"
 
+	_ "github.com/Xenous-Inc/finapp-api/docs"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/swaggo/http-swagger"
-	_"github.com/Xenous-Inc/finapp-api/docs"
 )
 
 type Router struct {
@@ -45,6 +46,8 @@ func (s *Router) RegisterRoutes() http.Handler {
 	r.Post("/finapp/api/auditorium", s.HandlerGetAuditorium)
 	r.Post("/finapp/api/auditorium/schedule", s.HandlerGetAuditoriumSchedule)
 
+	r.Post("/finapp/api/auth", s.HandlerAuth)
+	r.Post("/finapp/api/auth/mygroup", s.HandlerGetMyGroup)
 	return r
 }
 
@@ -206,6 +209,14 @@ func (s *Router) HandlerGetAuditoriumSchedule(w http.ResponseWriter, r *http.Req
 
 //AUTH
 
+// @Summary GetGroup
+// @Tags OrgFaRu
+// @Description auth
+// @Accept json
+// @Produce json
+// @Param input body orgfaclient.LoginInput true "auth"
+// @Success 200 {integer} integer 1
+// @Router /finapp/api/auth [post]
 func (s *Router) HandlerAuth(w http.ResponseWriter, r *http.Request) {
 	var input *orgfaclient.LoginInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -213,35 +224,53 @@ func (s *Router) HandlerAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	auth, err := s.ClientOrgfaclient.Login(input)
-
-
-
-
-
-
-
-
-
-
-
-
-
-	r.ParseForm()
-	authForm := r.Form.Get("AUTH_FORM")
-	typ := r.Form.Get("TYPE")
-	userLogin := r.Form.Get("USER_LOGIN")
-	userPassword := r.Form.Get("USER_PASSWORD")
-
-	cookie, err := r.Cookie("PHPSESSID")
-
-
+	userLogin := r.URL.Query().Get("USER_LOGIN")
+	userPassword := r.URL.Query().Get("USER_PASSWORD")
 
 	auth, err := s.ClientOrgfaclient.Login(&orgfaclient.LoginInput{
-		AuthForm:     authForm,
-		Typ:     typ,
 		Login: userLogin,
 		Password: userPassword,
-		Cookie: *cookie,
 	})
+
+	if err != nil {
+		fmt.Fprintf(w, "Get my group:  %s", clients.ErrRequest)
+	}
+
+	res, err := json.Marshal(auth)
+
+	if err != nil {
+		fmt.Fprintf(w, "Get my group:  %s", clients.ErrRequest)
+	}
+
+	fmt.Fprintf(w, string(res))
+}
+
+// @Summary GetMyGroup
+// @Tags OrgFaRu
+// @Description get myGroup
+// @Accept json
+// @Produce json
+// @Param input body orgfaclient.AuthSession true "myGroup info"
+// @Success 200 {integer} integer 1
+// @Router /finapp/api/auth/mygroup [get]
+func (s *Router) HandlerGetMyGroup(w http.ResponseWriter, r *http.Request) {
+	var input *orgfaclient.AuthSession
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	myGroup, err := s.ClientOrgfaclient.GetMyGroup(input)
+
+	if err != nil {
+		fmt.Fprintf(w, "Get my group:  %s", clients.ErrUnauthorized)
+	}
+
+	res, err := json.Marshal(myGroup)
+
+	if err != nil {
+		fmt.Fprintf(w, "Get my group marshal:  %s", clients.ErrRequest)
+	}
+
+	fmt.Fprintf(w, string(res))
 }

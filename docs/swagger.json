@@ -75,6 +75,74 @@
                 }
             }
         },
+        "/finapp/api/auth": {
+            "post": {
+                "description": "auth",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OrgFaRu"
+                ],
+                "summary": "GetGroup",
+                "parameters": [
+                    {
+                        "description": "auth",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/orgfaclient.LoginInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "/finapp/api/auth/mygroup": {
+            "get": {
+                "description": "get myGroup",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OrgFaRu"
+                ],
+                "summary": "GetMyGroup",
+                "parameters": [
+                    {
+                        "description": "myGroup info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/orgfaclient.AuthSession"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
         "/finapp/api/group": {
             "post": {
                 "description": "get group",
@@ -213,6 +281,25 @@
         }
     },
     "definitions": {
+        "orgfaclient.AuthSession": {
+            "type": "object",
+            "properties": {
+                "sessionId": {
+                    "type": "string"
+                }
+            }
+        },
+        "orgfaclient.LoginInput": {
+            "type": "object",
+            "properties": {
+                "login": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
         "ruzfaclient.GetAuditoriumInput": {
             "type": "object",
             "properties": {

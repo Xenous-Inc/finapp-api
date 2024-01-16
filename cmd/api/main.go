@@ -22,10 +22,10 @@ func main() {
 	container := di.New(config)
 
 	client := ruzfaclient.NewClient(&http.Client{}, "https://ruz.fa.ru/api/")
-	clientOrg := orgfaclient.NewClient(&http.Client{}, "https://org.fa.ru/api/")
+	clientOrg := orgfaclient.NewClient(&http.Client{}, "https://org.fa.ru/")
 	server := container.GetServer(client, clientOrg)
 	id, err := clientOrg.Login(&orgfaclient.LoginInput{
-		Login:    "2262921",
+		Login:    "226292",
 		Password: "Oeia7299",
 	})
 
@@ -34,5 +34,16 @@ func main() {
 	} else {
 		fmt.Println("Logged in successfully with id:", id)
 	}
+
+	cook, err := clientOrg.GetMyGroup(&orgfaclient.AuthSession{
+		SessionId: id,
+	})
+
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("Logged in successfully with cook:", cook)
+	}
+	
 	server.StartListening()
 }

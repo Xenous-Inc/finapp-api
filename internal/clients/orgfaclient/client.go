@@ -1,15 +1,17 @@
 package orgfaclient
 
 import (
-	"bytes"
+	"encoding/json"
 	"fmt"
-	"io"
-	"log"
-	"mime/multipart"
-	"net/http"
 	"strings"
 
+	"io"
+	"log"
+	"net/http"
+	"net/url"
+
 	"github.com/Xenous-Inc/finapp-api/internal/clients"
+	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient/dto"
 	requestbuidler "github.com/dr3dnought/request_builder"
 )
 
@@ -28,25 +30,27 @@ func NewClient(httpClient *http.Client, url string) *Client {
 type LoginInput struct {
 	Login string
 	Password string
+
 }
 
 func (c *Client) Login(input *LoginInput) (string, error) {
-	path := "auth?login=yes"
-	body := new(bytes.Buffer)
-	writer := multipart.NewWriter(body)
-	writer.WriteField("AUTH_FORM", "Y")
-	writer.WriteField("TYPE", "AUTH")
-	writer.WriteField("USER_LOGIN", input.Login)
-	writer.WriteField("USER_PASSWORD", input.Password)
+	path := "app/interaction/?login=yes"
 
-	req := c.reqBuilder.SetMethod("POST").SetPath(path).SetBody(body.Bytes()).AddHeader("Content-Type", writer.FormDataContentType()).Build()
+	data := url.Values{}
+    data.Set("AUTH_FORM", "Y")
+    data.Set("TYPE", "AUTH")
+    data.Set("USER_LOGIN", input.Login)
+    data.Set("USER_PASSWORD", input.Password)
 
+	req := c.reqBuilder.SetMethod("POST").SetPath(path).SetBody([]byte(data.Encode())).SetContentURLEncoded().Build()
+	
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
 		return "", clients.ErrRequest
 	}
 
 	rawBody, err := io.ReadAll(res.Body)
+	fmt.Println(string(rawBody))
 	defer res.Body.Close()
 
 	if err != nil {
@@ -54,6 +58,12 @@ func (c *Client) Login(input *LoginInput) (string, error) {
 	}
 
 	if strings.Contains(string(rawBody), "errortext") {
+		fmt.Println(string(rawBody))
+		return "", clients.ErrUnauthorized
+	}
+
+	if strings.Contains(string(rawBody), "<title>Авторизация</title>") {
+		fmt.Println(string(rawBody))
 		return "", clients.ErrUnauthorized
 	}
 
@@ -76,29 +86,37 @@ func (c *Client) Login(input *LoginInput) (string, error) {
 	return phpSessionId, nil
 }
 
-func (c *Client) GetMyGroup(input *LoginInput) (string, error) {
-	path := "app/interaction/myGroup"
-	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
+type AuthSession struct {
+	SessionId string
+}
+
+func (c *Client) GetMyGroup(input *AuthSession) ([]dto.Student, error) {
+	path := "bitrix/vuz/api/interaction/myGroup"
+	phpSessionId := fmt.Sprintf("PHPSESSID=%s", input.SessionId)
+	req := c.reqBuilder.SetMethod("GET").SetPath(path).AddHeader("Cookie", phpSessionId).Build()
 
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
-		return "", clients.ErrRequest
+		return nil, clients.ErrRequest
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return "", clients.ErrInvalidEntity
+		return nil, clients.ErrRequest
 	}
-
-	fmt.Println(res.StatusCode)
+	fmt.Println(string(body))
 	defer res.Body.Close()
 
-	schedule := new([]dto.Schedule)
-	err = json.Unmarshal(body, schedule)
+	student := &dto.Data{} 
+	err = json.Unmarshal(body, student)
+
 	if err != nil {
-		fmt.Print(err)
 		return nil, clients.ErrValidation
 	}
+	
+	if student.Error != 0 {
+		return nil, clients.ErrRequest
+	}
 
-	return *schedule, nil
+	return student.Student, nil
 }

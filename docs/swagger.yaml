@@ -1,5 +1,17 @@
 basePath: /
 definitions:
+  orgfaclient.AuthSession:
+    properties:
+      sessionId:
+        type: string
+    type: object
+  orgfaclient.LoginInput:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
   ruzfaclient.GetAuditoriumInput:
     properties:
       auditorium:
@@ -91,6 +103,50 @@ paths:
       summary: GetAuditoriumSchedule
       tags:
       - TimeTable
+  /finapp/api/auth:
+    post:
+      consumes:
+      - application/json
+      description: auth
+      parameters:
+      - description: auth
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/orgfaclient.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: GetGroup
+      tags:
+      - OrgFaRu
+  /finapp/api/auth/mygroup:
+    get:
+      consumes:
+      - application/json
+      description: get myGroup
+      parameters:
+      - description: myGroup info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/orgfaclient.AuthSession'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: GetMyGroup
+      tags:
+      - OrgFaRu
   /finapp/api/group:
     post:
       consumes:
