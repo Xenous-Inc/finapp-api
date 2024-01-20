@@ -362,12 +362,12 @@ func (c *Client) GetStudyPlan(input *GetStudyPlanInput) ([]dto.StudyPlan, error)
 
 	defer res.Body.Close()
 
-	studyPlan := new([]dto.StudyPlan)
+	studyPlan := make([]dto.StudyPlan, 0)
 	err = json.Unmarshal(body, &studyPlan)
 
 	if err != nil {
 		return nil, clients.ErrInvalidEntity
 	}
 
-	return *studyPlan, nil
+	return studyPlan, nil
 }
