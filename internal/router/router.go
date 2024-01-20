@@ -7,22 +7,23 @@ import (
 
 	"github.com/Xenous-Inc/finapp-api/internal/clients"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient"
+	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient/dto"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/ruzfaclient"
 
 	_ "github.com/Xenous-Inc/finapp-api/docs"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/swaggo/http-swagger"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 type Router struct {
-	Client *ruzfaclient.Client
+	Client            *ruzfaclient.Client
 	ClientOrgfaclient *orgfaclient.Client
 }
 
 func NewRouter(client *ruzfaclient.Client, clientOrgfaclient *orgfaclient.Client) *Router {
 	return &Router{
-		Client: client,
+		Client:            client,
 		ClientOrgfaclient: clientOrgfaclient,
 	}
 }
@@ -48,7 +49,7 @@ func (s *Router) RegisterRoutes() http.Handler {
 
 	r.Post("/finapp/api/auth", s.HandlerAuth)
 	r.Post("/finapp/api/auth/mygroup", s.HandlerGetMyGroup)
-	r.Post("/finapp/api/auth/zachetka", s.HandlerGetZachetka)
+	r.Post("/finapp/api/auth/recordbook", s.HandlerGetRecordBook)
 	r.Post("/finapp/api/auth/miniprofile", s.HandlerGetMiniProfile)
 	r.Post("/finapp/api/auth/miniprofile/profile", s.HandlerGetProfile)
 	r.Post("/finapp/api/auth/miniprofile/profile/order", s.HandlerGetOrder)
@@ -71,7 +72,7 @@ func (s *Router) HandlerGetGroup(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	
+
 	groups, err := s.Client.GetGroups(input)
 
 	res, err := json.Marshal(groups)
@@ -97,7 +98,7 @@ func (s *Router) HandlerGetGroupSchedule(w http.ResponseWriter, r *http.Request)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	
+
 	groupsSchedule, err := s.Client.GetGroupSchedule(input)
 
 	res, err := json.Marshal(groupsSchedule)
@@ -123,7 +124,7 @@ func (s *Router) HandlerGetTeacher(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	
+
 	teacher, err := s.Client.GetTeacher(input)
 
 	res, err := json.Marshal(teacher)
@@ -149,7 +150,7 @@ func (s *Router) HandlerGetTeacherSchedule(w http.ResponseWriter, r *http.Reques
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	
+
 	groupsSchedule, err := s.Client.GetTeacherSchedule(input)
 
 	res, err := json.Marshal(groupsSchedule)
@@ -175,7 +176,7 @@ func (s *Router) HandlerGetAuditorium(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	
+
 	auditorium, err := s.Client.GetAuditorium(input)
 
 	res, err := json.Marshal(auditorium)
@@ -201,7 +202,7 @@ func (s *Router) HandlerGetAuditoriumSchedule(w http.ResponseWriter, r *http.Req
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	
+
 	auditoriumSchedule, err := s.Client.GetAuditoriumSchedule(input)
 
 	res, err := json.Marshal(auditoriumSchedule)
@@ -213,13 +214,11 @@ func (s *Router) HandlerGetAuditoriumSchedule(w http.ResponseWriter, r *http.Req
 	fmt.Fprintf(w, string(res))
 }
 
-//AUTH
-
-// @Summary GetGroup
+// @Summary Auth
 // @Tags OrgFaRu
 // @Description auth
-// @Accept json
-// @Produce json
+// @Accept x-www-form-urlencoded
+// @Produce x-www-form-urlencoded
 // @Param input body orgfaclient.LoginInput true "auth"
 // @Success 200 {integer} integer 1
 // @Router /finapp/api/auth [post]
@@ -230,23 +229,22 @@ func (s *Router) HandlerAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userLogin := r.URL.Query().Get("USER_LOGIN")
-	userPassword := r.URL.Query().Get("USER_PASSWORD")
+	userLogin := r.URL.Query().Get(dto.USER_LOGIN)
+	userPassword := r.URL.Query().Get(dto.USER_PASSWORD)
 
 	sessionId, err := s.ClientOrgfaclient.Login(&orgfaclient.LoginInput{
-		Login: userLogin,
+		Login:    userLogin,
 		Password: userPassword,
 	})
 
 	if err != nil {
-		fmt.Fprintf(w, "Get my group:  %s", clients.ErrRequest)
+		fmt.Fprintf(w, "auth:  %s", clients.ErrRequest)
 	}
 
 	res, err := json.Marshal(sessionId)
-	//res2, err := json.Marshal(profileId)
 
 	if err != nil {
-		fmt.Fprintf(w, "Get my group:  %s", clients.ErrRequest)
+		fmt.Fprintf(w, "auth marshal:  %s", clients.ErrRequest)
 	}
 
 	fmt.Fprintf(w, string(res))
@@ -257,7 +255,7 @@ func (s *Router) HandlerAuth(w http.ResponseWriter, r *http.Request) {
 // @Description get myGroup
 // @Accept json
 // @Produce json
-// @Param input body orgfaclient.AuthSession true "myGroup info"
+// @Param input body orgfaclient.GetMyGroupInput true "myGroup info"
 // @Success 200 {integer} integer 1
 // @Router /finapp/api/auth/mygroup [get]
 func (s *Router) HandlerGetMyGroup(w http.ResponseWriter, r *http.Request) {
@@ -282,15 +280,15 @@ func (s *Router) HandlerGetMyGroup(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, string(res))
 }
 
-// @Summary GetMyGroup
+// @Summary GetRecordBook
 // @Tags OrgFaRu
-// @Description get myGroup
+// @Description get GetRecordBook
 // @Accept json
 // @Produce json
-// @Param input body orgfaclient.AuthSession true "myGroup info"
+// @Param input body orgfaclient.GetRecordBookInput true "Record book info"
 // @Success 200 {integer} integer 1
-// @Router /finapp/api/auth/mygroup [get]
-func (s *Router) HandlerGetZachetka(w http.ResponseWriter, r *http.Request) {
+// @Router /finapp/api/auth/recordbook [get]
+func (s *Router) HandlerGetRecordBook(w http.ResponseWriter, r *http.Request) {
 	var input *orgfaclient.AuthSession
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -300,26 +298,26 @@ func (s *Router) HandlerGetZachetka(w http.ResponseWriter, r *http.Request) {
 	myGroup, err := s.ClientOrgfaclient.GetRecordBook(input)
 
 	if err != nil {
-		fmt.Fprintf(w, "Get zachetka:  %s", clients.ErrUnauthorized)
+		fmt.Fprintf(w, "Get record book:  %s", clients.ErrUnauthorized)
 	}
 
 	res, err := json.Marshal(myGroup)
 
 	if err != nil {
-		fmt.Fprintf(w, "Get zachetka marshal:  %s", clients.ErrRequest)
+		fmt.Fprintf(w, "Get record book marshal:  %s", clients.ErrRequest)
 	}
 
 	fmt.Fprintf(w, string(res))
 }
 
-// @Summary GetMyGroup
+// @Summary GetMiniProfile
 // @Tags OrgFaRu
-// @Description get myGroup
+// @Description GetMiniProfile
 // @Accept json
 // @Produce json
-// @Param input body orgfaclient.AuthSession true "myGroup info"
+// @Param input body orgfaclient.GetMiniProfileInput true "Get mini profile info"
 // @Success 200 {integer} integer 1
-// @Router /finapp/api/auth/mygroup [get]
+// @Router /finapp/api/auth/miniprofile [get]
 func (s *Router) HandlerGetMiniProfile(w http.ResponseWriter, r *http.Request) {
 	var input *orgfaclient.GetMiniProfileInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -342,14 +340,14 @@ func (s *Router) HandlerGetMiniProfile(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, string(res))
 }
 
-// @Summary GetMyGroup
+// @Summary GetProfile
 // @Tags OrgFaRu
-// @Description get myGroup
+// @Description GetProfile
 // @Accept json
 // @Produce json
-// @Param input body orgfaclient.AuthSession true "myGroup info"
+// @Param input body orgfaclient.GetProfileInput true "Profile info"
 // @Success 200 {integer} integer 1
-// @Router /finapp/api/auth/mygroup [get]
+// @Router /finapp/api/auth/miniprofile/profile [get]
 func (s *Router) HandlerGetProfile(w http.ResponseWriter, r *http.Request) {
 	var input *orgfaclient.GetProfileInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -372,14 +370,14 @@ func (s *Router) HandlerGetProfile(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, string(res))
 }
 
-// @Summary GetMyGroup
+// @Summary GetOrder
 // @Tags OrgFaRu
-// @Description get myGroup
+// @Description GetOrder
 // @Accept json
 // @Produce json
-// @Param input body orgfaclient.AuthSession true "myGroup info"
+// @Param input body orgfaclient.GetOrderInput true "Order info"
 // @Success 200 {integer} integer 1
-// @Router /finapp/api/auth/mygroup [get]
+// @Router /finapp/api/auth/miniprofile/profile/order [get]
 func (s *Router) HandlerGetOrder(w http.ResponseWriter, r *http.Request) {
 	var input *orgfaclient.GetOrderInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -402,14 +400,14 @@ func (s *Router) HandlerGetOrder(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, string(res))
 }
 
-// @Summary GetMyGroup
+// @Summary GetStudentCard
 // @Tags OrgFaRu
-// @Description get myGroup
+// @Description GetStudentCard
 // @Accept json
 // @Produce json
-// @Param input body orgfaclient.AuthSession true "myGroup info"
+// @Param input body orgfaclient.GetStudentCardInput true "Get student card info"
 // @Success 200 {integer} integer 1
-// @Router /finapp/api/auth/mygroup [get]
+// @Router /finapp/api/auth/miniprofile/profile/studentcard [get]
 func (s *Router) HandlerGetStudentCard(w http.ResponseWriter, r *http.Request) {
 	url := chi.URLParam(r, "profileId")
 	myGroup, err := s.ClientOrgfaclient.GetStudentCard(&orgfaclient.GetStudentCardInput{
@@ -429,14 +427,14 @@ func (s *Router) HandlerGetStudentCard(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, string(res))
 }
 
-// @Summary GetMyGroup
+// @Summary GetStudyPlan
 // @Tags OrgFaRu
-// @Description get myGroup
+// @Description GetStudyPlan
 // @Accept json
 // @Produce json
-// @Param input body orgfaclient.AuthSession true "myGroup info"
+// @Param input body orgfaclient.GetStudyPlanInput true "Get study plan info"
 // @Success 200 {integer} integer 1
-// @Router /finapp/api/auth/mygroup [get]
+// @Router /finapp/api/auth/miniprofile/profile/studyplan/{profileId} [get]
 func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
 	var input *orgfaclient.GetStudyPlanInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
@@ -447,13 +445,13 @@ func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
 	myGroup, err := s.ClientOrgfaclient.GetStudyPlan(input)
 
 	if err != nil {
-		fmt.Fprintf(w, "Get my study plan:  %s", clients.ErrUnauthorized)
+		fmt.Fprintf(w, "Get study plan:  %s", clients.ErrUnauthorized)
 	}
 
 	res, err := json.Marshal(myGroup)
 
 	if err != nil {
-		fmt.Fprintf(w, "Get my study plan marshal:  %s", clients.ErrRequest)
+		fmt.Fprintf(w, "Get study plan marshal:  %s", clients.ErrRequest)
 	}
 
 	fmt.Fprintf(w, string(res))

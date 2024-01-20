@@ -1,6 +1,38 @@
 basePath: /
 definitions:
-  orgfaclient.AuthSession:
+  orgfaclient.GetMiniProfileInput:
+    properties:
+      sessionId:
+        type: string
+    type: object
+  orgfaclient.GetMyGroupInput:
+    properties:
+      sessionId:
+        type: string
+    type: object
+  orgfaclient.GetOrderInput:
+    properties:
+      sessionId:
+        type: string
+    type: object
+  orgfaclient.GetProfileInput:
+    properties:
+      sessionId:
+        type: string
+    type: object
+  orgfaclient.GetRecordBookInput:
+    properties:
+      sessionId:
+        type: string
+    type: object
+  orgfaclient.GetStudentCardInput:
+    properties:
+      profileId:
+        type: string
+      sessionId:
+        type: string
+    type: object
+  orgfaclient.GetStudyPlanInput:
     properties:
       sessionId:
         type: string
@@ -106,7 +138,7 @@ paths:
   /finapp/api/auth:
     post:
       consumes:
-      - application/json
+      - application/x-www-form-urlencoded
       description: auth
       parameters:
       - description: auth
@@ -116,13 +148,123 @@ paths:
         schema:
           $ref: '#/definitions/orgfaclient.LoginInput'
       produces:
+      - application/x-www-form-urlencoded
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: Auth
+      tags:
+      - OrgFaRu
+  /finapp/api/auth/miniprofile:
+    get:
+      consumes:
+      - application/json
+      description: GetMiniProfile
+      parameters:
+      - description: Get mini profile info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/orgfaclient.GetMiniProfileInput'
+      produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
             type: integer
-      summary: GetGroup
+      summary: GetMiniProfile
+      tags:
+      - OrgFaRu
+  /finapp/api/auth/miniprofile/profile:
+    get:
+      consumes:
+      - application/json
+      description: GetProfile
+      parameters:
+      - description: Profile info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/orgfaclient.GetProfileInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: GetProfile
+      tags:
+      - OrgFaRu
+  /finapp/api/auth/miniprofile/profile/order:
+    get:
+      consumes:
+      - application/json
+      description: GetOrder
+      parameters:
+      - description: Order info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/orgfaclient.GetOrderInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: GetOrder
+      tags:
+      - OrgFaRu
+  /finapp/api/auth/miniprofile/profile/studentcard:
+    get:
+      consumes:
+      - application/json
+      description: GetStudentCard
+      parameters:
+      - description: Get student card info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/orgfaclient.GetStudentCardInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: GetStudentCard
+      tags:
+      - OrgFaRu
+  /finapp/api/auth/miniprofile/profile/studyplan/{profileId}:
+    get:
+      consumes:
+      - application/json
+      description: GetStudyPlan
+      parameters:
+      - description: Get study plan info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/orgfaclient.GetStudyPlanInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: GetStudyPlan
       tags:
       - OrgFaRu
   /finapp/api/auth/mygroup:
@@ -136,7 +278,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/orgfaclient.AuthSession'
+          $ref: '#/definitions/orgfaclient.GetMyGroupInput'
       produces:
       - application/json
       responses:
@@ -145,6 +287,28 @@ paths:
           schema:
             type: integer
       summary: GetMyGroup
+      tags:
+      - OrgFaRu
+  /finapp/api/auth/recordbook:
+    get:
+      consumes:
+      - application/json
+      description: get GetRecordBook
+      parameters:
+      - description: Record book info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/orgfaclient.GetRecordBookInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: GetRecordBook
       tags:
       - OrgFaRu
   /finapp/api/group:

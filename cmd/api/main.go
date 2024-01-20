@@ -34,7 +34,6 @@ func main() {
 	} else {
 		_ = sessionId
 		fmt.Println("jopa:", sessionId)
-		//fmt.Println("jopa2:", profileId)
 	}
 	//Logged in successfully with id
 	// cook, err := clientOrg.GetMyGroup(&orgfaclient.AuthSession{
@@ -50,7 +49,7 @@ func main() {
 	// }
 
 	// zachetka, err := clientOrg.GetRecordBook(&orgfaclient.AuthSession{
-	// 	SessionId: id,
+	// 	SessionId: sessionId,
 	// })
 
 	// if err != nil {
@@ -96,17 +95,18 @@ func main() {
 	// }
 
 	// DONT WORK
-	studentCard, err := clientOrg.GetStudentCard(&orgfaclient.GetStudentCardInput{
-		AuthSession: &orgfaclient.AuthSession{
-			SessionId: sessionId,
-		},
-	})
+	// studentCard, err := clientOrg.GetStudentCard(&orgfaclient.GetStudentCardInput{
+	// 	AuthSession: &orgfaclient.AuthSession{
+	// 		SessionId: sessionId,
+	// 	},
+	// 	ProfileId: "93491",
+	// })
 
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println("Logged in successfully with zachetka:", studentCard)
-	}
+	// if err != nil {
+	// 	fmt.Println(err)
+	// } else {
+	// 	fmt.Println("Logged in successfully with studentCard:", studentCard)
+	// }
 
 	// studentPlan, err := clientOrg.GetStudyPlan(&orgfaclient.GetStudyPlanInput{
 	// 	AuthSession: &orgfaclient.AuthSession{

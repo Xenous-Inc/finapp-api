@@ -34,12 +34,12 @@ type LoginInput struct {
 
 func (c *Client) Login(input *LoginInput) (string, error) {
 	path := "app/interaction/?login=yes"
-
+	//package constants
 	data := url.Values{}
-	data.Set("AUTH_FORM", "Y")
-	data.Set("TYPE", "AUTH")
-	data.Set("USER_LOGIN", input.Login)
-	data.Set("USER_PASSWORD", input.Password)
+	data.Set(dto.AUTH_FORM, dto.Y)
+	data.Set(dto.TYPE, dto.AUTH)
+	data.Set(dto.USER_LOGIN, input.Login)
+	data.Set(dto.USER_PASSWORD, input.Password)
 
 	req := c.reqBuilder.SetMethod("POST").SetPath(path).SetBody([]byte(data.Encode())).SetContentURLEncoded().Build()
 
@@ -48,22 +48,27 @@ func (c *Client) Login(input *LoginInput) (string, error) {
 		return "", clients.ErrRequest
 	}
 
-	rawBody, err := io.ReadAll(res.Body)
-	fmt.Println(string(rawBody))
-	defer res.Body.Close()
+	if res.StatusCode != 200 {
+		if res.StatusCode == 401 {
+			return "", clients.ErrUnauthorized
+		}
 
-	if err != nil {
-		return "", clients.ErrInvalidEntity
+		return "", fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 	}
 
+	rawBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		return "", clients.ErrInvalidResponse
+	}
+
+	defer res.Body.Close()
+
 	if strings.Contains(string(rawBody), "errortext") {
-		fmt.Println(string(rawBody))
 		return "", clients.ErrUnauthorized
 	}
 
 	if strings.Contains(string(rawBody), "<title>Авторизация</title>") {
-		fmt.Println(string(rawBody))
-		return "",clients.ErrUnauthorized
+		return "", clients.ErrUnauthorized
 	}
 
 	phpSessionId := ""
@@ -103,39 +108,30 @@ func (c *Client) GetMyGroup(input *GetMyGroupInput) ([]dto.Student, error) {
 		return nil, clients.ErrRequest
 	}
 
+	if res.StatusCode != 200 {
+		if res.StatusCode == 401 {
+			return nil, clients.ErrUnauthorized
+		}
+
+		return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
+	}
+
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, clients.ErrRequest
+		return nil, clients.ErrInvalidResponse
 	}
-	fmt.Println(string(body))
+
 	defer res.Body.Close()
-	
-	profileId := ""
-
-	cookies := res.Cookies()
-
-	for _, cookie := range cookies {
-		if cookie.Name == "BX_ORG_FA_RU_PROFILE_ID" {
-			profileId = cookie.Value
-			break
-		}
-	}
-
-	if profileId == "" {
-		log.Println("Unable to find to profileId")
-		return nil, clients.ErrUnauthorized
-	}
-	fmt.Println(profileId)
 
 	student := &dto.Data{}
 	err = json.Unmarshal(body, student)
 
 	if err != nil {
-		return nil, clients.ErrValidation
+		return nil, clients.ErrInvalidEntity
 	}
 
 	if student.Error != 0 {
-		return nil, clients.ErrRequest
+		return nil, fmt.Errorf("Unknown error got from ORG.FA.RU: ErrorCode: %d", student.Error)
 	}
 
 	return student.Student, nil
@@ -155,13 +151,6 @@ func (c *Client) GetRecordBook(input *AuthSession) ([]dto.RecordBookItem, error)
 		return nil, clients.ErrRequest
 	}
 
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, clients.ErrRequest
-	}
-	fmt.Println(string(body))
-	defer res.Body.Close()
-
 	if res.StatusCode != 200 {
 		if res.StatusCode == 401 {
 			return nil, clients.ErrUnauthorized
@@ -170,15 +159,21 @@ func (c *Client) GetRecordBook(input *AuthSession) ([]dto.RecordBookItem, error)
 		return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 	}
 
-	recordBookList := new([]dto.RecordBookItem)
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, clients.ErrInvalidResponse
+	}
+
+	defer res.Body.Close()
+
+	recordBookList := make([]dto.RecordBookItem, 0)
 	err = json.Unmarshal(body, &recordBookList)
 
 	if err != nil {
-		fmt.Println(err.Error())
-		return nil, clients.ErrValidation
+		return nil, clients.ErrInvalidEntity
 	}
 
-	return *recordBookList, nil
+	return recordBookList, nil
 }
 
 type GetMiniProfileInput struct {
@@ -195,13 +190,6 @@ func (c *Client) GetMiniProfile(input *GetMiniProfileInput) ([]dto.MiniProfile, 
 		return nil, clients.ErrRequest
 	}
 
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, clients.ErrRequest
-	}
-	fmt.Println(string(body))
-	defer res.Body.Close()
-
 	if res.StatusCode != 200 {
 		if res.StatusCode == 401 {
 			return nil, clients.ErrUnauthorized
@@ -210,15 +198,21 @@ func (c *Client) GetMiniProfile(input *GetMiniProfileInput) ([]dto.MiniProfile, 
 		return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 	}
 
-	miniProfile := new([]dto.MiniProfile)
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, clients.ErrInvalidResponse
+	}
+
+	defer res.Body.Close()
+
+	miniProfile := make([]dto.MiniProfile, 0)
 	err = json.Unmarshal(body, &miniProfile)
 
 	if err != nil {
-		fmt.Println(err.Error())
-		return nil, clients.ErrValidation
+		return nil, clients.ErrInvalidEntity
 	}
 
-	return *miniProfile, nil
+	return miniProfile, nil
 }
 
 type GetProfileInput struct {
@@ -235,13 +229,6 @@ func (c *Client) GetProfile(input *GetProfileInput) ([]dto.Profile, error) {
 		return nil, clients.ErrRequest
 	}
 
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, clients.ErrRequest
-	}
-	fmt.Println(string(body))
-	defer res.Body.Close()
-
 	if res.StatusCode != 200 {
 		if res.StatusCode == 401 {
 			return nil, clients.ErrUnauthorized
@@ -250,12 +237,18 @@ func (c *Client) GetProfile(input *GetProfileInput) ([]dto.Profile, error) {
 		return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 	}
 
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, clients.ErrInvalidResponse
+	}
+
+	defer res.Body.Close()
+
 	profile := dto.AllDataProfile{}
 	err = json.Unmarshal(body, &profile)
 
 	if err != nil {
-		fmt.Println(err.Error())
-		return nil, clients.ErrValidation
+		return nil, clients.ErrInvalidEntity
 	}
 
 	return profile.Profile, nil
@@ -272,17 +265,8 @@ func (c *Client) GetOrder(input *GetOrderInput) ([]dto.Order, error) {
 
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
-		//fmt.Errorf(err.Error())
 		return nil, clients.ErrRequest
 	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		//fmt.Errorf(err.Error())
-		return nil, clients.ErrRequest
-	}
-	fmt.Println(string(body))
-	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
 		if res.StatusCode == 401 {
@@ -292,13 +276,18 @@ func (c *Client) GetOrder(input *GetOrderInput) ([]dto.Order, error) {
 		return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 	}
 
-	//order := new([]dto.Order)
-	var order []dto.Order
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, clients.ErrInvalidResponse
+	}
+
+	defer res.Body.Close()
+
+	order := make([]dto.Order, 0)
 	err = json.Unmarshal(body, &order)
 
 	if err != nil {
-		fmt.Println(err.Error())
-		return nil, clients.ErrValidation
+		return nil, clients.ErrInvalidEntity
 	}
 
 	return order, nil
@@ -311,21 +300,13 @@ type GetStudentCardInput struct {
 
 func (c *Client) GetStudentCard(input *GetStudentCardInput) (*dto.StudentCard, error) {
 	phpSessionId := fmt.Sprintf("PHPSESSID=%s", input.SessionId)
-	// path := fmt.Sprintf("bitrix/vuz/api/profiles/studentCard/%s", input.ProfileId) 
-	path := "bitrix/vuz/api/profiles/studentCard/93491" 
+	path := fmt.Sprintf("bitrix/vuz/api/profiles/studentCard/%s", input.ProfileId)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).AddHeader("Cookie", phpSessionId).Build()
 
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
 		return nil, clients.ErrRequest
 	}
-
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, clients.ErrRequest
-	}
-	fmt.Println(string(body))
-	defer res.Body.Close()
 
 	if res.StatusCode != 200 {
 		if res.StatusCode == 401 {
@@ -335,16 +316,21 @@ func (c *Client) GetStudentCard(input *GetStudentCardInput) (*dto.StudentCard, e
 		return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 	}
 
-	//order := new([]dto.StudentCard)
-	var order *dto.StudentCard
-	err = json.Unmarshal(body, &order)
-
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		fmt.Println(err.Error())
-		return nil, clients.ErrValidation
+		return nil, clients.ErrInvalidResponse
 	}
 
-	return order, nil
+	defer res.Body.Close()
+
+	var studentCard *dto.StudentCard
+	err = json.Unmarshal(body, &studentCard)
+
+	if err != nil {
+		return nil, clients.ErrInvalidEntity
+	}
+
+	return studentCard, nil
 }
 
 type GetStudyPlanInput struct {
@@ -361,13 +347,6 @@ func (c *Client) GetStudyPlan(input *GetStudyPlanInput) ([]dto.StudyPlan, error)
 		return nil, clients.ErrRequest
 	}
 
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, clients.ErrRequest
-	}
-	fmt.Println(string(body))
-	defer res.Body.Close()
-
 	if res.StatusCode != 200 {
 		if res.StatusCode == 401 {
 			return nil, clients.ErrUnauthorized
@@ -376,12 +355,18 @@ func (c *Client) GetStudyPlan(input *GetStudyPlanInput) ([]dto.StudyPlan, error)
 		return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 	}
 
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, clients.ErrInvalidResponse
+	}
+
+	defer res.Body.Close()
+
 	studyPlan := new([]dto.StudyPlan)
 	err = json.Unmarshal(body, &studyPlan)
 
 	if err != nil {
-		fmt.Println(err.Error())
-		return nil, clients.ErrValidation
+		return nil, clients.ErrInvalidEntity
 	}
 
 	return *studyPlan, nil

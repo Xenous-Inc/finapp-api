@@ -87,15 +87,15 @@ const docTemplate = `{
             "post": {
                 "description": "auth",
                 "consumes": [
-                    "application/json"
+                    "application/x-www-form-urlencoded"
                 ],
                 "produces": [
-                    "application/json"
+                    "application/x-www-form-urlencoded"
                 ],
                 "tags": [
                     "OrgFaRu"
                 ],
-                "summary": "GetGroup",
+                "summary": "Auth",
                 "parameters": [
                     {
                         "description": "auth",
@@ -104,6 +104,176 @@ const docTemplate = `{
                         "required": true,
                         "schema": {
                             "$ref": "#/definitions/orgfaclient.LoginInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "/finapp/api/auth/miniprofile": {
+            "get": {
+                "description": "GetMiniProfile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OrgFaRu"
+                ],
+                "summary": "GetMiniProfile",
+                "parameters": [
+                    {
+                        "description": "Get mini profile info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/orgfaclient.GetMiniProfileInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "/finapp/api/auth/miniprofile/profile": {
+            "get": {
+                "description": "GetProfile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OrgFaRu"
+                ],
+                "summary": "GetProfile",
+                "parameters": [
+                    {
+                        "description": "Profile info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/orgfaclient.GetProfileInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "/finapp/api/auth/miniprofile/profile/order": {
+            "get": {
+                "description": "GetOrder",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OrgFaRu"
+                ],
+                "summary": "GetOrder",
+                "parameters": [
+                    {
+                        "description": "Order info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/orgfaclient.GetOrderInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "/finapp/api/auth/miniprofile/profile/studentcard": {
+            "get": {
+                "description": "GetStudentCard",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OrgFaRu"
+                ],
+                "summary": "GetStudentCard",
+                "parameters": [
+                    {
+                        "description": "Get student card info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/orgfaclient.GetStudentCardInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "/finapp/api/auth/miniprofile/profile/studyplan/{profileId}": {
+            "get": {
+                "description": "GetStudyPlan",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OrgFaRu"
+                ],
+                "summary": "GetStudyPlan",
+                "parameters": [
+                    {
+                        "description": "Get study plan info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/orgfaclient.GetStudyPlanInput"
                         }
                     }
                 ],
@@ -137,7 +307,41 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/orgfaclient.AuthSession"
+                            "$ref": "#/definitions/orgfaclient.GetMyGroupInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "/finapp/api/auth/recordbook": {
+            "get": {
+                "description": "get GetRecordBook",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OrgFaRu"
+                ],
+                "summary": "GetRecordBook",
+                "parameters": [
+                    {
+                        "description": "Record book info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/orgfaclient.GetRecordBookInput"
                         }
                     }
                 ],
@@ -289,7 +493,58 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "orgfaclient.AuthSession": {
+        "orgfaclient.GetMiniProfileInput": {
+            "type": "object",
+            "properties": {
+                "sessionId": {
+                    "type": "string"
+                }
+            }
+        },
+        "orgfaclient.GetMyGroupInput": {
+            "type": "object",
+            "properties": {
+                "sessionId": {
+                    "type": "string"
+                }
+            }
+        },
+        "orgfaclient.GetOrderInput": {
+            "type": "object",
+            "properties": {
+                "sessionId": {
+                    "type": "string"
+                }
+            }
+        },
+        "orgfaclient.GetProfileInput": {
+            "type": "object",
+            "properties": {
+                "sessionId": {
+                    "type": "string"
+                }
+            }
+        },
+        "orgfaclient.GetRecordBookInput": {
+            "type": "object",
+            "properties": {
+                "sessionId": {
+                    "type": "string"
+                }
+            }
+        },
+        "orgfaclient.GetStudentCardInput": {
+            "type": "object",
+            "properties": {
+                "profileId": {
+                    "type": "string"
+                },
+                "sessionId": {
+                    "type": "string"
+                }
+            }
+        },
+        "orgfaclient.GetStudyPlanInput": {
             "type": "object",
             "properties": {
                 "sessionId": {

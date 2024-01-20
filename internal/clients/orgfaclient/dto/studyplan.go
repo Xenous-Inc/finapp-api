@@ -10,7 +10,7 @@ type StudyPlan struct {
 	Year       string              `json:"year"`
 	FacultyId  int                 `json:"faculty_id"`
 	EduCource  int                 `json:"edu_cource"`
-	EisId      string                 `json:"eis_id"`
+	EisId      string              `json:"eis_id"`
 	Semester   []StudyPlanSemester `json:"semesters"`
 }
 
@@ -20,21 +20,23 @@ type StudyPlanSemester struct {
 }
 
 type Section struct {
-	Id         int       `json:"id"`
-	ExternalId string    `json:"external_id"`
-	RupId      int       `json:"rup_id"`
-	Title      string    `json:"title"`
-	Type       string    `json:"section"`
-	Hours      int       `json:"hours"`
-	Zet        string    `json:"zet"`
+	Id         int    `json:"id"`
+	ExternalId string `json:"external_id"`
+	RupId      int    `json:"rup_id"`
+	Title      string `json:"title"`
+	Type       string `json:"section"`
+	Hours      int    `json:"hours"`
+	Zet        string `json:"zet"`
 	// SubTerms   []SubTerm `json:"sub_terms"`
 	// Subjects   []Subject `json:"subjects"`
-	Terms      []Term    `json:"terms"`
+	Terms []Term `json:"terms"`
 }
 
+// TODO: init me
 type SubTerm struct {
 }
 
+// TODO: init me
 type Subject struct {
 }
 
