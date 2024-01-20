@@ -24,7 +24,7 @@ func main() {
 	client := ruzfaclient.NewClient(&http.Client{}, "https://ruz.fa.ru/api/")
 	clientOrg := orgfaclient.NewClient(&http.Client{}, "https://org.fa.ru/")
 	server := container.GetServer(client, clientOrg)
-	id, err := clientOrg.Login(&orgfaclient.LoginInput{
+	sessionId, err := clientOrg.Login(&orgfaclient.LoginInput{
 		Login:    "226292",
 		Password: "Oeia7299",
 	})
@@ -32,18 +32,93 @@ func main() {
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Println("Logged in successfully with id:", id)
+		_ = sessionId
+		fmt.Println("jopa:", sessionId)
+		//fmt.Println("jopa2:", profileId)
 	}
+	//Logged in successfully with id
+	// cook, err := clientOrg.GetMyGroup(&orgfaclient.AuthSession{
+	// 	SessionId: id,
+	// })
 
-	cook, err := clientOrg.GetMyGroup(&orgfaclient.AuthSession{
-		SessionId: id,
+	// if err != nil {
+	// 	fmt.Println(err)
+	// } else {
+	// 	_ = cook
+	// 	fmt.Println("Logged in successfully with cook:", cook)
+
+	// }
+
+	// zachetka, err := clientOrg.GetRecordBook(&orgfaclient.AuthSession{
+	// 	SessionId: id,
+	// })
+
+	// if err != nil {
+	// 	fmt.Println(err)
+	// } else {
+	// 	fmt.Println("Logged in successfully with zachetka:", zachetka)
+	// }
+
+	// miniProfile, err := clientOrg.GetMiniProfile(&orgfaclient.GetMiniProfileInput{
+	// 	AuthSession: &orgfaclient.AuthSession{
+	// 		SessionId: id,
+	// 	},
+	// })
+
+	// if err != nil {
+	// 	fmt.Println(err)
+	// } else {
+	// 	fmt.Println("Logged in successfully with zachetka:", miniProfile)
+	// }
+
+	// profile, err := clientOrg.GetProfile(&orgfaclient.GetProfileInput{
+	// 	AuthSession: &orgfaclient.AuthSession{
+	// 		SessionId: id,
+	// 	},
+	// })
+
+	// if err != nil {
+	// 	fmt.Println(err)
+	// } else {
+	// 	fmt.Println("Logged in successfully with zachetka:", profile)
+	// }
+
+	// order, err := clientOrg.GetOrder(&orgfaclient.GetOrderInput{
+	// 	AuthSession: &orgfaclient.AuthSession{
+	// 		SessionId: sessionId,
+	// 	},
+	// })
+
+	// if err != nil {
+	// 	fmt.Println(err)
+	// } else {
+	// 	fmt.Println("Logged in successfully with order:", order)
+	// }
+
+	// DONT WORK
+	studentCard, err := clientOrg.GetStudentCard(&orgfaclient.GetStudentCardInput{
+		AuthSession: &orgfaclient.AuthSession{
+			SessionId: sessionId,
+		},
 	})
 
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Println("Logged in successfully with cook:", cook)
+		fmt.Println("Logged in successfully with zachetka:", studentCard)
 	}
-	
+
+	// studentPlan, err := clientOrg.GetStudyPlan(&orgfaclient.GetStudyPlanInput{
+	// 	AuthSession: &orgfaclient.AuthSession{
+	// 		SessionId: sessionId,
+	// 	},
+	// })
+
+	// if err != nil {
+	// 	fmt.Println(err)
+	// } else {
+	// 	fmt.Println("Logged in successfully with student plan:", studentPlan)
+	// }
+
 	server.StartListening()
 }
