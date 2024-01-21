@@ -20,7 +20,7 @@ func NewServer(port uint16, host string, router *router.Router) *Server {
 
 	// Declare Server config
 	server := &http.Server{
-		Addr:         fmt.Sprintf("%s:%d", host, port),
+		Addr:         fmt.Sprintf(":%d", port),
 		Handler:      router.RegisterRoutes(),
 		IdleTimeout:  time.Minute,
 		ReadTimeout:  10 * time.Second,
