@@ -1,10 +1,11 @@
 FROM golang:alpine AS builder
 
 ENV CGO_ENABLED 0
+EXPOSE 5051 
 
 RUN apk update --no-cache 
 
-WORKDIR /build
+WORKDIR /usr/local/src
 
 RUN apk --no-cache add bash git make gcc gettext
 
@@ -12,17 +13,15 @@ ADD go.mod .
 ADD go.sum . 
 RUN go mod download
 
-RUN go mod download
+COPY ./ ./
 
-COPY . .
+RUN go build -o ./bin/app cmd/api/main.go
 
-RUN go build -ldflags="-s -w" -o build/runner . /cmd/api/main.go
+FROM alpine as runner 
 
-FROM apline as runner 
-
-WORKDIR /build
-
-COPY --from=builder /build/runner /build/runner 
+COPY --from=builder /usr/local/src/bin/app / 
 COPY environments/config.yaml environments/config.yaml
 
-CMD [". /runner -env-mode=development -config-path=environments/config.yaml"]
+EXPOSE 5051 
+
+CMD ["/app", "--env-mode=development", "--config-path=environments/config.yaml"]
