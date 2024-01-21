@@ -15,7 +15,7 @@ type Server struct {
 	*http.Server
 }
 
-func NewServer(port uint16, host string, router *router.Router) *Server {
+func NewServer(port uint16, host string, router *router.RootRouter) *Server {
 	newServer := &Server{port: port, host: host}
 
 	// Declare Server config

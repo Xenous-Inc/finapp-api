@@ -13,7 +13,7 @@ type Container struct {
 
 	server *server.Server
 
-	router *router.Router
+	router *router.RootRouter
 }
 
 func New(cfg *config.Config) *Container {
@@ -28,9 +28,9 @@ func (c *Container) GetServer(cl *ruzfaclient.Client, clO *orgfaclient.Client) *
 	})
 }
 
-func (c *Container) GetRouter(cl *ruzfaclient.Client, clO *orgfaclient.Client) *router.Router {
-	return get(&c.router, func() *router.Router {
-		return router.NewRouter(cl, clO)
+func (c *Container) GetRouter(cl *ruzfaclient.Client, clO *orgfaclient.Client) *router.RootRouter {
+	return get(&c.router, func() *router.RootRouter {
+		return router.NewRootRouter(cl, clO)
 	})
 }
 

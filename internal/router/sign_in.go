@@ -1,5 +1,5 @@
 package router
 
-func (r *Router) signInHandler() {
+func (r *RootRouter) signInHandler() {
 	// todo: Init me
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient/dto"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/ruzfaclient"
+	"github.com/Xenous-Inc/finapp-api/internal/router/auth"
 
 	_ "github.com/Xenous-Inc/finapp-api/docs"
 	"github.com/go-chi/chi"
@@ -16,26 +17,29 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-type Router struct {
+type RootRouter struct {
 	Client            *ruzfaclient.Client
 	ClientOrgfaclient *orgfaclient.Client
+	authRouter *auth.Router 
 }
 
-func NewRouter(client *ruzfaclient.Client, clientOrgfaclient *orgfaclient.Client) *Router {
-	return &Router{
+func NewRootRouter(client *ruzfaclient.Client, clientOrgfaclient *orgfaclient.Client) *RootRouter {
+	return &RootRouter{
 		Client:            client,
 		ClientOrgfaclient: clientOrgfaclient,
+		authRouter: auth.NewRouter(clientOrgfaclient),
 	}
 }
 
-func (s *Router) RegisterRoutes() http.Handler {
+func (s *RootRouter) RegisterRoutes() http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-
+	r.Route("/auth", s.authRouter.Route)
+	
 	r.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL("http://localhost:5555/swagger/doc.json"), //The url pointing to API definition
 	))
-
+	
 	r.Get("/", s.pingHandler)
 
 	r.Post("/finapp/api/group/", s.HandlerGetGroup)
@@ -66,7 +70,7 @@ func (s *Router) RegisterRoutes() http.Handler {
 // @Param input body ruzfaclient.GetGroupsInput true "group info"
 // @Success 200 {integer} integer 1
 // @Router /finapp/api/group [post]
-func (s *Router) HandlerGetGroup(w http.ResponseWriter, r *http.Request) {
+func (s *RootRouter) HandlerGetGroup(w http.ResponseWriter, r *http.Request) {
 	var input *ruzfaclient.GetGroupsInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -92,7 +96,7 @@ func (s *Router) HandlerGetGroup(w http.ResponseWriter, r *http.Request) {
 // @Param input body ruzfaclient.GetGroupScheduleInput true "group schedule info"
 // @Success 200 {integer} integer 1
 // @Router /finapp/api/group/schedule [post]
-func (s *Router) HandlerGetGroupSchedule(w http.ResponseWriter, r *http.Request) {
+func (s *RootRouter) HandlerGetGroupSchedule(w http.ResponseWriter, r *http.Request) {
 	var input *ruzfaclient.GetGroupScheduleInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -118,7 +122,7 @@ func (s *Router) HandlerGetGroupSchedule(w http.ResponseWriter, r *http.Request)
 // @Param input body ruzfaclient.GetTeacherInput true "teacher info"
 // @Success 200 {integer} integer 1
 // @Router /finapp/api/teacher [post]
-func (s *Router) HandlerGetTeacher(w http.ResponseWriter, r *http.Request) {
+func (s *RootRouter) HandlerGetTeacher(w http.ResponseWriter, r *http.Request) {
 	var input *ruzfaclient.GetTeacherInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -144,7 +148,7 @@ func (s *Router) HandlerGetTeacher(w http.ResponseWriter, r *http.Request) {
 // @Param input body ruzfaclient.GetTeacherScheduleInput true "teacher schedule info"
 // @Success 200 {integer} integer 1
 // @Router /finapp/api/teacher/schedule [post]
-func (s *Router) HandlerGetTeacherSchedule(w http.ResponseWriter, r *http.Request) {
+func (s *RootRouter) HandlerGetTeacherSchedule(w http.ResponseWriter, r *http.Request) {
 	var input *ruzfaclient.GetTeacherScheduleInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -170,7 +174,7 @@ func (s *Router) HandlerGetTeacherSchedule(w http.ResponseWriter, r *http.Reques
 // @Param input body ruzfaclient.GetAuditoriumInput true "auditorium info"
 // @Success 200 {integer} integer 1
 // @Router /finapp/api/auditorium [post]
-func (s *Router) HandlerGetAuditorium(w http.ResponseWriter, r *http.Request) {
+func (s *RootRouter) HandlerGetAuditorium(w http.ResponseWriter, r *http.Request) {
 	var input *ruzfaclient.GetAuditoriumInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -196,7 +200,7 @@ func (s *Router) HandlerGetAuditorium(w http.ResponseWriter, r *http.Request) {
 // @Param input body ruzfaclient.GetAuditoriumScheduleInput true "auditorium schedule info"
 // @Success 200 {integer} integer 1
 // @Router /finapp/api/auditorium/schedule [post]
-func (s *Router) HandlerGetAuditoriumSchedule(w http.ResponseWriter, r *http.Request) {
+func (s *RootRouter) HandlerGetAuditoriumSchedule(w http.ResponseWriter, r *http.Request) {
 	var input *ruzfaclient.GetAuditoriumScheduleInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -222,7 +226,7 @@ func (s *Router) HandlerGetAuditoriumSchedule(w http.ResponseWriter, r *http.Req
 // @Param input body orgfaclient.LoginInput true "auth"
 // @Success 200 {integer} integer 1
 // @Router /finapp/api/auth [post]
-func (s *Router) HandlerAuth(w http.ResponseWriter, r *http.Request) {
+func (s *RootRouter) HandlerAuth(w http.ResponseWriter, r *http.Request) {
 	var input *orgfaclient.LoginInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -258,7 +262,7 @@ func (s *Router) HandlerAuth(w http.ResponseWriter, r *http.Request) {
 // @Param input body orgfaclient.GetMyGroupInput true "myGroup info"
 // @Success 200 {integer} integer 1
 // @Router /finapp/api/auth/mygroup [get]
-func (s *Router) HandlerGetMyGroup(w http.ResponseWriter, r *http.Request) {
+func (s *RootRouter) HandlerGetMyGroup(w http.ResponseWriter, r *http.Request) {
 	var input *orgfaclient.GetMyGroupInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -288,7 +292,7 @@ func (s *Router) HandlerGetMyGroup(w http.ResponseWriter, r *http.Request) {
 // @Param input body orgfaclient.GetRecordBookInput true "Record book info"
 // @Success 200 {integer} integer 1
 // @Router /finapp/api/auth/recordbook [get]
-func (s *Router) HandlerGetRecordBook(w http.ResponseWriter, r *http.Request) {
+func (s *RootRouter) HandlerGetRecordBook(w http.ResponseWriter, r *http.Request) {
 	var input *orgfaclient.AuthSession
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -318,7 +322,7 @@ func (s *Router) HandlerGetRecordBook(w http.ResponseWriter, r *http.Request) {
 // @Param input body orgfaclient.GetMiniProfileInput true "Get mini profile info"
 // @Success 200 {integer} integer 1
 // @Router /finapp/api/auth/miniprofile [get]
-func (s *Router) HandlerGetMiniProfile(w http.ResponseWriter, r *http.Request) {
+func (s *RootRouter) HandlerGetMiniProfile(w http.ResponseWriter, r *http.Request) {
 	var input *orgfaclient.GetMiniProfileInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -348,7 +352,7 @@ func (s *Router) HandlerGetMiniProfile(w http.ResponseWriter, r *http.Request) {
 // @Param input body orgfaclient.GetProfileInput true "Profile info"
 // @Success 200 {integer} integer 1
 // @Router /finapp/api/auth/miniprofile/profile [get]
-func (s *Router) HandlerGetProfile(w http.ResponseWriter, r *http.Request) {
+func (s *RootRouter) HandlerGetProfile(w http.ResponseWriter, r *http.Request) {
 	var input *orgfaclient.GetProfileInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -378,7 +382,7 @@ func (s *Router) HandlerGetProfile(w http.ResponseWriter, r *http.Request) {
 // @Param input body orgfaclient.GetOrderInput true "Order info"
 // @Success 200 {integer} integer 1
 // @Router /finapp/api/auth/miniprofile/profile/order [get]
-func (s *Router) HandlerGetOrder(w http.ResponseWriter, r *http.Request) {
+func (s *RootRouter) HandlerGetOrder(w http.ResponseWriter, r *http.Request) {
 	var input *orgfaclient.GetOrderInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -408,7 +412,7 @@ func (s *Router) HandlerGetOrder(w http.ResponseWriter, r *http.Request) {
 // @Param input body orgfaclient.GetStudentCardInput true "Get student card info"
 // @Success 200 {integer} integer 1
 // @Router /finapp/api/auth/miniprofile/profile/studentcard [get]
-func (s *Router) HandlerGetStudentCard(w http.ResponseWriter, r *http.Request) {
+func (s *RootRouter) HandlerGetStudentCard(w http.ResponseWriter, r *http.Request) {
 	url := chi.URLParam(r, "profileId")
 	myGroup, err := s.ClientOrgfaclient.GetStudentCard(&orgfaclient.GetStudentCardInput{
 		ProfileId: url,
@@ -435,7 +439,7 @@ func (s *Router) HandlerGetStudentCard(w http.ResponseWriter, r *http.Request) {
 // @Param input body orgfaclient.GetStudyPlanInput true "Get study plan info"
 // @Success 200 {integer} integer 1
 // @Router /finapp/api/auth/miniprofile/profile/studyplan/{profileId} [get]
-func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
+func (s *RootRouter) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
 	var input *orgfaclient.GetStudyPlanInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
