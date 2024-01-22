@@ -1,483 +1,149 @@
 {
     "swagger": "2.0",
     "info": {
-        "title": "Finapp-api",
-        "contact": {}
+        "description": "This is a sample server celler server.",
+        "title": "Swagger Example API",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.swagger.io/support",
+            "email": "support@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0"
     },
-    "host": "localhost:5555",
-    "basePath": "/",
+    "host": "localhost:5051/",
     "paths": {
-        "/finapp/api/auditorium": {
-            "post": {
-                "description": "get auditorium",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "TimeTable"
-                ],
-                "summary": "GetAuditorium",
-                "parameters": [
-                    {
-                        "description": "auditorium info",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/ruzfaclient.GetAuditoriumInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
-        "/finapp/api/auditorium/schedule": {
-            "post": {
-                "description": "get auditorium schedule",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "TimeTable"
-                ],
-                "summary": "GetAuditoriumSchedule",
-                "parameters": [
-                    {
-                        "description": "auditorium schedule info",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/ruzfaclient.GetAuditoriumScheduleInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
-        "/finapp/api/auth": {
-            "post": {
-                "description": "auth",
-                "consumes": [
-                    "application/x-www-form-urlencoded"
-                ],
-                "produces": [
-                    "application/x-www-form-urlencoded"
-                ],
-                "tags": [
-                    "OrgFaRu"
-                ],
-                "summary": "Auth",
-                "parameters": [
-                    {
-                        "description": "auth",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/orgfaclient.LoginInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
-        "/finapp/api/auth/miniprofile": {
+        "/classrooms/": {
             "get": {
-                "description": "GetMiniProfile",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Return list of classrooms which found by provided query term",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "OrgFaRu"
+                    "classrooms"
                 ],
-                "summary": "GetMiniProfile",
+                "summary": "Return List of classrooms",
                 "parameters": [
                     {
-                        "description": "Get mini profile info",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/orgfaclient.GetMiniProfileInput"
-                        }
+                        "type": "string",
+                        "description": "Classroom search mask",
+                        "name": "term",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "integer"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Clasroom"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
                         }
                     }
                 }
             }
         },
-        "/finapp/api/auth/miniprofile/profile": {
+        "/groups/": {
             "get": {
-                "description": "GetProfile",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Return list of student groups which found by provided query term",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "OrgFaRu"
+                    "groups"
                 ],
-                "summary": "GetProfile",
+                "summary": "Return List of groups",
                 "parameters": [
                     {
-                        "description": "Profile info",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/orgfaclient.GetProfileInput"
-                        }
+                        "type": "string",
+                        "description": "Group search mask",
+                        "name": "term",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "integer"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Group"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
                         }
                     }
                 }
             }
         },
-        "/finapp/api/auth/miniprofile/profile/order": {
+        "/teachers/": {
             "get": {
-                "description": "GetOrder",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Return list of teachers which found by provided query term",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "OrgFaRu"
+                    "teachers"
                 ],
-                "summary": "GetOrder",
+                "summary": "Return List of teachers",
                 "parameters": [
                     {
-                        "description": "Order info",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/orgfaclient.GetOrderInput"
-                        }
+                        "type": "string",
+                        "description": "Teacher search mask",
+                        "name": "term",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "integer"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Teacher"
+                            }
                         }
-                    }
-                }
-            }
-        },
-        "/finapp/api/auth/miniprofile/profile/studentcard": {
-            "get": {
-                "description": "GetStudentCard",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "OrgFaRu"
-                ],
-                "summary": "GetStudentCard",
-                "parameters": [
-                    {
-                        "description": "Get student card info",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
+                    },
+                    "400": {
+                        "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/orgfaclient.GetStudentCardInput"
+                            "$ref": "#/definitions/ApiError"
                         }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
-                            "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
-        "/finapp/api/auth/miniprofile/profile/studyplan/{profileId}": {
-            "get": {
-                "description": "GetStudyPlan",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "OrgFaRu"
-                ],
-                "summary": "GetStudyPlan",
-                "parameters": [
-                    {
-                        "description": "Get study plan info",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/orgfaclient.GetStudyPlanInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
-        "/finapp/api/auth/mygroup": {
-            "get": {
-                "description": "get myGroup",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "OrgFaRu"
-                ],
-                "summary": "GetMyGroup",
-                "parameters": [
-                    {
-                        "description": "myGroup info",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/orgfaclient.GetMyGroupInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
-        "/finapp/api/auth/recordbook": {
-            "get": {
-                "description": "get GetRecordBook",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "OrgFaRu"
-                ],
-                "summary": "GetRecordBook",
-                "parameters": [
-                    {
-                        "description": "Record book info",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/orgfaclient.GetRecordBookInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
-        "/finapp/api/group": {
-            "post": {
-                "description": "get group",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "TimeTable"
-                ],
-                "summary": "GetGroup",
-                "parameters": [
-                    {
-                        "description": "group info",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/ruzfaclient.GetGroupsInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
-        "/finapp/api/group/schedule": {
-            "post": {
-                "description": "get groupSchedule",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "TimeTable"
-                ],
-                "summary": "GetGroupSchedule",
-                "parameters": [
-                    {
-                        "description": "group schedule info",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/ruzfaclient.GetGroupScheduleInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
-        "/finapp/api/teacher": {
-            "post": {
-                "description": "get teacher",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "TimeTable"
-                ],
-                "summary": "GetTeacher",
-                "parameters": [
-                    {
-                        "description": "teacher info",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/ruzfaclient.GetTeacherInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                }
-            }
-        },
-        "/finapp/api/teacher/schedule": {
-            "post": {
-                "description": "get teacherSchedule",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "TimeTable"
-                ],
-                "summary": "GetTeacherSchedule",
-                "parameters": [
-                    {
-                        "description": "teacher schedule info",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/ruzfaclient.GetTeacherScheduleInput"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "integer"
+                            "$ref": "#/definitions/ApiError"
                         }
                     }
                 }
@@ -485,141 +151,74 @@
         }
     },
     "definitions": {
-        "orgfaclient.GetMiniProfileInput": {
+        "ApiError": {
             "type": "object",
             "properties": {
-                "sessionId": {
-                    "type": "string"
+                "error": {
+                    "type": "string",
+                    "example": "Validation error"
                 }
             }
         },
-        "orgfaclient.GetMyGroupInput": {
+        "Clasroom": {
             "type": "object",
             "properties": {
-                "sessionId": {
-                    "type": "string"
-                }
-            }
-        },
-        "orgfaclient.GetOrderInput": {
-            "type": "object",
-            "properties": {
-                "sessionId": {
-                    "type": "string"
-                }
-            }
-        },
-        "orgfaclient.GetProfileInput": {
-            "type": "object",
-            "properties": {
-                "sessionId": {
-                    "type": "string"
-                }
-            }
-        },
-        "orgfaclient.GetRecordBookInput": {
-            "type": "object",
-            "properties": {
-                "sessionId": {
-                    "type": "string"
-                }
-            }
-        },
-        "orgfaclient.GetStudentCardInput": {
-            "type": "object",
-            "properties": {
-                "profileId": {
-                    "type": "string"
+                "desc": {
+                    "type": "string",
+                    "example": "25 | Филиалы Челябинский филиал | Лекционная"
                 },
-                "sessionId": {
-                    "type": "string"
-                }
-            }
-        },
-        "orgfaclient.GetStudyPlanInput": {
-            "type": "object",
-            "properties": {
-                "sessionId": {
-                    "type": "string"
-                }
-            }
-        },
-        "orgfaclient.LoginInput": {
-            "type": "object",
-            "properties": {
-                "login": {
-                    "type": "string"
+                "id": {
+                    "type": "string",
+                    "example": "3587"
                 },
-                "password": {
-                    "type": "string"
+                "title": {
+                    "type": "string",
+                    "example": "24"
                 }
             }
         },
-        "ruzfaclient.GetAuditoriumInput": {
+        "Group": {
             "type": "object",
             "properties": {
-                "auditorium": {
-                    "type": "string"
+                "desc": {
+                    "type": "string",
+                    "example": "Финансовый факультет | Очная"
+                },
+                "id": {
+                    "type": "string",
+                    "example": "110694"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "ФФ21-1"
                 }
             }
         },
-        "ruzfaclient.GetAuditoriumScheduleInput": {
+        "Teacher": {
             "type": "object",
             "properties": {
-                "auditoriumId": {
-                    "type": "string"
+                "desc": {
+                    "type": "string",
+                    "example": "Департамент гуманитарных наук"
                 },
-                "endDate": {
-                    "type": "string"
+                "id": {
+                    "type": "string",
+                    "example": "00000000-0001-2345-6789-000000005451"
                 },
-                "startDate": {
-                    "type": "string"
-                }
-            }
-        },
-        "ruzfaclient.GetGroupScheduleInput": {
-            "type": "object",
-            "properties": {
-                "endDate": {
-                    "type": "string"
-                },
-                "groupId": {
-                    "type": "string"
-                },
-                "startDate": {
-                    "type": "string"
-                }
-            }
-        },
-        "ruzfaclient.GetGroupsInput": {
-            "type": "object",
-            "properties": {
-                "group": {
-                    "type": "string"
-                }
-            }
-        },
-        "ruzfaclient.GetTeacherInput": {
-            "type": "object",
-            "properties": {
-                "teacher": {
-                    "type": "string"
-                }
-            }
-        },
-        "ruzfaclient.GetTeacherScheduleInput": {
-            "type": "object",
-            "properties": {
-                "endDate": {
-                    "type": "string"
-                },
-                "startDate": {
-                    "type": "string"
-                },
-                "teacherId": {
-                    "type": "string"
+                "title": {
+                    "type": "string",
+                    "example": "Махаматов Таир"
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "BasicAuth": {
+            "type": "basic"
+        }
+    },
+    "externalDocs": {
+        "description": "OpenAPI",
+        "url": "https://swagger.io/resources/open-api/"
     }
 }

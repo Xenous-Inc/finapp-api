@@ -1,4 +1,4 @@
-package classrooms
+package teachers
 
 import (
 	"net/http"
@@ -24,19 +24,19 @@ func NewRouter(client *ruzfaclient.Client) *Router {
 }
 
 func (s *Router) Route(r chi.Router) {
-	r.Get("/", s.HandleGetClassRooms)
+	r.Get("/", s.HandleGetTeacher)
 }
 
-// @Summary Return List of classrooms
-// @Description Return list of classrooms which found by provided query term
-// @Tags classrooms
-// @Param term query string true "Classroom search mask"
+// @Summary Return List of teachers
+// @Description Return list of teachers which found by provided query term
+// @Tags teachers
+// @Param term query string true "Teacher search mask"
 // @Produce json
-// @Success 200 {object} []dto.Classroom
+// @Success 200 {object} []dto.Teacher
 // @Failure 400 {object} dto.ApiError
 // @Failure 500 {object} dto.ApiError
-// @Router /classrooms/ [get]
-func (s *Router) HandleGetClassRooms(w http.ResponseWriter, r *http.Request) {
+// @Router /teachers/ [get]
+func (s *Router) HandleGetTeacher(w http.ResponseWriter, r *http.Request) {
 	term := r.URL.Query().Get(constants.QUERY_TERM)
 	err := s.validator.Var(term, "required")
 	if err != nil {
@@ -45,8 +45,8 @@ func (s *Router) HandleGetClassRooms(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := s.client.GetAuditorium(&ruzfaclient.GetAuditoriumInput{
-		AuditoriumTerm: term,
+	response, err := s.client.GetTeacher(&ruzfaclient.GetTeacherInput{
+		TeacherTerm: term,
 	})
 	if err != nil {
 		responser.Internal(w, r, err.Error())
@@ -54,16 +54,16 @@ func (s *Router) HandleGetClassRooms(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	classrooms := make([]dto.Classroom, 0)
-	for _, classroom := range response {
-		if classroom.Id != "" {
-			classrooms = append(classrooms, dto.Classroom{
-				Id:          classroom.Id,
-				Title:       classroom.Label,
-				Description: classroom.Description,
+	teachers := make([]dto.Teacher, 0)
+	for _, teacher := range response {
+		if teacher.Id != "" {
+			teachers = append(teachers, dto.Teacher{
+				Id:          teacher.Id,
+				Title:       teacher.Label,
+				Description: teacher.Description,
 			})
 		}
 	}
 
-	responser.Success(w, r, classrooms)
+	responser.Success(w, r, teachers)
 }

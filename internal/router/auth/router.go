@@ -17,7 +17,7 @@ type Router struct {
 
 func NewRouter(client *orgfaclient.Client) *Router {
 	return &Router{
-		client:            client,
+		client: client,
 	}
 }
 
@@ -25,14 +25,6 @@ func (s *Router) Route(r chi.Router) {
 	r.Post("/login", s.HandleAuth)
 }
 
-// @Summary Auth
-// @Tags OrgFaRu
-// @Description auth
-// @Accept json
-// @Produce json
-// @Param input body dto.LoginRequest
-// @Success 200 {integer} integer 1
-// @Router /finapp/api/auth [post]
 func (s *Router) HandleAuth(w http.ResponseWriter, r *http.Request) {
 	var input *dto.LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {

@@ -1,4 +1,4 @@
-package classrooms
+package groups
 
 import (
 	"net/http"
@@ -12,7 +12,8 @@ import (
 )
 
 type Router struct {
-	client    *ruzfaclient.Client
+	client *ruzfaclient.Client
+
 	validator *validator.Validate
 }
 
@@ -24,19 +25,19 @@ func NewRouter(client *ruzfaclient.Client) *Router {
 }
 
 func (s *Router) Route(r chi.Router) {
-	r.Get("/", s.HandleGetClassRooms)
+	r.Get("/", s.HandleGetGroup)
 }
 
-// @Summary Return List of classrooms
-// @Description Return list of classrooms which found by provided query term
-// @Tags classrooms
-// @Param term query string true "Classroom search mask"
+// @Summary Return List of groups
+// @Description Return list of student groups which found by provided query term
+// @Tags groups
+// @Param term query string true "Group search mask"
 // @Produce json
-// @Success 200 {object} []dto.Classroom
+// @Success 200 {object} []dto.Group
 // @Failure 400 {object} dto.ApiError
 // @Failure 500 {object} dto.ApiError
-// @Router /classrooms/ [get]
-func (s *Router) HandleGetClassRooms(w http.ResponseWriter, r *http.Request) {
+// @Router /groups/ [get]
+func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 	term := r.URL.Query().Get(constants.QUERY_TERM)
 	err := s.validator.Var(term, "required")
 	if err != nil {
@@ -45,8 +46,8 @@ func (s *Router) HandleGetClassRooms(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := s.client.GetAuditorium(&ruzfaclient.GetAuditoriumInput{
-		AuditoriumTerm: term,
+	response, err := s.client.GetGroups(&ruzfaclient.GetGroupsInput{
+		GroupTerm: term,
 	})
 	if err != nil {
 		responser.Internal(w, r, err.Error())
@@ -54,16 +55,16 @@ func (s *Router) HandleGetClassRooms(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	classrooms := make([]dto.Classroom, 0)
-	for _, classroom := range response {
-		if classroom.Id != "" {
-			classrooms = append(classrooms, dto.Classroom{
-				Id:          classroom.Id,
-				Title:       classroom.Label,
-				Description: classroom.Description,
+	groups := make([]dto.Classroom, 0)
+	for _, group := range response {
+		if group.Id != "" {
+			groups = append(groups, dto.Classroom{
+				Id:          group.Id,
+				Title:       group.Label,
+				Description: group.Description,
 			})
 		}
 	}
 
-	responser.Success(w, r, classrooms)
+	responser.Success(w, r, groups)
 }

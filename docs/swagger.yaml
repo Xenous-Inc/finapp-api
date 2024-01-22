@@ -1,402 +1,151 @@
-basePath: /
 definitions:
-  orgfaclient.GetMiniProfileInput:
+  ApiError:
     properties:
-      sessionId:
+      error:
+        example: Validation error
         type: string
     type: object
-  orgfaclient.GetMyGroupInput:
+  Clasroom:
     properties:
-      sessionId:
+      desc:
+        example: 25 | Филиалы Челябинский филиал | Лекционная
+        type: string
+      id:
+        example: "3587"
+        type: string
+      title:
+        example: "24"
         type: string
     type: object
-  orgfaclient.GetOrderInput:
+  Group:
     properties:
-      sessionId:
+      desc:
+        example: Финансовый факультет | Очная
+        type: string
+      id:
+        example: "110694"
+        type: string
+      title:
+        example: ФФ21-1
         type: string
     type: object
-  orgfaclient.GetProfileInput:
+  Teacher:
     properties:
-      sessionId:
+      desc:
+        example: Департамент гуманитарных наук
+        type: string
+      id:
+        example: 00000000-0001-2345-6789-000000005451
+        type: string
+      title:
+        example: Махаматов Таир
         type: string
     type: object
-  orgfaclient.GetRecordBookInput:
-    properties:
-      sessionId:
-        type: string
-    type: object
-  orgfaclient.GetStudentCardInput:
-    properties:
-      profileId:
-        type: string
-      sessionId:
-        type: string
-    type: object
-  orgfaclient.GetStudyPlanInput:
-    properties:
-      sessionId:
-        type: string
-    type: object
-  orgfaclient.LoginInput:
-    properties:
-      login:
-        type: string
-      password:
-        type: string
-    type: object
-  ruzfaclient.GetAuditoriumInput:
-    properties:
-      auditorium:
-        type: string
-    type: object
-  ruzfaclient.GetAuditoriumScheduleInput:
-    properties:
-      auditoriumId:
-        type: string
-      endDate:
-        type: string
-      startDate:
-        type: string
-    type: object
-  ruzfaclient.GetGroupScheduleInput:
-    properties:
-      endDate:
-        type: string
-      groupId:
-        type: string
-      startDate:
-        type: string
-    type: object
-  ruzfaclient.GetGroupsInput:
-    properties:
-      group:
-        type: string
-    type: object
-  ruzfaclient.GetTeacherInput:
-    properties:
-      teacher:
-        type: string
-    type: object
-  ruzfaclient.GetTeacherScheduleInput:
-    properties:
-      endDate:
-        type: string
-      startDate:
-        type: string
-      teacherId:
-        type: string
-    type: object
-host: localhost:5555
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+host: localhost:5051/
 info:
-  contact: {}
-  title: Finapp-api
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server celler server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
 paths:
-  /finapp/api/auditorium:
-    post:
-      consumes:
-      - application/json
-      description: get auditorium
-      parameters:
-      - description: auditorium info
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/ruzfaclient.GetAuditoriumInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: integer
-      summary: GetAuditorium
-      tags:
-      - TimeTable
-  /finapp/api/auditorium/schedule:
-    post:
-      consumes:
-      - application/json
-      description: get auditorium schedule
-      parameters:
-      - description: auditorium schedule info
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/ruzfaclient.GetAuditoriumScheduleInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: integer
-      summary: GetAuditoriumSchedule
-      tags:
-      - TimeTable
-  /finapp/api/auth:
-    post:
-      consumes:
-      - application/x-www-form-urlencoded
-      description: auth
-      parameters:
-      - description: auth
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/orgfaclient.LoginInput'
-      produces:
-      - application/x-www-form-urlencoded
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: integer
-      summary: Auth
-      tags:
-      - OrgFaRu
-  /finapp/api/auth/miniprofile:
+  /classrooms/:
     get:
-      consumes:
-      - application/json
-      description: GetMiniProfile
+      description: Return list of classrooms which found by provided query term
       parameters:
-      - description: Get mini profile info
-        in: body
-        name: input
+      - description: Classroom search mask
+        in: query
+        name: term
         required: true
-        schema:
-          $ref: '#/definitions/orgfaclient.GetMiniProfileInput'
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            type: integer
-      summary: GetMiniProfile
+            items:
+              $ref: '#/definitions/Clasroom'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiError'
+      summary: Return List of classrooms
       tags:
-      - OrgFaRu
-  /finapp/api/auth/miniprofile/profile:
+      - classrooms
+  /groups/:
     get:
-      consumes:
-      - application/json
-      description: GetProfile
+      description: Return list of student groups which found by provided query term
       parameters:
-      - description: Profile info
-        in: body
-        name: input
+      - description: Group search mask
+        in: query
+        name: term
         required: true
-        schema:
-          $ref: '#/definitions/orgfaclient.GetProfileInput'
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            type: integer
-      summary: GetProfile
+            items:
+              $ref: '#/definitions/Group'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiError'
+      summary: Return List of groups
       tags:
-      - OrgFaRu
-  /finapp/api/auth/miniprofile/profile/order:
+      - groups
+  /teachers/:
     get:
-      consumes:
-      - application/json
-      description: GetOrder
+      description: Return list of teachers which found by provided query term
       parameters:
-      - description: Order info
-        in: body
-        name: input
+      - description: Teacher search mask
+        in: query
+        name: term
         required: true
-        schema:
-          $ref: '#/definitions/orgfaclient.GetOrderInput'
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            type: integer
-      summary: GetOrder
-      tags:
-      - OrgFaRu
-  /finapp/api/auth/miniprofile/profile/studentcard:
-    get:
-      consumes:
-      - application/json
-      description: GetStudentCard
-      parameters:
-      - description: Get student card info
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/orgfaclient.GetStudentCardInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
+            items:
+              $ref: '#/definitions/Teacher'
+            type: array
+        "400":
+          description: Bad Request
           schema:
-            type: integer
-      summary: GetStudentCard
-      tags:
-      - OrgFaRu
-  /finapp/api/auth/miniprofile/profile/studyplan/{profileId}:
-    get:
-      consumes:
-      - application/json
-      description: GetStudyPlan
-      parameters:
-      - description: Get study plan info
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/orgfaclient.GetStudyPlanInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
+            $ref: '#/definitions/ApiError'
+        "500":
+          description: Internal Server Error
           schema:
-            type: integer
-      summary: GetStudyPlan
+            $ref: '#/definitions/ApiError'
+      summary: Return List of teachers
       tags:
-      - OrgFaRu
-  /finapp/api/auth/mygroup:
-    get:
-      consumes:
-      - application/json
-      description: get myGroup
-      parameters:
-      - description: myGroup info
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/orgfaclient.GetMyGroupInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: integer
-      summary: GetMyGroup
-      tags:
-      - OrgFaRu
-  /finapp/api/auth/recordbook:
-    get:
-      consumes:
-      - application/json
-      description: get GetRecordBook
-      parameters:
-      - description: Record book info
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/orgfaclient.GetRecordBookInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: integer
-      summary: GetRecordBook
-      tags:
-      - OrgFaRu
-  /finapp/api/group:
-    post:
-      consumes:
-      - application/json
-      description: get group
-      parameters:
-      - description: group info
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/ruzfaclient.GetGroupsInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: integer
-      summary: GetGroup
-      tags:
-      - TimeTable
-  /finapp/api/group/schedule:
-    post:
-      consumes:
-      - application/json
-      description: get groupSchedule
-      parameters:
-      - description: group schedule info
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/ruzfaclient.GetGroupScheduleInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: integer
-      summary: GetGroupSchedule
-      tags:
-      - TimeTable
-  /finapp/api/teacher:
-    post:
-      consumes:
-      - application/json
-      description: get teacher
-      parameters:
-      - description: teacher info
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/ruzfaclient.GetTeacherInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: integer
-      summary: GetTeacher
-      tags:
-      - TimeTable
-  /finapp/api/teacher/schedule:
-    post:
-      consumes:
-      - application/json
-      description: get teacherSchedule
-      parameters:
-      - description: teacher schedule info
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/ruzfaclient.GetTeacherScheduleInput'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            type: integer
-      summary: GetTeacherSchedule
-      tags:
-      - TimeTable
+      - teachers
+securityDefinitions:
+  BasicAuth:
+    type: basic
 swagger: "2.0"
