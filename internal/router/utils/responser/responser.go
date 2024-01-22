@@ -14,6 +14,13 @@ func BadRequset(w http.ResponseWriter, r *http.Request, msg string) {
 	})
 }
 
+func Unauthorized(w http.ResponseWriter, r *http.Request) {
+	render.Status(r, http.StatusUnauthorized)
+	render.JSON(w, r, &dto.ApiError{
+		Error: "Unauthorized",
+	})
+}
+
 func Internal(w http.ResponseWriter, r *http.Request, msg string) {
 	render.Status(r, http.StatusInternalServerError)
 	render.JSON(w, r, &dto.ApiError{
