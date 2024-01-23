@@ -22,6 +22,7 @@ type Config struct {
 	EnvMode uint8
 	Host    string
 	Port    uint16
+	JwtSecret string `yaml:"jwtSecret"`
 }
 
 func LoadConfig(envMode, path string) (*Config, error) {

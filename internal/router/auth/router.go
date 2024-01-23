@@ -10,20 +10,21 @@ import (
 	"github.com/Xenous-Inc/finapp-api/internal/dto"
 	"github.com/Xenous-Inc/finapp-api/internal/router/utils/responser"
 	"github.com/go-chi/chi"
-	"github.com/google/uuid"
+	//"github.com/google/uuid"
 	"gopkg.in/go-playground/validator.v9"
 )
 
 type Router struct {
 	client *orgfaclient.Client
-
+	jwtSecret string
 	validator *validator.Validate
 }
 
-func NewRouter(client *orgfaclient.Client) *Router {
+func NewRouter(client *orgfaclient.Client, jwtSecret string) *Router {
 	return &Router{
 		client:    client,
 		validator: validator.New(),
+		jwtSecret: jwtSecret,
 	}
 }
 
@@ -55,10 +56,10 @@ func (s *Router) HandleAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = s.client.Login(&orgfaclient.LoginInput{
+	token, err := s.client.Login(&orgfaclient.LoginInput{
 		Login:    input.Login,
 		Password: input.Password,
-	})
+	}, s.jwtSecret)
 	if err != nil {
 		if errors.Is(err, clients.ErrUnauthorized) {
 			responser.Unauthorized(w, r)
@@ -72,7 +73,8 @@ func (s *Router) HandleAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	response := &dto.LoginResponse{
-		AccessToken: uuid.NewString(), // TODO: Genereate token
+		// AccessToken: uuid.NewString(), // TODO: Genereate token
+		AccessToken: token, // TODO: Genereate token
 	}
 
 	responser.Success(w, r, response)
