@@ -30,8 +30,8 @@ func (s *Router) Route(r chi.Router) {
 func (s *Router) HandleGetGroupSchedule(w http.ResponseWriter, r *http.Request) {
 	input := &dto.GetScheduleRequest{
 		EntityId:  r.URL.Query().Get(constants.QUERY_ID),
-		StartDate: r.URL.Query().Get(constants.QUERY_START_DATE),
-		EndDate:   r.URL.Query().Get(constants.QUERY_END_DATE),
+		StartDate: dto.Date(r.URL.Query().Get(constants.QUERY_START_DATE)),
+		EndDate:   dto.Date(r.URL.Query().Get(constants.QUERY_END_DATE)),
 	}
 
 	groupsSchedule, err := s.client.GetGroupSchedule(&ruzfaclient.GetGroupScheduleInput{
@@ -96,4 +96,3 @@ func (s *Router) HandleGetAuditoriumSchedule(w http.ResponseWriter, r *http.Requ
 
 	fmt.Fprintf(w, string(res))
 }
-
