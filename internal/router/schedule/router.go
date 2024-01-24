@@ -23,10 +23,21 @@ func NewRouter(client *ruzfaclient.Client) *Router {
 
 func (s *Router) Route(r chi.Router) {
 	r.Post("/group", s.HandleGetGroupSchedule)
-	r.Post("/teacher", s.HandleGetTeacherSchedule)
-	r.Post("/auditorium", s.HandleGetTeacherSchedule)
+	// r.Post("/teacher", s.HandleGetTeacherSchedule)
+	// r.Post("/auditorium", s.HandleGetTeacherSchedule)
 }
 
+// @Summary Return schedule for provided group
+// @Description Returns schedule for provided group Id and time interval
+// @Tags schedule
+// @Param id query string true "Group ID"
+// @Param from query string true "Group ID"
+// @Param to query string true "Group ID"
+// @Produce json
+// @Success 200 {object} []dto.Group
+// @Failure 400 {object} dto.ApiError
+// @Failure 500 {object} dto.ApiError
+// @Router /groups/ [get]
 func (s *Router) HandleGetGroupSchedule(w http.ResponseWriter, r *http.Request) {
 	input := &dto.GetScheduleRequest{
 		EntityId:  r.URL.Query().Get(constants.QUERY_ID),
@@ -36,12 +47,11 @@ func (s *Router) HandleGetGroupSchedule(w http.ResponseWriter, r *http.Request) 
 
 	groupsSchedule, err := s.client.GetGroupSchedule(&ruzfaclient.GetGroupScheduleInput{
 		GroupId:   input.EntityId,
-		StartDate: input.StartDate,
-		EndDate:   input.EndDate,
+		StartDate: input.StartDate.String(),
+		EndDate:   input.EndDate.String(),
 	})
 
 	res, err := json.Marshal(groupsSchedule)
-
 	if err != nil {
 		fmt.Fprintf(w, "Unlucky:  %s", err)
 	}
@@ -49,7 +59,7 @@ func (s *Router) HandleGetGroupSchedule(w http.ResponseWriter, r *http.Request) 
 	fmt.Fprintf(w, string(res))
 }
 
-func (s *Router) HandleGetTeacherSchedule(w http.ResponseWriter, r *http.Request) {
+/*func (s *Router) HandleGetTeacherSchedule(w http.ResponseWriter, r *http.Request) {
 	input := &dto.GetScheduleRequest{
 		EntityId:  r.URL.Query().Get(constants.QUERY_ID),
 		StartDate: r.URL.Query().Get(constants.QUERY_START_DATE),
@@ -95,4 +105,4 @@ func (s *Router) HandleGetAuditoriumSchedule(w http.ResponseWriter, r *http.Requ
 	}
 
 	fmt.Fprintf(w, string(res))
-}
+}*/
