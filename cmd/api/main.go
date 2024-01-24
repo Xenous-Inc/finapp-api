@@ -1,22 +1,18 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-
-	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient"
-	"github.com/Xenous-Inc/finapp-api/internal/clients/ruzfaclient"
 	"github.com/Xenous-Inc/finapp-api/internal/di"
 	"github.com/Xenous-Inc/finapp-api/internal/utils/config"
 	"github.com/Xenous-Inc/finapp-api/internal/utils/flags"
+	"github.com/Xenous-Inc/finapp-api/internal/utils/logger"
 )
 
-// @title           Swagger Example API
+// @title           Finapp-api
 // @version         1.0
-// @description     This is a sample server celler server.
+// @description     This is a server finapp-api.
 // @termsOfService  http://swagger.io/terms/
 
-// @contact.name   API Support
+// @contact.name   https://web.telegram.org/a/#488960669
 // @contact.url    http://www.swagger.io/support
 // @contact.email  support@swagger.io
 
@@ -32,12 +28,10 @@ import (
 func main() {
 	flags := flags.MustParseFlags()
 	config := config.MustLoadConfig(flags.EnvMode, flags.ConfigPath)
-	fmt.Println(config.Host)
+	logger.ConfigureZeroLogger()
 	container := di.New(config)
 
-	client := ruzfaclient.NewClient(&http.Client{}, "https://ruz.fa.ru/api/")
-	clientOrg := orgfaclient.NewClient(&http.Client{}, "https://org.fa.ru/")
-	server := container.GetServer(client, clientOrg)
+	server := container.GetServer()
 
 	server.StartListening()
 }

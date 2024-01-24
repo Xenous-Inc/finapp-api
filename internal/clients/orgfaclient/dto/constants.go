@@ -1,7 +1,7 @@
 package dto
 
 const (
-	AUTH_FORM = "AUTH_FORM"
+	AUTH_TYPE = "AUTH_FORM"
 	Y         = "Y"
 
 	TYPE = "TYPE"

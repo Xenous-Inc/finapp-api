@@ -6,24 +6,27 @@ import (
 	"strings"
 
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 
 	"github.com/Xenous-Inc/finapp-api/internal/clients"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient/dto"
+	"github.com/Xenous-Inc/finapp-api/internal/utils/config"
 	"github.com/Xenous-Inc/finapp-api/internal/utils/jwt"
+	"github.com/Xenous-Inc/finapp-api/internal/utils/logger/log"
 	requestbuidler "github.com/dr3dnought/request_builder"
 )
 
 type Client struct {
 	httpClient *http.Client
 	reqBuilder *requestbuidler.RequestBuilder
+	Cfg        *config.Config
 }
 
-func NewClient(httpClient *http.Client, url string) *Client {
+func NewClient(url string, cfg *config.Config) *Client {
 	return &Client{
-		httpClient: httpClient,
+		Cfg:        cfg,
+		httpClient: &http.Client{},
 		reqBuilder: requestbuidler.New(url),
 	}
 }
@@ -33,11 +36,11 @@ type LoginInput struct {
 	Password string
 }
 
-func (c *Client) Login(input *LoginInput, jwtSecret string) (string, error) {
+func (c *Client) Login(input *LoginInput) (string, error) {
 	path := "app/interaction/?login=yes"
-	
+
 	data := url.Values{}
-	data.Set(dto.AUTH_FORM, dto.Y)
+	data.Set(dto.AUTH_TYPE, dto.Y)
 	data.Set(dto.TYPE, dto.AUTH)
 	data.Set(dto.USER_LOGIN, input.Login)
 	data.Set(dto.USER_PASSWORD, input.Password)
@@ -84,13 +87,13 @@ func (c *Client) Login(input *LoginInput, jwtSecret string) (string, error) {
 	}
 
 	if phpSessionId == "" {
-		log.Println("Unable to find to sessionId")
+		fmt.Println("PHPSESSID is empty")
 		return "", clients.ErrUnauthorized
 	}
 
-	token, err := jwt.NewToken(phpSessionId, jwtSecret)
-	 if err != nil {
-		//fmt.Fprintf(, "Error generate Token for Guest:  %s", err) !!!!!!!!!
+	token, err := jwt.NewToken(phpSessionId, c.Cfg.JwtSecret)
+	if err != nil {
+		fmt.Println("Error generate Token")
 	}
 
 	return token, nil
@@ -129,7 +132,7 @@ func (c *Client) GetMyGroup(input *GetMyGroupInput) ([]dto.Student, error) {
 
 	defer res.Body.Close()
 
-	student := &dto.Data{}
+	student := new(dto.Data)
 	err = json.Unmarshal(body, student)
 
 	if err != nil {
@@ -225,7 +228,7 @@ type GetProfileInput struct {
 	*AuthSession
 }
 
-func (c *Client) GetProfile(input *GetProfileInput) ([]dto.Profile, error) {
+func (c *Client) GetProfile(input *GetProfileInput) (*dto.ProfileDetails, error) {
 	path := "bitrix/vuz/api/profile/current"
 	phpSessionId := fmt.Sprintf("PHPSESSID=%s", input.SessionId)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).AddHeader("Cookie", phpSessionId).Build()
@@ -250,14 +253,15 @@ func (c *Client) GetProfile(input *GetProfileInput) ([]dto.Profile, error) {
 
 	defer res.Body.Close()
 
-	profile := dto.AllDataProfile{}
+	profile := new(dto.ProfileDetails)
 	err = json.Unmarshal(body, &profile)
-
+	log.Debug(fmt.Sprintf("Profile response: %s", string(body)))
 	if err != nil {
+		log.Error(err, "Error unmarshaling profile response")
 		return nil, clients.ErrInvalidEntity
 	}
 
-	return profile.Profile, nil
+	return profile, nil
 }
 
 type GetOrderInput struct {
@@ -329,7 +333,7 @@ func (c *Client) GetStudentCard(input *GetStudentCardInput) (*dto.StudentCard, e
 
 	defer res.Body.Close()
 
-	var studentCard *dto.StudentCard
+	studentCard := new(dto.StudentCard)
 	err = json.Unmarshal(body, &studentCard)
 
 	if err != nil {

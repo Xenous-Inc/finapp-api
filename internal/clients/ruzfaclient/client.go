@@ -8,17 +8,20 @@ import (
 
 	"github.com/Xenous-Inc/finapp-api/internal/clients"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/ruzfaclient/dto"
+	"github.com/Xenous-Inc/finapp-api/internal/utils/config"
 	requestbuidler "github.com/dr3dnought/request_builder"
 )
 
 type Client struct {
 	httpClient *http.Client
 	reqBuilder *requestbuidler.RequestBuilder
+	Cfg        *config.Config
 }
 
-func NewClient(httpClient *http.Client, url string) *Client {
+func NewClient(url string, cfg *config.Config) *Client {
 	return &Client{
-		httpClient: httpClient,
+		Cfg:        cfg,
+		httpClient: &http.Client{},
 		reqBuilder: requestbuidler.New(url),
 	}
 }
@@ -198,4 +201,3 @@ func (c *Client) GetAuditoriumSchedule(input *GetAuditoriumScheduleInput) ([]dto
 
 	return *scheduleAuditorium, nil
 }
-

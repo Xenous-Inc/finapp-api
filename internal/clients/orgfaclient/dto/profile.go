@@ -9,13 +9,9 @@ type MiniProfile struct {
 	Extra    string `json:"extra"`
 }
 
-type AllDataProfile struct {
-	Profile []Profile
-}
-
-type Profile struct {
+type ProfileDetails struct {
 	Id               int              `json:"id"`
-	UserId           string           `json:"user_id"`
+	UserId           int              `json:"user_id"`
 	Type             string           `json:"type"`
 	EduForm          string           `json:"edu_form"`
 	EduMarkBookNum   string           `json:"edu_mark_book_num"`
@@ -28,7 +24,7 @@ type Profile struct {
 	TypeName         string           `json:"type_name"`
 	BitrixLogin      string           `json:"bitrix_login"`
 	BitrixEmail      string           `json:"bitrix_email"`
-	User             []User           `json:"user"`
+	User             User             `json:"user"`
 	Faculty          Faculty          `json:"faculty"`
 	EduGroup         EduGroup         `json:"edu_group"`
 	EduQualification EduQualification `json:"edu_qualification"`

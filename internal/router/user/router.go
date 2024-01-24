@@ -1,26 +1,27 @@
 package user
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 
 	"github.com/Xenous-Inc/finapp-api/internal/clients"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient"
+	"github.com/Xenous-Inc/finapp-api/internal/router/utils/responser"
+	"github.com/Xenous-Inc/finapp-api/internal/utils/logger/log"
 	"github.com/go-chi/chi"
 	"github.com/golang-jwt/jwt/v5"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 type Router struct {
-	client *orgfaclient.Client
-	jwtSecret string 
+	client    *orgfaclient.Client
+	validator *validator.Validate
 }
 
-func NewRouter(client *orgfaclient.Client, jwtSecret string) *Router {
+func NewRouter(client *orgfaclient.Client) *Router {
 	return &Router{
-		client: client,
-		jwtSecret: jwtSecret,
+		client:    client,
+		validator: validator.New(),
 	}
 }
 
@@ -30,184 +31,415 @@ func (s *Router) Route(r chi.Router) {
 	r.Get("/profile/details", s.HandleGetProfileDetails)
 	r.Get("/order", s.HandleGetOrder)
 	r.Get("/recordbook", s.HandleGetRecordBook)
-	r.Get("/studentcard", s.HandleGetStudentCard)
+	r.Get("/studentcard/{profileId}", s.HandleGetStudentCard)
+	r.Get("/studyplan", s.HandlerGetStudyPlan)
 }
 
 func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 	tokenString := r.Header.Get("Authorization")
 
 	if tokenString == "" {
-		//errors.New("Токен отсутствует в заголовке Authorization")
-		return 
-	}
-	
-	tokenSlice := strings.Split(tokenString, "Bearer ")
-	if len(tokenSlice) != 2 {
+		log.Warn("Authorization header is empty")
+		responser.Unauthorized(w, r)
 		return
 	}
-	
+
+	tokenSlice := strings.Split(tokenString, "Bearer ")
+	if len(tokenSlice) != 2 {
+		log.Warn("Invalid Authorization header format")
+		responser.Unauthorized(w, r)
+		return
+	}
+
 	tokenString = tokenSlice[1]
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(s.jwtSecret), nil
+		return []byte(s.client.Cfg.JwtSecret), nil
 	})
 
 	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
+		responser.Unauthorized(w, r)
 		return
 	}
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 
 		sessionId := claims["sessionId"]
-		fmt.Println(sessionId.(string))
-		
-	myGroup, err := s.client.GetMyGroup(&orgfaclient.GetMyGroupInput{
-		AuthSession: &orgfaclient.AuthSession{
-			SessionId: sessionId.(string),
-		},
-	})
 
-	if err != nil {
-		fmt.Fprintf(w, "Get my group:  %s", clients.ErrUnauthorized)
-	}
+		myGroup, err := s.client.GetMyGroup(&orgfaclient.GetMyGroupInput{
+			AuthSession: &orgfaclient.AuthSession{
+				SessionId: sessionId.(string),
+			},
+		})
 
-	res, err := json.Marshal(myGroup)
+		if err != nil {
+			switch err {
+			case clients.ErrRequest:
+				responser.BadRequset(w, r, "Invalid request")
+			case clients.ErrInvalidEntity:
+				responser.BadRequset(w, r, "Invalid entity")
+			case clients.ErrValidation:
+				responser.BadRequset(w, r, "Error validation")
+			case clients.ErrUnauthorized:
+				responser.Unauthorized(w, r)
+			default:
+				responser.Internal(w, r, err.Error())
+			}
 
-	if err != nil {
-		fmt.Fprintf(w, "Get my group marshal:  %s", clients.ErrRequest)
-	}
+			return
+		}
 
-	fmt.Fprintf(w, string(res))
+		responser.Success(w, r, myGroup)
 	}
 }
 
 func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
-	var input *orgfaclient.GetRecordBookInput
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	tokenString := r.Header.Get("Authorization")
+
+	if tokenString == "" {
+		log.Warn("Authorization header is empty")
+		responser.Unauthorized(w, r)
 		return
 	}
 
-	myGroup, err := s.client.GetRecordBook(input)
-
-	if err != nil {
-		fmt.Fprintf(w, "Get record book:  %s", clients.ErrUnauthorized)
+	tokenSlice := strings.Split(tokenString, "Bearer ")
+	if len(tokenSlice) != 2 {
+		log.Warn("Invalid Authorization header format")
+		responser.Unauthorized(w, r)
+		return
 	}
 
-	res, err := json.Marshal(myGroup)
+	tokenString = tokenSlice[1]
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(s.client.Cfg.JwtSecret), nil
+	})
 
 	if err != nil {
-		fmt.Fprintf(w, "Get record book marshal:  %s", clients.ErrRequest)
+		responser.Unauthorized(w, r)
+		return
 	}
 
-	fmt.Fprintf(w, string(res))
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+
+		sessionId := claims["sessionId"]
+
+		recordBook, err := s.client.GetRecordBook(&orgfaclient.GetRecordBookInput{
+			AuthSession: &orgfaclient.AuthSession{
+				SessionId: sessionId.(string),
+			},
+		})
+
+		if err != nil {
+			switch err {
+			case clients.ErrRequest:
+				responser.BadRequset(w, r, "Invalid request")
+			case clients.ErrInvalidEntity:
+				responser.BadRequset(w, r, "Invalid entity")
+			case clients.ErrValidation:
+				responser.BadRequset(w, r, "Error validation")
+			case clients.ErrUnauthorized:
+				responser.Unauthorized(w, r)
+			default:
+				responser.Internal(w, r, err.Error())
+			}
+
+			return
+		}
+
+		responser.Success(w, r, recordBook)
+	}
 }
 
 func (s *Router) HandleGetProfile(w http.ResponseWriter, r *http.Request) {
-	var input *orgfaclient.GetMiniProfileInput
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	tokenString := r.Header.Get("Authorization")
+
+	if tokenString == "" {
+		log.Warn("Authorization header is empty")
+		responser.Unauthorized(w, r)
 		return
 	}
 
-	myGroup, err := s.client.GetMiniProfile(input)
-
-	if err != nil {
-		fmt.Fprintf(w, "Get mini profile:  %s", clients.ErrUnauthorized)
+	tokenSlice := strings.Split(tokenString, "Bearer ")
+	if len(tokenSlice) != 2 {
+		log.Warn("Invalid Authorization header format")
+		responser.Unauthorized(w, r)
+		return
 	}
 
-	res, err := json.Marshal(myGroup)
+	tokenString = tokenSlice[1]
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(s.client.Cfg.JwtSecret), nil
+	})
 
 	if err != nil {
-		fmt.Fprintf(w, "Get mini profile marshal:  %s", clients.ErrRequest)
+		responser.Unauthorized(w, r)
+		return
 	}
 
-	fmt.Fprintf(w, string(res))
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+
+		sessionId := claims["sessionId"]
+
+		miniProfile, err := s.client.GetMiniProfile(&orgfaclient.GetMiniProfileInput{
+			AuthSession: &orgfaclient.AuthSession{
+				SessionId: sessionId.(string),
+			},
+		})
+
+		if err != nil {
+			switch err {
+			case clients.ErrRequest:
+				responser.BadRequset(w, r, "Invalid request")
+			case clients.ErrInvalidEntity:
+				responser.BadRequset(w, r, "Invalid entity")
+			case clients.ErrValidation:
+				responser.BadRequset(w, r, "Error validation")
+			case clients.ErrUnauthorized:
+				responser.Unauthorized(w, r)
+			default:
+				responser.Internal(w, r, err.Error())
+			}
+
+			return
+		}
+
+		responser.Success(w, r, miniProfile)
+	}
 }
 
 func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request) {
-	var input *orgfaclient.GetProfileInput
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	tokenString := r.Header.Get("Authorization")
+
+	if tokenString == "" {
+		log.Warn("Authorization header is empty")
+		responser.Unauthorized(w, r)
 		return
 	}
 
-	myGroup, err := s.client.GetProfile(input)
-
-	if err != nil {
-		fmt.Fprintf(w, "Get profile:  %s", clients.ErrUnauthorized)
+	tokenSlice := strings.Split(tokenString, "Bearer ")
+	if len(tokenSlice) != 2 {
+		log.Warn("Invalid Authorization header format")
+		responser.Unauthorized(w, r)
+		return
 	}
 
-	res, err := json.Marshal(myGroup)
+	tokenString = tokenSlice[1]
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(s.client.Cfg.JwtSecret), nil
+	})
 
 	if err != nil {
-		fmt.Fprintf(w, "Get profile marshal:  %s", clients.ErrRequest)
+		responser.Unauthorized(w, r)
+		return
 	}
 
-	fmt.Fprintf(w, string(res))
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+
+		sessionId := claims["sessionId"]
+
+		profile, err := s.client.GetProfile(&orgfaclient.GetProfileInput{
+			AuthSession: &orgfaclient.AuthSession{
+				SessionId: sessionId.(string),
+			},
+		})
+
+		if err != nil {
+			switch err {
+			case clients.ErrRequest:
+				responser.BadRequset(w, r, "Invalid request")
+			case clients.ErrInvalidEntity:
+				responser.BadRequset(w, r, "Invalid entity")
+			case clients.ErrValidation:
+				responser.BadRequset(w, r, "Error validation")
+			case clients.ErrUnauthorized:
+				responser.Unauthorized(w, r)
+			default:
+				responser.Internal(w, r, err.Error())
+			}
+
+			return
+		}
+
+		responser.Success(w, r, profile)
+
+	}
 }
 
 func (s *Router) HandleGetOrder(w http.ResponseWriter, r *http.Request) {
-	var input *orgfaclient.GetOrderInput
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	tokenString := r.Header.Get("Authorization")
+
+	if tokenString == "" {
+		log.Warn("Authorization header is empty")
+		responser.Unauthorized(w, r)
 		return
 	}
 
-	myGroup, err := s.client.GetOrder(input)
-
-	if err != nil {
-		fmt.Fprintf(w, "Get order:  %s", clients.ErrUnauthorized)
+	tokenSlice := strings.Split(tokenString, "Bearer ")
+	if len(tokenSlice) != 2 {
+		log.Warn("Invalid Authorization header format")
+		responser.Unauthorized(w, r)
+		return
 	}
 
-	res, err := json.Marshal(myGroup)
+	tokenString = tokenSlice[1]
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(s.client.Cfg.JwtSecret), nil
+	})
 
 	if err != nil {
-		fmt.Fprintf(w, "Get order marshal:  %s", clients.ErrRequest)
+		responser.Unauthorized(w, r)
+		return
 	}
 
-	fmt.Fprintf(w, string(res))
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+
+		sessionId := claims["sessionId"]
+
+		order, err := s.client.GetOrder(&orgfaclient.GetOrderInput{
+			AuthSession: &orgfaclient.AuthSession{
+				SessionId: sessionId.(string),
+			},
+		})
+
+		if err != nil {
+			switch err {
+			case clients.ErrRequest:
+				responser.BadRequset(w, r, "Invalid request")
+			case clients.ErrInvalidEntity:
+				responser.BadRequset(w, r, "Invalid entity")
+			case clients.ErrValidation:
+				responser.BadRequset(w, r, "Error validation")
+			case clients.ErrUnauthorized:
+				responser.Unauthorized(w, r)
+			default:
+				responser.Internal(w, r, err.Error())
+			}
+
+			return
+		}
+
+		responser.Success(w, r, order)
+	}
 }
 
 func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
 	url := chi.URLParam(r, "profileId")
-	myGroup, err := s.client.GetStudentCard(&orgfaclient.GetStudentCardInput{
-		ProfileId: url,
-	})
 
-	if err != nil {
-		fmt.Fprintf(w, "Get student card:  %s", clients.ErrUnauthorized)
-	}
+	tokenString := r.Header.Get("Authorization")
 
-	res, err := json.Marshal(myGroup)
-
-	if err != nil {
-		fmt.Fprintf(w, "Get student card marshal:  %s", clients.ErrRequest)
-	}
-
-	fmt.Fprintf(w, string(res))
-}
-
-func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
-	var input *orgfaclient.GetStudyPlanInput
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if tokenString == "" {
+		log.Warn("Authorization header is empty")
+		responser.Unauthorized(w, r)
 		return
 	}
 
-	myGroup, err := s.client.GetStudyPlan(input)
-
-	if err != nil {
-		fmt.Fprintf(w, "Get study plan:  %s", clients.ErrUnauthorized)
+	tokenSlice := strings.Split(tokenString, "Bearer ")
+	if len(tokenSlice) != 2 {
+		log.Warn("Invalid Authorization header format")
+		responser.Unauthorized(w, r)
+		return
 	}
 
-	res, err := json.Marshal(myGroup)
+	tokenString = tokenSlice[1]
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(s.client.Cfg.JwtSecret), nil
+	})
 
 	if err != nil {
-		fmt.Fprintf(w, "Get study plan marshal:  %s", clients.ErrRequest)
+		responser.Unauthorized(w, r)
+		return
 	}
 
-	fmt.Fprintf(w, string(res))
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+
+		sessionId := claims["sessionId"]
+
+		studentCard, err := s.client.GetStudentCard(&orgfaclient.GetStudentCardInput{
+			AuthSession: &orgfaclient.AuthSession{
+				SessionId: sessionId.(string),
+			}, ProfileId: url,
+		})
+
+		if err != nil {
+			switch err {
+			case clients.ErrRequest:
+				responser.BadRequset(w, r, "Invalid request")
+			case clients.ErrInvalidEntity:
+				responser.BadRequset(w, r, "Invalid entity")
+			case clients.ErrValidation:
+				responser.BadRequset(w, r, "Error validation")
+			case clients.ErrUnauthorized:
+				responser.Unauthorized(w, r)
+			default:
+				responser.Internal(w, r, err.Error())
+			}
+
+			return
+		}
+
+		responser.Success(w, r, studentCard)
+	}
 }
 
+func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
+	tokenString := r.Header.Get("Authorization")
+
+	if tokenString == "" {
+		log.Warn("Authorization header is empty")
+		responser.Unauthorized(w, r)
+		return
+	}
+
+	tokenSlice := strings.Split(tokenString, "Bearer ")
+	if len(tokenSlice) != 2 {
+		log.Warn("Invalid Authorization header format")
+		responser.Unauthorized(w, r)
+		return
+	}
+
+	tokenString = tokenSlice[1]
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(s.client.Cfg.JwtSecret), nil
+	})
+
+	if err != nil {
+		responser.Unauthorized(w, r)
+		return
+	}
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+
+		sessionId := claims["sessionId"]
+
+		studyPlan, err := s.client.GetStudyPlan(&orgfaclient.GetStudyPlanInput{
+			AuthSession: &orgfaclient.AuthSession{
+				SessionId: sessionId.(string),
+			},
+		})
+
+		if err != nil {
+			switch err {
+			case clients.ErrRequest:
+				responser.BadRequset(w, r, "Invalid request")
+			case clients.ErrInvalidEntity:
+				responser.BadRequset(w, r, "Invalid entity")
+			case clients.ErrValidation:
+				responser.BadRequset(w, r, "Error validation")
+			case clients.ErrUnauthorized:
+				responser.Unauthorized(w, r)
+			default:
+				responser.Internal(w, r, err.Error())
+			}
+
+			return
+		}
+
+		responser.Success(w, r, studyPlan)
+	}
+}

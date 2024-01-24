@@ -11,6 +11,7 @@ import (
 	"github.com/Xenous-Inc/finapp-api/internal/router/groups"
 	"github.com/Xenous-Inc/finapp-api/internal/router/teachers"
 	"github.com/Xenous-Inc/finapp-api/internal/router/user"
+	"github.com/Xenous-Inc/finapp-api/internal/utils/config"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -20,6 +21,8 @@ type RootRouter struct {
 	Client            *ruzfaclient.Client
 	ClientOrgfaclient *orgfaclient.Client
 
+	cfg *config.Config
+
 	authRouter      *auth.Router
 	classroomRouter *classrooms.Router
 	groupsRouter    *groups.Router
@@ -27,13 +30,13 @@ type RootRouter struct {
 	userRouter      *user.Router
 }
 
-func NewRootRouter(ruzfaClient *ruzfaclient.Client, orgfaClient *orgfaclient.Client, jwtSecret string) *RootRouter {
+func NewRootRouter(ruzfaClient *ruzfaclient.Client, orgfaClient *orgfaclient.Client, cfg *config.Config) *RootRouter {
 	return &RootRouter{
 		Client:            ruzfaClient,
 		ClientOrgfaclient: orgfaClient,
 
-		userRouter:      user.NewRouter(orgfaClient, jwtSecret),
-		authRouter:      auth.NewRouter(orgfaClient, jwtSecret),
+		userRouter:      user.NewRouter(orgfaClient),
+		authRouter:      auth.NewRouter(orgfaClient),
 		classroomRouter: classrooms.NewRouter(ruzfaClient),
 		groupsRouter:    groups.NewRouter(ruzfaClient),
 		techersRouter:   teachers.NewRouter(ruzfaClient),

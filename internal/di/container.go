@@ -14,6 +14,9 @@ type Container struct {
 	server *server.Server
 
 	router *router.RootRouter
+
+	ruzFaClient *ruzfaclient.Client
+	orgFaClient *orgfaclient.Client
 }
 
 func New(cfg *config.Config) *Container {
@@ -22,15 +25,27 @@ func New(cfg *config.Config) *Container {
 	}
 }
 
-func (c *Container) GetServer(cl *ruzfaclient.Client, clO *orgfaclient.Client) *server.Server {
-	return get(&c.server, func() *server.Server {
-		return server.NewServer(c.cfg.Port, c.cfg.Host, c.GetRouter(cl, clO, c.cfg.JwtSecret))
+func (c *Container) GetRuzClient() *ruzfaclient.Client {
+	return get(&c.ruzFaClient, func() *ruzfaclient.Client {
+		return ruzfaclient.NewClient("https://ruz.fa.ru/api/", c.cfg)
 	})
 }
 
-func (c *Container) GetRouter(cl *ruzfaclient.Client, clO *orgfaclient.Client, jwtSecret string) *router.RootRouter {
+func (c *Container) GetOrgClient() *orgfaclient.Client {
+	return get(&c.orgFaClient, func() *orgfaclient.Client {
+		return orgfaclient.NewClient("https://org.fa.ru/", c.cfg)
+	})
+}
+
+func (c *Container) GetServer() *server.Server {
+	return get(&c.server, func() *server.Server {
+		return server.NewServer(c.cfg.Port, c.cfg.Host, c.GetRouter(c.GetRuzClient(), c.GetOrgClient(), c.cfg))
+	})
+}
+
+func (c *Container) GetRouter(cl *ruzfaclient.Client, clO *orgfaclient.Client, cfg *config.Config) *router.RootRouter {
 	return get(&c.router, func() *router.RootRouter {
-		return router.NewRootRouter(cl, clO, jwtSecret)
+		return router.NewRootRouter(cl, clO, c.cfg)
 	})
 }
 
