@@ -24,13 +24,13 @@ func New(cfg *config.Config) *Container {
 
 func (c *Container) GetServer(cl *ruzfaclient.Client, clO *orgfaclient.Client) *server.Server {
 	return get(&c.server, func() *server.Server {
-		return server.NewServer(c.cfg.Port, c.cfg.Host, c.GetRouter(cl, clO))
+		return server.NewServer(c.cfg.Port, c.cfg.Host, c.GetRouter(cl, clO, c.cfg.JwtSecret))
 	})
 }
 
-func (c *Container) GetRouter(cl *ruzfaclient.Client, clO *orgfaclient.Client) *router.RootRouter {
+func (c *Container) GetRouter(cl *ruzfaclient.Client, clO *orgfaclient.Client, jwtSecret string) *router.RootRouter {
 	return get(&c.router, func() *router.RootRouter {
-		return router.NewRootRouter(cl, clO)
+		return router.NewRootRouter(cl, clO, jwtSecret)
 	})
 }
 

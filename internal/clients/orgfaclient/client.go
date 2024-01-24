@@ -12,6 +12,7 @@ import (
 
 	"github.com/Xenous-Inc/finapp-api/internal/clients"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient/dto"
+	"github.com/Xenous-Inc/finapp-api/internal/utils/jwt"
 	requestbuidler "github.com/dr3dnought/request_builder"
 )
 
@@ -32,9 +33,9 @@ type LoginInput struct {
 	Password string
 }
 
-func (c *Client) Login(input *LoginInput) (string, error) {
+func (c *Client) Login(input *LoginInput, jwtSecret string) (string, error) {
 	path := "app/interaction/?login=yes"
-	//package constants
+	
 	data := url.Values{}
 	data.Set(dto.AUTH_FORM, dto.Y)
 	data.Set(dto.TYPE, dto.AUTH)
@@ -87,7 +88,12 @@ func (c *Client) Login(input *LoginInput) (string, error) {
 		return "", clients.ErrUnauthorized
 	}
 
-	return phpSessionId, nil
+	token, err := jwt.NewToken(phpSessionId, jwtSecret)
+	 if err != nil {
+		//fmt.Fprintf(, "Error generate Token for Guest:  %s", err) !!!!!!!!!
+	}
+
+	return token, nil
 }
 
 type AuthSession struct {
@@ -141,7 +147,7 @@ type GetRecordBookInput struct {
 	*AuthSession
 }
 
-func (c *Client) GetRecordBook(input *AuthSession) ([]dto.RecordBookItem, error) {
+func (c *Client) GetRecordBook(input *GetRecordBookInput) ([]dto.RecordBookItem, error) {
 	path := "bitrix/vuz/api/marks2/"
 	phpSessionId := fmt.Sprintf("PHPSESSID=%s", input.SessionId)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).AddHeader("Cookie", phpSessionId).Build()

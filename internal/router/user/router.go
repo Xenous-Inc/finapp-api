@@ -4,19 +4,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/Xenous-Inc/finapp-api/internal/clients"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient"
 	"github.com/go-chi/chi"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type Router struct {
 	client *orgfaclient.Client
+	jwtSecret string 
 }
 
-func NewRouter(client *orgfaclient.Client) *Router {
+func NewRouter(client *orgfaclient.Client, jwtSecret string) *Router {
 	return &Router{
 		client: client,
+		jwtSecret: jwtSecret,
 	}
 }
 
@@ -30,13 +34,39 @@ func (s *Router) Route(r chi.Router) {
 }
 
 func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
-	var input *orgfaclient.GetMyGroupInput
-	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	tokenString := r.Header.Get("Authorization")
+
+	if tokenString == "" {
+		//errors.New("Токен отсутствует в заголовке Authorization")
+		return 
+	}
+	
+	tokenSlice := strings.Split(tokenString, "Bearer ")
+	if len(tokenSlice) != 2 {
+		return
+	}
+	
+	tokenString = tokenSlice[1]
+
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		return []byte(s.jwtSecret), nil
+	})
+
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
-	myGroup, err := s.client.GetMyGroup(input)
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+
+		sessionId := claims["sessionId"]
+		fmt.Println(sessionId.(string))
+		
+	myGroup, err := s.client.GetMyGroup(&orgfaclient.GetMyGroupInput{
+		AuthSession: &orgfaclient.AuthSession{
+			SessionId: sessionId.(string),
+		},
+	})
 
 	if err != nil {
 		fmt.Fprintf(w, "Get my group:  %s", clients.ErrUnauthorized)
@@ -49,10 +79,11 @@ func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprintf(w, string(res))
+	}
 }
 
 func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
-	var input *orgfaclient.AuthSession
+	var input *orgfaclient.GetRecordBookInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

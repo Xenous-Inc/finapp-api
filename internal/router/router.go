@@ -3,14 +3,14 @@ package router
 import (
 	"net/http"
 
+	_ "github.com/Xenous-Inc/finapp-api/docs"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/ruzfaclient"
 	"github.com/Xenous-Inc/finapp-api/internal/router/auth"
 	"github.com/Xenous-Inc/finapp-api/internal/router/classrooms"
 	"github.com/Xenous-Inc/finapp-api/internal/router/groups"
 	"github.com/Xenous-Inc/finapp-api/internal/router/teachers"
-
-	_ "github.com/Xenous-Inc/finapp-api/docs"
+	"github.com/Xenous-Inc/finapp-api/internal/router/user"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -24,14 +24,16 @@ type RootRouter struct {
 	classroomRouter *classrooms.Router
 	groupsRouter    *groups.Router
 	techersRouter   *teachers.Router
+	userRouter      *user.Router
 }
 
-func NewRootRouter(ruzfaClient *ruzfaclient.Client, orgfaClient *orgfaclient.Client) *RootRouter {
+func NewRootRouter(ruzfaClient *ruzfaclient.Client, orgfaClient *orgfaclient.Client, jwtSecret string) *RootRouter {
 	return &RootRouter{
 		Client:            ruzfaClient,
 		ClientOrgfaclient: orgfaClient,
 
-		authRouter:      auth.NewRouter(orgfaClient),
+		userRouter:      user.NewRouter(orgfaClient, jwtSecret),
+		authRouter:      auth.NewRouter(orgfaClient, jwtSecret),
 		classroomRouter: classrooms.NewRouter(ruzfaClient),
 		groupsRouter:    groups.NewRouter(ruzfaClient),
 		techersRouter:   teachers.NewRouter(ruzfaClient),
@@ -43,10 +45,10 @@ func (s *RootRouter) RegisterRoutes() http.Handler {
 	r.Use(middleware.Logger)
 
 	r.Route("/auth", s.authRouter.Route)
+	r.Route("/user", s.userRouter.Route)
 	r.Route("/classrooms", s.classroomRouter.Route)
 	r.Route("/groups", s.groupsRouter.Route)
 	r.Route("/teachers", s.techersRouter.Route)
-
 	r.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL("http://localhost:5051/swagger/doc.json"), //The url pointing to API definition
 	))

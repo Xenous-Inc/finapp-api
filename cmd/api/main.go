@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient"
@@ -31,6 +32,7 @@ import (
 func main() {
 	flags := flags.MustParseFlags()
 	config := config.MustLoadConfig(flags.EnvMode, flags.ConfigPath)
+	fmt.Println(config.Host)
 	container := di.New(config)
 
 	client := ruzfaclient.NewClient(&http.Client{}, "https://ruz.fa.ru/api/")
