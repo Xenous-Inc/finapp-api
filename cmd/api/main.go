@@ -7,14 +7,13 @@ import (
 	"github.com/Xenous-Inc/finapp-api/internal/utils/logger"
 )
 
-// @title           Finapp-api
+// @title           FinAppAPI
 // @version         1.0
-// @description     This is a server finapp-api.
+// @description     This is a FinAppAPI Swaggers documentation. For any suggestions, questions and deals write me in Telegram: @dr3dnought
 // @termsOfService  http://swagger.io/terms/
 
-// @contact.name   https://web.telegram.org/a/#488960669
-// @contact.url    http://www.swagger.io/support
-// @contact.email  support@swagger.io
+// @contact.name   Alexander Drednought
+// @contact.email  ask@dr3dnought.ru
 
 // @license.name  Apache 2.0
 // @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
@@ -22,9 +21,6 @@ import (
 // @host      localhost:5051/
 
 // @securityDefinitions.basic  BasicAuth
-
-// @externalDocs.description  OpenAPI
-// @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
 	flags := flags.MustParseFlags()
 	config := config.MustLoadConfig(flags.EnvMode, flags.ConfigPath)

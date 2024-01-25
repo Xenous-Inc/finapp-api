@@ -11,9 +11,8 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
-            "name": "https://web.telegram.org/a/#488960669",
-            "url": "http://www.swagger.io/support",
-            "email": "support@swagger.io"
+            "name": "Alexander Drednought",
+            "email": "ask@dr3dnought.ru"
         },
         "license": {
             "name": "Apache 2.0",
@@ -711,10 +710,6 @@ const docTemplate = `{
         "BasicAuth": {
             "type": "basic"
         }
-    },
-    "externalDocs": {
-        "description": "OpenAPI",
-        "url": "https://swagger.io/resources/open-api/"
     }
 }`
 
@@ -724,8 +719,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:5051/",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "Finapp-api",
-	Description:      "This is a server finapp-api.",
+	Title:            "FinAppAPI",
+	Description:      "This is a FinAppAPI Swaggers documentation. For any suggestions, questions and deals write me in Telegram: @dr3dnought",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",
