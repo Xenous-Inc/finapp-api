@@ -12,7 +12,6 @@ import (
 	"github.com/Xenous-Inc/finapp-api/internal/clients"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient/dto"
 	"github.com/Xenous-Inc/finapp-api/internal/utils/config"
-	"github.com/Xenous-Inc/finapp-api/internal/utils/jwt"
 	"github.com/Xenous-Inc/finapp-api/internal/utils/logger/log"
 	requestbuidler "github.com/dr3dnought/request_builder"
 )
@@ -49,29 +48,34 @@ func (c *Client) Login(input *LoginInput) (string, error) {
 
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
+		log.Error(err, "BadRequest", "orgfaclient login")
 		return "", clients.ErrRequest
 	}
 
 	if res.StatusCode != 200 {
 		if res.StatusCode == 401 {
+			log.Warn("Unauthorized", "orgfaclient login")
 			return "", clients.ErrUnauthorized
 		}
-
+		log.Warn("BadRequest", "orgfaclient login")
 		return "", fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 	}
 
 	rawBody, err := io.ReadAll(res.Body)
 	if err != nil {
+		log.Error(err, "InvalidResponse", "orgfaclient login")
 		return "", clients.ErrInvalidResponse
 	}
 
 	defer res.Body.Close()
 
 	if strings.Contains(string(rawBody), "errortext") {
+		log.Warn("Unauthorized", "orgfaclient login")
 		return "", clients.ErrUnauthorized
 	}
 
 	if strings.Contains(string(rawBody), "<title>Авторизация</title>") {
+		log.Warn("Unauthorized", "orgfaclient login")
 		return "", clients.ErrUnauthorized
 	}
 
@@ -87,16 +91,11 @@ func (c *Client) Login(input *LoginInput) (string, error) {
 	}
 
 	if phpSessionId == "" {
-		fmt.Println("PHPSESSID is empty")
+		log.Warn("Unauthorized, PHPSESSID is empty", "orgfaclient login")
 		return "", clients.ErrUnauthorized
 	}
 
-	token, err := jwt.NewToken(phpSessionId, c.Cfg.JwtSecret)
-	if err != nil {
-		fmt.Println("Error generate Token")
-	}
-
-	return token, nil
+	return phpSessionId, nil
 }
 
 type AuthSession struct {
@@ -114,19 +113,23 @@ func (c *Client) GetMyGroup(input *GetMyGroupInput) ([]dto.Student, error) {
 
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
+		log.Error(err, "BadRequest", "orgfaclient myGroup")
 		return nil, clients.ErrRequest
 	}
 
 	if res.StatusCode != 200 {
 		if res.StatusCode == 401 {
+			log.Warn("Unauthorized", "orgfaclient myGroup")
 			return nil, clients.ErrUnauthorized
 		}
 
+		log.Warn("BadRequest", "orgfaclient myGroup")
 		return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
+		log.Error(err, "InvalidResponse", "orgfaclient myGroup")
 		return nil, clients.ErrInvalidResponse
 	}
 
@@ -136,10 +139,12 @@ func (c *Client) GetMyGroup(input *GetMyGroupInput) ([]dto.Student, error) {
 	err = json.Unmarshal(body, student)
 
 	if err != nil {
+		log.Error(err, "InvalidEntity", "orgfaclient myGroup")
 		return nil, clients.ErrInvalidEntity
 	}
 
 	if student.Error != 0 {
+		log.Error(err, "InvalidResponse", "orgfaclient myGroup")
 		return nil, fmt.Errorf("Unknown error got from ORG.FA.RU: ErrorCode: %d", student.Error)
 	}
 
@@ -157,19 +162,22 @@ func (c *Client) GetRecordBook(input *GetRecordBookInput) ([]dto.RecordBookItem,
 
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
+		log.Error(err, "BadRequest", "orgfaclient recordBook")
 		return nil, clients.ErrRequest
 	}
 
 	if res.StatusCode != 200 {
 		if res.StatusCode == 401 {
+			log.Warn("Unauthorized", "orgfaclient recordBook")
 			return nil, clients.ErrUnauthorized
 		}
-
+		log.Warn("BadRequest", "orgfaclient recordBook")
 		return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
+		log.Error(err, "InvalidResponse", "orgfaclient recordBook")
 		return nil, clients.ErrInvalidResponse
 	}
 
@@ -179,6 +187,7 @@ func (c *Client) GetRecordBook(input *GetRecordBookInput) ([]dto.RecordBookItem,
 	err = json.Unmarshal(body, &recordBookList)
 
 	if err != nil {
+		log.Error(err, "InvalidEntity", "orgfaclient recordBook")
 		return nil, clients.ErrInvalidEntity
 	}
 
@@ -189,26 +198,29 @@ type GetMiniProfileInput struct {
 	*AuthSession
 }
 
-func (c *Client) GetMiniProfile(input *GetMiniProfileInput) ([]dto.MiniProfile, error) {
+func (c *Client) GetProfile(input *GetMiniProfileInput) ([]dto.MiniProfile, error) {
 	path := "bitrix/vuz/api/profile/"
 	phpSessionId := fmt.Sprintf("PHPSESSID=%s", input.SessionId)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).AddHeader("Cookie", phpSessionId).Build()
 
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
+		log.Error(err, "BadRequest", "orgfaclient profile")
 		return nil, clients.ErrRequest
 	}
 
 	if res.StatusCode != 200 {
 		if res.StatusCode == 401 {
+			log.Warn("Unauthorized", "orgfaclient profile")
 			return nil, clients.ErrUnauthorized
 		}
-
+		log.Warn("BadRequest", "orgfaclient profile")
 		return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
+		log.Error(err, "InvalidResponse", "orgfaclient profile")
 		return nil, clients.ErrInvalidResponse
 	}
 
@@ -218,6 +230,7 @@ func (c *Client) GetMiniProfile(input *GetMiniProfileInput) ([]dto.MiniProfile, 
 	err = json.Unmarshal(body, &miniProfile)
 
 	if err != nil {
+		log.Error(err, "InvalidEntity", "orgfaclient profile")
 		return nil, clients.ErrInvalidEntity
 	}
 
@@ -228,26 +241,29 @@ type GetProfileInput struct {
 	*AuthSession
 }
 
-func (c *Client) GetProfile(input *GetProfileInput) (*dto.ProfileDetails, error) {
+func (c *Client) GetProfileDetails(input *GetProfileInput) (*dto.ProfileDetails, error) {
 	path := "bitrix/vuz/api/profile/current"
 	phpSessionId := fmt.Sprintf("PHPSESSID=%s", input.SessionId)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).AddHeader("Cookie", phpSessionId).Build()
 
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
+		log.Error(err, "BadRequest", "orgfaclient profileDetails")
 		return nil, clients.ErrRequest
 	}
 
 	if res.StatusCode != 200 {
 		if res.StatusCode == 401 {
+			log.Warn("Unauthorized", "orgfaclient profileDetails")
 			return nil, clients.ErrUnauthorized
 		}
-
+		log.Warn("BadRequest", "orgfaclient profileDetails")
 		return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
+		log.Error(err, "InvalidResponse", "orgfaclient profileDetails")
 		return nil, clients.ErrInvalidResponse
 	}
 
@@ -255,9 +271,9 @@ func (c *Client) GetProfile(input *GetProfileInput) (*dto.ProfileDetails, error)
 
 	profile := new(dto.ProfileDetails)
 	err = json.Unmarshal(body, &profile)
-	log.Debug(fmt.Sprintf("Profile response: %s", string(body)))
+
 	if err != nil {
-		log.Error(err, "Error unmarshaling profile response")
+		log.Error(err, "InvalidEntity", "orgfaclient profileDetails")
 		return nil, clients.ErrInvalidEntity
 	}
 
@@ -275,19 +291,22 @@ func (c *Client) GetOrder(input *GetOrderInput) ([]dto.Order, error) {
 
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
+		log.Error(err, "BadRequest", "orgfaclient order")
 		return nil, clients.ErrRequest
 	}
 
 	if res.StatusCode != 200 {
 		if res.StatusCode == 401 {
+			log.Warn("Unauthorized", "orgfaclient order")
 			return nil, clients.ErrUnauthorized
 		}
-
+		log.Warn("BadRequest", "orgfaclient order")
 		return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
+		log.Error(err, "InvalidResponse", "orgfaclient order")
 		return nil, clients.ErrInvalidResponse
 	}
 
@@ -297,6 +316,7 @@ func (c *Client) GetOrder(input *GetOrderInput) ([]dto.Order, error) {
 	err = json.Unmarshal(body, &order)
 
 	if err != nil {
+		log.Error(err, "InvalidEntity", "orgfaclient order")
 		return nil, clients.ErrInvalidEntity
 	}
 
@@ -315,19 +335,22 @@ func (c *Client) GetStudentCard(input *GetStudentCardInput) (*dto.StudentCard, e
 
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
+		log.Error(err, "BadRequest", "orgfaclient studentCard")
 		return nil, clients.ErrRequest
 	}
 
 	if res.StatusCode != 200 {
 		if res.StatusCode == 401 {
+			log.Warn("Unauthorized", "orgfaclient studentCard")
 			return nil, clients.ErrUnauthorized
 		}
-
+		log.Warn("BadRequest", "orgfaclient studentCard")
 		return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
+		log.Error(err, "InvalidResponse", "orgfaclient studentCard")
 		return nil, clients.ErrInvalidResponse
 	}
 
@@ -337,6 +360,7 @@ func (c *Client) GetStudentCard(input *GetStudentCardInput) (*dto.StudentCard, e
 	err = json.Unmarshal(body, &studentCard)
 
 	if err != nil {
+		log.Error(err, "InvalidEntity", "orgfaclient studentCard")
 		return nil, clients.ErrInvalidEntity
 	}
 
@@ -354,19 +378,22 @@ func (c *Client) GetStudyPlan(input *GetStudyPlanInput) ([]dto.StudyPlan, error)
 
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
+		log.Error(err, "BadRequest", "orgfaclient studyPlan")
 		return nil, clients.ErrRequest
 	}
 
 	if res.StatusCode != 200 {
 		if res.StatusCode == 401 {
+			log.Warn("Unauthorized", "orgfaclient studyPlan")
 			return nil, clients.ErrUnauthorized
 		}
-
+		log.Warn("BadRequest", "orgfaclient studyPlan")
 		return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
+		log.Error(err, "InvalidResponse", "orgfaclient studyPlan")
 		return nil, clients.ErrInvalidResponse
 	}
 
@@ -376,6 +403,7 @@ func (c *Client) GetStudyPlan(input *GetStudyPlanInput) ([]dto.StudyPlan, error)
 	err = json.Unmarshal(body, &studyPlan)
 
 	if err != nil {
+		log.Error(err, "InvalidEntity", "orgfaclient studyPlan")
 		return nil, clients.ErrInvalidEntity
 	}
 

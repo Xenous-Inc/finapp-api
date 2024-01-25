@@ -6,6 +6,7 @@ import (
 	"github.com/Xenous-Inc/finapp-api/internal/router"
 	"github.com/Xenous-Inc/finapp-api/internal/server"
 	"github.com/Xenous-Inc/finapp-api/internal/utils/config"
+	"github.com/Xenous-Inc/finapp-api/internal/utils/logger/log"
 )
 
 type Container struct {
@@ -51,6 +52,7 @@ func (c *Container) GetRouter(cl *ruzfaclient.Client, clO *orgfaclient.Client, c
 
 func get[T comparable](obj *T, builder func() T) T {
 	if *obj != *new(T) {
+		log.Warn("Internal", "di get")
 		return *obj
 	}
 

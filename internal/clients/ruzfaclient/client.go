@@ -9,6 +9,7 @@ import (
 	"github.com/Xenous-Inc/finapp-api/internal/clients"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/ruzfaclient/models"
 	"github.com/Xenous-Inc/finapp-api/internal/utils/config"
+	"github.com/Xenous-Inc/finapp-api/internal/utils/logger/log"
 	requestbuidler "github.com/dr3dnought/request_builder"
 )
 
@@ -41,18 +42,22 @@ func (c *Client) GetGroups(input *GetEntitiesInput) ([]models.Group, error) {
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
+		log.Error(err, "BadRequest", "ruzfaclient group")
 		return nil, clients.ErrRequest
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, clients.ErrInvalidEntity
+		log.Error(err, "InvalidResponse", "ruzfaclient group")
+		return nil, clients.ErrInvalidResponse
 	}
+
 	defer res.Body.Close()
 
 	groups := new([]models.Group)
 	err = json.Unmarshal(body, groups)
 	if err != nil {
+		log.Error(err, "InvalidEntity", "ruzfaclient group")
 		return nil, clients.ErrInvalidEntity
 	}
 
@@ -64,20 +69,22 @@ func (c *Client) GetGroupSchedule(input *GetScheduleInput) ([]models.Schedule, e
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
+		log.Error(err, "BadRequest", "ruzfaclient group schedule")
 		return nil, clients.ErrRequest
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, clients.ErrInvalidEntity
+		log.Error(err, "InvalidResponse", "ruzfaclient group schedule")
+		return nil, clients.ErrInvalidResponse
 	}
 	defer res.Body.Close()
 
 	schedule := new([]models.Schedule)
 	err = json.Unmarshal(body, schedule)
 	if err != nil {
-		fmt.Print(err)
-		return nil, clients.ErrValidation
+		log.Error(err, "InvalidEntity", "ruzfaclient group schedule")
+		return nil, clients.ErrInvalidEntity
 	}
 
 	return *schedule, nil
@@ -88,18 +95,21 @@ func (c *Client) GetTeacher(input *GetEntitiesInput) ([]models.Teacher, error) {
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
+		log.Error(err, "BadRequest", "ruzfaclient teacher")
 		return nil, clients.ErrRequest
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, clients.ErrInvalidEntity
+		log.Error(err, "InvalidResponse", "ruzfaclient teacher")
+		return nil, clients.ErrInvalidResponse
 	}
 	defer res.Body.Close()
 
 	teachers := new([]models.Teacher)
 	err = json.Unmarshal(body, teachers)
 	if err != nil {
+		log.Error(err, "InvalidEntity", "ruzfaclient teacher")
 		return nil, clients.ErrInvalidEntity
 	}
 
@@ -111,20 +121,22 @@ func (c *Client) GetTeacherSchedule(input *GetScheduleInput) ([]models.Schedule,
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
+		log.Error(err, "BadRequest", "ruzfaclient teacher schedule")
 		return nil, clients.ErrRequest
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, clients.ErrInvalidEntity
+		log.Error(err, "InvalidResponse", "ruzfaclient teacher schedule")
+		return nil, clients.ErrInvalidResponse
 	}
 	defer res.Body.Close()
 
 	scheduleTeacher := new([]models.Schedule)
 	err = json.Unmarshal(body, scheduleTeacher)
 	if err != nil {
-		fmt.Print(err)
-		return nil, clients.ErrValidation
+		log.Error(err, "InvalidEntity", "ruzfaclient teacher schedule")
+		return nil, clients.ErrInvalidEntity
 	}
 	return *scheduleTeacher, nil
 }
@@ -134,18 +146,21 @@ func (c *Client) GetAuditorium(input *GetEntitiesInput) ([]models.Auditorium, er
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
+		log.Error(err, "BadRequest", "ruzfaclient classroom")
 		return nil, clients.ErrRequest
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, clients.ErrInvalidEntity
+		log.Error(err, "InvalidResponse", "ruzfaclient classroom")
+		return nil, clients.ErrInvalidResponse
 	}
 	defer res.Body.Close()
 
 	auditoriums := new([]models.Auditorium)
 	err = json.Unmarshal(body, auditoriums)
 	if err != nil {
+		log.Error(err, "InvalidEntity", "ruzfaclient classroom")
 		return nil, clients.ErrInvalidEntity
 	}
 
@@ -157,22 +172,23 @@ func (c *Client) GetAuditoriumSchedule(input *GetScheduleInput) ([]models.Schedu
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
+		log.Error(err, "BadRequest", "ruzfaclient classroom schedule")
 		return nil, clients.ErrRequest
 	}
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		return nil, clients.ErrInvalidEntity
+		log.Error(err, "InvalidResponse", "ruzfaclient classroom schedule")
+		return nil, clients.ErrInvalidResponse
 	}
 
-	fmt.Println(res.StatusCode)
 	defer res.Body.Close()
 
 	scheduleAuditorium := new([]models.Schedule)
 	err = json.Unmarshal(body, scheduleAuditorium)
 	if err != nil {
-		fmt.Print(err)
-		return nil, clients.ErrValidation
+		log.Error(err, "InvalidEntity", "ruzfaclient classroom schedule")
+		return nil, clients.ErrInvalidEntity
 	}
 
 	return *scheduleAuditorium, nil

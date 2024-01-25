@@ -8,6 +8,7 @@ import (
 	"github.com/Xenous-Inc/finapp-api/internal/dto"
 	"github.com/Xenous-Inc/finapp-api/internal/router/constants"
 	"github.com/Xenous-Inc/finapp-api/internal/router/utils/responser"
+	"github.com/Xenous-Inc/finapp-api/internal/utils/logger/log"
 	"github.com/go-chi/chi"
 	"golang.org/x/sync/errgroup"
 	"gopkg.in/go-playground/validator.v9"
@@ -60,6 +61,7 @@ func (s *Router) HandleGetGroupSchedule(w http.ResponseWriter, r *http.Request) 
 
 	err := s.validator.Struct(input)
 	if err != nil {
+		log.Error(err, "BadRequest", "schedule HandleGetGroupSchedule")
 		responser.BadRequset(w, r, "All required parameters must be provided")
 
 		return
@@ -83,12 +85,16 @@ func (s *Router) HandleGetGroupSchedule(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		switch err {
 		case clients.ErrRequest:
-			responser.Internal(w, r, "Invalid request")
+			log.Error(err, "BadRequest", "schedule HandleGetGroupSchedule")
+			responser.BadRequset(w, r, "Invalid request")
 		case clients.ErrInvalidEntity:
-			responser.Internal(w, r, "Invalid entity")
+			log.Error(err, "Invalid Entity", "schedule HandleGetGroupSchedule")
+			responser.BadRequset(w, r, "Invalid entity")
 		case clients.ErrValidation:
+			log.Error(err, "Error Validation", "schedule HandleGetGroupSchedule")
 			responser.BadRequset(w, r, "Error validation")
 		default:
+			log.Error(err, "Internal", "schedule HandleGetGroupSchedule")
 			responser.Internal(w, r, err.Error())
 		}
 
@@ -124,11 +130,13 @@ func (s *Router) HandleGetTeacherSchedule(w http.ResponseWriter, r *http.Request
 
 	err := s.validator.Struct(input)
 	if err != nil {
+		log.Error(err, "BadRequest", "schedule HandleGetTeacherSchedule")
 		responser.BadRequset(w, r, "All required parameters must be provided")
 
 		return
 	}
 	if err != nil {
+		log.Error(err, "BadRequest", "schedule HandleGetTeacherSchedule")
 		responser.BadRequset(w, r, "All required parameters must be provided")
 
 		return
@@ -152,12 +160,16 @@ func (s *Router) HandleGetTeacherSchedule(w http.ResponseWriter, r *http.Request
 	if err != nil {
 		switch err {
 		case clients.ErrRequest:
-			responser.Internal(w, r, "Invalid request")
+			log.Error(err, "BadRequest", "schedule HandleGetTeacherSchedule")
+			responser.BadRequset(w, r, "Invalid request")
 		case clients.ErrInvalidEntity:
-			responser.Internal(w, r, "Invalid entity")
+			log.Error(err, "Invalid Entity", "schedule HandleGetTeacherSchedule")
+			responser.BadRequset(w, r, "Invalid entity")
 		case clients.ErrValidation:
+			log.Error(err, "Error Validation", "schedule HandleGetTeacherSchedule")
 			responser.BadRequset(w, r, "Error validation")
 		default:
+			log.Error(err, "Internal", "schedule HandleGetTeacherSchedule")
 			responser.Internal(w, r, err.Error())
 		}
 
@@ -193,11 +205,13 @@ func (s *Router) HandleGetAuditoriumSchedule(w http.ResponseWriter, r *http.Requ
 
 	err := s.validator.Struct(input)
 	if err != nil {
+		log.Error(err, "BadRequest", "schedule HandleGetAuditoriumSchedule")
 		responser.BadRequset(w, r, "All required parameters must be provided")
 
 		return
 	}
 	if err != nil {
+		log.Error(err, "BadRequest", "schedule HandleGetAuditoriumSchedule")
 		responser.BadRequset(w, r, "All required parameters must be provided")
 
 		return
@@ -221,12 +235,16 @@ func (s *Router) HandleGetAuditoriumSchedule(w http.ResponseWriter, r *http.Requ
 	if err != nil {
 		switch err {
 		case clients.ErrRequest:
-			responser.Internal(w, r, "Invalid request")
+			log.Error(err, "BadRequest", "schedule HandleGetAuditoriumSchedule")
+			responser.BadRequset(w, r, "Invalid request")
 		case clients.ErrInvalidEntity:
-			responser.Internal(w, r, "Invalid entity")
+			log.Error(err, "Invalid Entity", "schedule HandleGetAuditoriumSchedule")
+			responser.BadRequset(w, r, "Invalid entity")
 		case clients.ErrValidation:
+			log.Error(err, "Error Validation", "schedule HandleGetAuditoriumSchedule")
 			responser.BadRequset(w, r, "Error validation")
 		default:
+			log.Error(err, "Internal", "schedule HandleGetAuditoriumSchedule")
 			responser.Internal(w, r, err.Error())
 		}
 

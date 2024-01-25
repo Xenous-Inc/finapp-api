@@ -28,6 +28,5 @@ func main() {
 	container := di.New(config)
 
 	server := container.GetServer()
-
 	server.StartListening()
 }

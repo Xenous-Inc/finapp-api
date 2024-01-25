@@ -9,6 +9,8 @@ import (
 	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient"
 	"github.com/Xenous-Inc/finapp-api/internal/dto"
 	"github.com/Xenous-Inc/finapp-api/internal/router/utils/responser"
+	"github.com/Xenous-Inc/finapp-api/internal/utils/jwtservice"
+	"github.com/Xenous-Inc/finapp-api/internal/utils/logger/log"
 	"github.com/go-chi/chi"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -53,10 +55,16 @@ func (s *Router) HandleAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := s.client.Login(&orgfaclient.LoginInput{
+	sessionId, err := s.client.Login(&orgfaclient.LoginInput{
 		Login:    input.Login,
 		Password: input.Password,
 	})
+
+	token, err := jwtservice.NewToken(sessionId, s.client.Cfg.JwtSecret)
+	if err != nil {
+		log.Warn("Unauthorized, Error generate Token", "orgfaclient login")
+	}
+
 	if err != nil {
 		if errors.Is(err, clients.ErrUnauthorized) {
 			responser.Unauthorized(w, r)

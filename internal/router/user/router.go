@@ -2,11 +2,12 @@ package user
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/Xenous-Inc/finapp-api/internal/clients"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient"
 	"github.com/Xenous-Inc/finapp-api/internal/router/utils/responser"
+	"github.com/Xenous-Inc/finapp-api/internal/utils/jwtservice"
+
 	"github.com/Xenous-Inc/finapp-api/internal/utils/logger/log"
 	"github.com/go-chi/chi"
 	"github.com/golang-jwt/jwt/v5"
@@ -38,26 +39,10 @@ func (s *Router) Route(r chi.Router) {
 func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 	tokenString := r.Header.Get("Authorization")
 
-	if tokenString == "" {
-		log.Warn("Authorization header is empty")
-		responser.Unauthorized(w, r)
-		return
-	}
-
-	tokenSlice := strings.Split(tokenString, "Bearer ")
-	if len(tokenSlice) != 2 {
-		log.Warn("Invalid Authorization header format")
-		responser.Unauthorized(w, r)
-		return
-	}
-
-	tokenString = tokenSlice[1]
-
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(s.client.Cfg.JwtSecret), nil
-	})
+	token, err := jwtservice.GetDecodeToken(tokenString, s.client.Cfg.JwtSecret)
 
 	if err != nil {
+		log.Error(err, "Unauthorized", "user HandleGetGroup")
 		responser.Unauthorized(w, r)
 		return
 	}
@@ -75,14 +60,19 @@ func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			switch err {
 			case clients.ErrRequest:
+				log.Error(err, "BadRequest", "schedule HandleGetGroup")
 				responser.BadRequset(w, r, "Invalid request")
 			case clients.ErrInvalidEntity:
+				log.Error(err, "Invalid Entity", "schedule HandleGetGroup")
 				responser.BadRequset(w, r, "Invalid entity")
 			case clients.ErrValidation:
+				log.Error(err, "Error Validation", "schedule HandleGetGroup")
 				responser.BadRequset(w, r, "Error validation")
 			case clients.ErrUnauthorized:
+				log.Error(err, "Unauthorized", "user HandleGetGroup")
 				responser.Unauthorized(w, r)
 			default:
+				log.Error(err, "Internal", "schedule HandleGetGroup")
 				responser.Internal(w, r, err.Error())
 			}
 
@@ -96,26 +86,10 @@ func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
 	tokenString := r.Header.Get("Authorization")
 
-	if tokenString == "" {
-		log.Warn("Authorization header is empty")
-		responser.Unauthorized(w, r)
-		return
-	}
-
-	tokenSlice := strings.Split(tokenString, "Bearer ")
-	if len(tokenSlice) != 2 {
-		log.Warn("Invalid Authorization header format")
-		responser.Unauthorized(w, r)
-		return
-	}
-
-	tokenString = tokenSlice[1]
-
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(s.client.Cfg.JwtSecret), nil
-	})
+	token, err := jwtservice.GetDecodeToken(tokenString, s.client.Cfg.JwtSecret)
 
 	if err != nil {
+		log.Error(err, "Unauthorized", "user HandleGetRecordBook")
 		responser.Unauthorized(w, r)
 		return
 	}
@@ -133,14 +107,19 @@ func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			switch err {
 			case clients.ErrRequest:
+				log.Error(err, "BadRequest", "schedule HandleGetRecordBook")
 				responser.BadRequset(w, r, "Invalid request")
 			case clients.ErrInvalidEntity:
+				log.Error(err, "Invalid Entity", "schedule HandleGetRecordBook")
 				responser.BadRequset(w, r, "Invalid entity")
 			case clients.ErrValidation:
+				log.Error(err, "Error Validation", "schedule HandleGetRecordBook")
 				responser.BadRequset(w, r, "Error validation")
 			case clients.ErrUnauthorized:
+				log.Error(err, "Unauthorized", "user HandleGetRecordBook")
 				responser.Unauthorized(w, r)
 			default:
+				log.Error(err, "Internal", "schedule HandleGetRecordBook")
 				responser.Internal(w, r, err.Error())
 			}
 
@@ -154,26 +133,10 @@ func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
 func (s *Router) HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 	tokenString := r.Header.Get("Authorization")
 
-	if tokenString == "" {
-		log.Warn("Authorization header is empty")
-		responser.Unauthorized(w, r)
-		return
-	}
-
-	tokenSlice := strings.Split(tokenString, "Bearer ")
-	if len(tokenSlice) != 2 {
-		log.Warn("Invalid Authorization header format")
-		responser.Unauthorized(w, r)
-		return
-	}
-
-	tokenString = tokenSlice[1]
-
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(s.client.Cfg.JwtSecret), nil
-	})
+	token, err := jwtservice.GetDecodeToken(tokenString, s.client.Cfg.JwtSecret)
 
 	if err != nil {
+		log.Error(err, "Unauthorized", "user HandleGetProfile")
 		responser.Unauthorized(w, r)
 		return
 	}
@@ -182,7 +145,7 @@ func (s *Router) HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 
 		sessionId := claims["sessionId"]
 
-		miniProfile, err := s.client.GetMiniProfile(&orgfaclient.GetMiniProfileInput{
+		miniProfile, err := s.client.GetProfile(&orgfaclient.GetMiniProfileInput{
 			AuthSession: &orgfaclient.AuthSession{
 				SessionId: sessionId.(string),
 			},
@@ -191,14 +154,19 @@ func (s *Router) HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			switch err {
 			case clients.ErrRequest:
+				log.Error(err, "BadRequest", "schedule HandleGetProfile")
 				responser.BadRequset(w, r, "Invalid request")
 			case clients.ErrInvalidEntity:
+				log.Error(err, "Invalid Entity", "schedule HandleGetProfile")
 				responser.BadRequset(w, r, "Invalid entity")
 			case clients.ErrValidation:
+				log.Error(err, "Error Validation", "schedule HandleGetProfile")
 				responser.BadRequset(w, r, "Error validation")
 			case clients.ErrUnauthorized:
+				log.Error(err, "Unauthorized", "user HandleGetProfile")
 				responser.Unauthorized(w, r)
 			default:
+				log.Error(err, "Internal", "schedule HandleGetProfile")
 				responser.Internal(w, r, err.Error())
 			}
 
@@ -212,26 +180,10 @@ func (s *Router) HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request) {
 	tokenString := r.Header.Get("Authorization")
 
-	if tokenString == "" {
-		log.Warn("Authorization header is empty")
-		responser.Unauthorized(w, r)
-		return
-	}
-
-	tokenSlice := strings.Split(tokenString, "Bearer ")
-	if len(tokenSlice) != 2 {
-		log.Warn("Invalid Authorization header format")
-		responser.Unauthorized(w, r)
-		return
-	}
-
-	tokenString = tokenSlice[1]
-
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(s.client.Cfg.JwtSecret), nil
-	})
+	token, err := jwtservice.GetDecodeToken(tokenString, s.client.Cfg.JwtSecret)
 
 	if err != nil {
+		log.Error(err, "Unauthorized", "user HandleGetProfileDetails")
 		responser.Unauthorized(w, r)
 		return
 	}
@@ -240,7 +192,7 @@ func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request)
 
 		sessionId := claims["sessionId"]
 
-		profile, err := s.client.GetProfile(&orgfaclient.GetProfileInput{
+		profile, err := s.client.GetProfileDetails(&orgfaclient.GetProfileInput{
 			AuthSession: &orgfaclient.AuthSession{
 				SessionId: sessionId.(string),
 			},
@@ -249,14 +201,19 @@ func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request)
 		if err != nil {
 			switch err {
 			case clients.ErrRequest:
+				log.Error(err, "BadRequest", "schedule HandleGetProfileDetails")
 				responser.BadRequset(w, r, "Invalid request")
 			case clients.ErrInvalidEntity:
+				log.Error(err, "Invalid Entity", "schedule HandleGetProfileDetails")
 				responser.BadRequset(w, r, "Invalid entity")
 			case clients.ErrValidation:
+				log.Error(err, "Error Validation", "schedule HandleGetProfileDetails")
 				responser.BadRequset(w, r, "Error validation")
 			case clients.ErrUnauthorized:
+				log.Error(err, "Unauthorized", "user HandleGetProfileDetails")
 				responser.Unauthorized(w, r)
 			default:
+				log.Error(err, "Internal", "schedule HandleGetProfileDetails")
 				responser.Internal(w, r, err.Error())
 			}
 
@@ -271,26 +228,10 @@ func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request)
 func (s *Router) HandleGetOrder(w http.ResponseWriter, r *http.Request) {
 	tokenString := r.Header.Get("Authorization")
 
-	if tokenString == "" {
-		log.Warn("Authorization header is empty")
-		responser.Unauthorized(w, r)
-		return
-	}
-
-	tokenSlice := strings.Split(tokenString, "Bearer ")
-	if len(tokenSlice) != 2 {
-		log.Warn("Invalid Authorization header format")
-		responser.Unauthorized(w, r)
-		return
-	}
-
-	tokenString = tokenSlice[1]
-
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(s.client.Cfg.JwtSecret), nil
-	})
+	token, err := jwtservice.GetDecodeToken(tokenString, s.client.Cfg.JwtSecret)
 
 	if err != nil {
+		log.Error(err, "Unauthorized", "user HandleGetOrder")
 		responser.Unauthorized(w, r)
 		return
 	}
@@ -308,14 +249,19 @@ func (s *Router) HandleGetOrder(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			switch err {
 			case clients.ErrRequest:
+				log.Error(err, "BadRequest", "schedule HandleGetOrder")
 				responser.BadRequset(w, r, "Invalid request")
 			case clients.ErrInvalidEntity:
+				log.Error(err, "Invalid Entity", "schedule HandleGetOrder")
 				responser.BadRequset(w, r, "Invalid entity")
 			case clients.ErrValidation:
+				log.Error(err, "Error Validation", "schedule HandleGetOrder")
 				responser.BadRequset(w, r, "Error validation")
 			case clients.ErrUnauthorized:
+				log.Error(err, "Unauthorized", "user HandleGetOrder")
 				responser.Unauthorized(w, r)
 			default:
+				log.Error(err, "Internal", "schedule HandleGetOrder")
 				responser.Internal(w, r, err.Error())
 			}
 
@@ -331,26 +277,10 @@ func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
 
 	tokenString := r.Header.Get("Authorization")
 
-	if tokenString == "" {
-		log.Warn("Authorization header is empty")
-		responser.Unauthorized(w, r)
-		return
-	}
-
-	tokenSlice := strings.Split(tokenString, "Bearer ")
-	if len(tokenSlice) != 2 {
-		log.Warn("Invalid Authorization header format")
-		responser.Unauthorized(w, r)
-		return
-	}
-
-	tokenString = tokenSlice[1]
-
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(s.client.Cfg.JwtSecret), nil
-	})
+	token, err := jwtservice.GetDecodeToken(tokenString, s.client.Cfg.JwtSecret)
 
 	if err != nil {
+		log.Error(err, "Unauthorized", "user HandleGetStudentCard")
 		responser.Unauthorized(w, r)
 		return
 	}
@@ -368,14 +298,19 @@ func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			switch err {
 			case clients.ErrRequest:
+				log.Error(err, "BadRequest", "schedule HandleGetStudentCard")
 				responser.BadRequset(w, r, "Invalid request")
 			case clients.ErrInvalidEntity:
+				log.Error(err, "Invalid Entity", "schedule HandleGetStudentCard")
 				responser.BadRequset(w, r, "Invalid entity")
 			case clients.ErrValidation:
+				log.Error(err, "Error Validation", "schedule HandleGetStudentCard")
 				responser.BadRequset(w, r, "Error validation")
 			case clients.ErrUnauthorized:
+				log.Error(err, "Unauthorized", "user HandleGetStudentCard")
 				responser.Unauthorized(w, r)
 			default:
+				log.Error(err, "Internal", "schedule HandleGetStudentCard")
 				responser.Internal(w, r, err.Error())
 			}
 
@@ -389,26 +324,10 @@ func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
 func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
 	tokenString := r.Header.Get("Authorization")
 
-	if tokenString == "" {
-		log.Warn("Authorization header is empty")
-		responser.Unauthorized(w, r)
-		return
-	}
-
-	tokenSlice := strings.Split(tokenString, "Bearer ")
-	if len(tokenSlice) != 2 {
-		log.Warn("Invalid Authorization header format")
-		responser.Unauthorized(w, r)
-		return
-	}
-
-	tokenString = tokenSlice[1]
-
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return []byte(s.client.Cfg.JwtSecret), nil
-	})
+	token, err := jwtservice.GetDecodeToken(tokenString, s.client.Cfg.JwtSecret)
 
 	if err != nil {
+		log.Error(err, "Unauthorized", "user HandlerGetStudyPlan")
 		responser.Unauthorized(w, r)
 		return
 	}
@@ -426,14 +345,19 @@ func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			switch err {
 			case clients.ErrRequest:
+				log.Error(err, "BadRequest", "schedule HandlerGetStudyPlan")
 				responser.BadRequset(w, r, "Invalid request")
 			case clients.ErrInvalidEntity:
+				log.Error(err, "Invalid Entity", "schedule HandlerGetStudyPlan")
 				responser.BadRequset(w, r, "Invalid entity")
 			case clients.ErrValidation:
+				log.Error(err, "Error Validation", "schedule HandlerGetStudyPlan")
 				responser.BadRequset(w, r, "Error validation")
 			case clients.ErrUnauthorized:
+				log.Error(err, "Unauthorized", "user HandlerGetStudyPlan")
 				responser.Unauthorized(w, r)
 			default:
+				log.Error(err, "Internal", "schedule HandlerGetStudyPlan")
 				responser.Internal(w, r, err.Error())
 			}
 

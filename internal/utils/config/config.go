@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 
+	"github.com/Xenous-Inc/finapp-api/internal/utils/logger/log"
 	"github.com/spf13/viper"
 )
 
@@ -19,15 +20,16 @@ const (
 )
 
 type Config struct {
-	EnvMode uint8
-	Host    string
-	Port    uint16
-	JwtSecret string `yaml:"jwtSecret"`
+	EnvMode   uint8
+	Host      string
+	Port      uint16
+	JwtSecret string
 }
 
 func LoadConfig(envMode, path string) (*Config, error) {
 	mode, err := validateEnvMode(envMode)
 	if err != nil {
+		log.Error(err, "Internal", "utils/config LoadConfig")
 		return nil, err
 	}
 
@@ -38,11 +40,13 @@ func LoadConfig(envMode, path string) (*Config, error) {
 
 	err = viper.ReadInConfig()
 	if err != nil {
+		log.Error(err, "Internal", "utils/config LoadConfig")
 		return nil, err
 	}
 
 	err = viper.Unmarshal(config)
 	if err != nil {
+		log.Error(err, "Internal", "utils/config LoadConfig")
 		return nil, err
 	}
 
@@ -54,6 +58,7 @@ func LoadConfig(envMode, path string) (*Config, error) {
 func MustLoadConfig(envMode, path string) *Config {
 	config, err := LoadConfig(envMode, path)
 	if err != nil {
+		log.Error(err, "Internal", "utils/config MustLoadConfig")
 		panic(err)
 	}
 
@@ -70,6 +75,7 @@ func validateEnvMode(envMode string) (uint8, error) {
 	case envModeStageStr:
 		mode = ENV_MODE_STAGE
 	default:
+		log.Warn("Internal", "utils/config validateEnvMode")
 		return mode, errors.New("Unknown environment mode")
 	}
 

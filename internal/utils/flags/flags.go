@@ -3,6 +3,8 @@ package flags
 import (
 	"errors"
 	"flag"
+
+	"github.com/Xenous-Inc/finapp-api/internal/utils/logger/log"
 )
 
 const (
@@ -21,10 +23,12 @@ func ParseFlags() (*CMDFlags, error) {
 	flag.Parse()
 
 	if *configPath == "" {
+		log.Warn("Internal", "flags ParseFlags")
 		return nil, errors.New("Configuration file path was not found in application flags")
 	}
 
 	if *envMode == "" {
+		log.Warn("Internal", "flags ParseFlags")
 		return nil, errors.New("Environment mode was not found in application flags")
 	}
 
@@ -34,6 +38,7 @@ func ParseFlags() (*CMDFlags, error) {
 func MustParseFlags() *CMDFlags {
 	flags, err := ParseFlags()
 	if err != nil {
+		log.Error(err, "Internal", "flags MustParseFlags")
 		panic(err)
 	}
 

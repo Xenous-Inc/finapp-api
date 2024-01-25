@@ -7,6 +7,7 @@ import (
 	"github.com/Xenous-Inc/finapp-api/internal/dto"
 	"github.com/Xenous-Inc/finapp-api/internal/router/constants"
 	"github.com/Xenous-Inc/finapp-api/internal/router/utils/responser"
+	"github.com/Xenous-Inc/finapp-api/internal/utils/logger/log"
 	"github.com/go-chi/chi"
 	"gopkg.in/go-playground/validator.v9"
 )
@@ -41,6 +42,7 @@ func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 	term := r.URL.Query().Get(constants.QUERY_TERM)
 	err := s.validator.Var(term, "required")
 	if err != nil {
+		log.Error(err, "BadRequest", "groups HandleGetGroup")
 		responser.BadRequset(w, r, "Query parameter `term` must be provided")
 
 		return
@@ -50,6 +52,7 @@ func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 		Term: term,
 	})
 	if err != nil {
+		log.Error(err, "Internal", "groups HandleGetGroup")
 		responser.Internal(w, r, err.Error())
 
 		return

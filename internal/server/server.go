@@ -2,11 +2,11 @@ package server
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/Xenous-Inc/finapp-api/internal/router"
+	"github.com/Xenous-Inc/finapp-api/internal/utils/logger/log"
 )
 
 type Server struct {
@@ -33,9 +33,10 @@ func NewServer(port uint16, host string, router *router.RootRouter) *Server {
 }
 
 func (s *Server) StartListening() {
-	log.Printf("Server successfully started on %s:%d", s.host, s.port)
+	log.Info(fmt.Sprintf("Server successfully started on %s:%d", s.host, s.port))
 	err := s.ListenAndServe()
 	if err != nil {
+		log.Error(err, "Internal", "server StartListening")
 		panic("cannot start server")
 	}
 }
