@@ -17,6 +17,10 @@ test:
 	@echo "Testing..."
 	@go test ./...
 
+# Swag application
+swag:
+	@swag init --parseDependency --parseInternal --parseDepth 1 -g cmd/api/main.go
+
 # Clean the binary
 clean:
 	@echo "Cleaning..."
