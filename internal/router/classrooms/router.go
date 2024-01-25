@@ -45,8 +45,8 @@ func (s *Router) HandleGetClassRooms(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := s.client.GetAuditorium(&ruzfaclient.GetAuditoriumInput{
-		AuditoriumTerm: term,
+	response, err := s.client.GetAuditorium(&ruzfaclient.GetEntitiesInput{
+		Term: term,
 	})
 	if err != nil {
 		responser.Internal(w, r, err.Error())

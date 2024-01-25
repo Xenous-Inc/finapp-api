@@ -46,8 +46,8 @@ func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := s.client.GetGroups(&ruzfaclient.GetGroupsInput{
-		GroupTerm: term,
+	response, err := s.client.GetGroups(&ruzfaclient.GetEntitiesInput{
+		Term: term,
 	})
 	if err != nil {
 		responser.Internal(w, r, err.Error())

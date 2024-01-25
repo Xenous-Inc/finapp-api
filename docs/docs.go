@@ -101,7 +101,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/Clasroom"
+                                "$ref": "#/definitions/Classroom"
                             }
                         }
                     },
@@ -222,6 +222,64 @@ const docTemplate = `{
                 }
             }
         },
+        "/schedule/classroom/mini": {
+            "get": {
+                "description": "Returns schedule in compact format for provided classroom Id and time interval",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "summary": "Return mini schedule for provided classroom",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Classroom ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start date",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "End date",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/MiniScheduleItem"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    }
+                }
+            }
+        },
         "/schedule/group": {
             "get": {
                 "description": "Returns schedule for provided group Id and time interval",
@@ -242,14 +300,14 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Group ID",
+                        "description": "Start date",
                         "name": "from",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "string",
-                        "description": "Group ID",
+                        "description": "End date",
                         "name": "to",
                         "in": "query",
                         "required": true
@@ -262,6 +320,64 @@ const docTemplate = `{
                             "type": "array",
                             "items": {
                                 "$ref": "#/definitions/ScheduleItem"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/schedule/group/mini": {
+            "get": {
+                "description": "Returns schedule in compact format for provided teacher Id and time interval",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "summary": "Return mini schedule for provided group",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Teacher ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start date",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "End date",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/MiniScheduleItem"
                             }
                         }
                     },
@@ -338,6 +454,64 @@ const docTemplate = `{
                 }
             }
         },
+        "/schedule/teacher/mini": {
+            "get": {
+                "description": "Returns schedule in compact format for provided teacher Id and time interval",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "summary": "Return mini schedule for provided teacher",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Teacher ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start date",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "End date",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/MiniScheduleItem"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    }
+                }
+            }
+        },
         "/teachers/": {
             "get": {
                 "description": "Return list of teachers which found by provided query term",
@@ -393,7 +567,7 @@ const docTemplate = `{
                 }
             }
         },
-        "Clasroom": {
+        "Classroom": {
             "type": "object",
             "properties": {
                 "desc": {
@@ -450,6 +624,19 @@ const docTemplate = `{
                 "token": {
                     "type": "string",
                     "example": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9"
+                }
+            }
+        },
+        "MiniScheduleItem": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string",
+                    "example": "2023.11.27"
+                },
+                "lessonType": {
+                    "type": "string",
+                    "example": "Лекции"
                 }
             }
         },

@@ -45,8 +45,8 @@ func (s *Router) HandleGetTeacher(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response, err := s.client.GetTeacher(&ruzfaclient.GetTeacherInput{
-		TeacherTerm: term,
+	response, err := s.client.GetTeacher(&ruzfaclient.GetEntitiesInput{
+		Term: term,
 	})
 	if err != nil {
 		responser.Internal(w, r, err.Error())

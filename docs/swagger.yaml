@@ -5,7 +5,7 @@ definitions:
         example: Validation error
         type: string
     type: object
-  Clasroom:
+  Classroom:
     properties:
       desc:
         example: 25 | Филиалы Челябинский филиал | Лекционная
@@ -45,6 +45,15 @@ definitions:
     properties:
       token:
         example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9
+        type: string
+    type: object
+  MiniScheduleItem:
+    properties:
+      date:
+        example: 2023.11.27
+        type: string
+      lessonType:
+        example: Лекции
         type: string
     type: object
   ScheduleItem:
@@ -162,7 +171,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/Clasroom'
+              $ref: '#/definitions/Classroom'
             type: array
         "400":
           description: Bad Request
@@ -243,6 +252,46 @@ paths:
       summary: Return schedule for provided classroom
       tags:
       - schedule
+  /schedule/classroom/mini:
+    get:
+      description: Returns schedule in compact format for provided classroom Id and
+        time interval
+      parameters:
+      - description: Classroom ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Start date
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: End date
+        in: query
+        name: to
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/MiniScheduleItem'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiError'
+      summary: Return mini schedule for provided classroom
+      tags:
+      - schedule
   /schedule/group:
     get:
       description: Returns schedule for provided group Id and time interval
@@ -252,12 +301,12 @@ paths:
         name: id
         required: true
         type: string
-      - description: Group ID
+      - description: Start date
         in: query
         name: from
         required: true
         type: string
-      - description: Group ID
+      - description: End date
         in: query
         name: to
         required: true
@@ -280,6 +329,46 @@ paths:
           schema:
             $ref: '#/definitions/ApiError'
       summary: Return schedule for provided group
+      tags:
+      - schedule
+  /schedule/group/mini:
+    get:
+      description: Returns schedule in compact format for provided teacher Id and
+        time interval
+      parameters:
+      - description: Teacher ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Start date
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: End date
+        in: query
+        name: to
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/MiniScheduleItem'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiError'
+      summary: Return mini schedule for provided group
       tags:
       - schedule
   /schedule/teacher:
@@ -319,6 +408,46 @@ paths:
           schema:
             $ref: '#/definitions/ApiError'
       summary: Return schedule for provided teacher
+      tags:
+      - schedule
+  /schedule/teacher/mini:
+    get:
+      description: Returns schedule in compact format for provided teacher Id and
+        time interval
+      parameters:
+      - description: Teacher ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Start date
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: End date
+        in: query
+        name: to
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/MiniScheduleItem'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiError'
+      summary: Return mini schedule for provided teacher
       tags:
       - schedule
   /teachers/:

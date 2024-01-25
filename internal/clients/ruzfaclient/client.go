@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/Xenous-Inc/finapp-api/internal/clients"
-	"github.com/Xenous-Inc/finapp-api/internal/clients/ruzfaclient/dto"
+	"github.com/Xenous-Inc/finapp-api/internal/clients/ruzfaclient/models"
 	"github.com/Xenous-Inc/finapp-api/internal/utils/config"
 	requestbuidler "github.com/dr3dnought/request_builder"
 )
@@ -26,12 +26,18 @@ func NewClient(url string, cfg *config.Config) *Client {
 	}
 }
 
-type GetGroupsInput struct {
-	GroupTerm string `json:"group"`
+type GetScheduleInput struct {
+	Id        string `json:"teacherId"`
+	StartDate string `json:"startDate"`
+	EndDate   string `json:"endDate"`
 }
 
-func (c *Client) GetGroups(input *GetGroupsInput) ([]dto.Group, error) {
-	path := fmt.Sprintf("search?type=group&term=%s", input.GroupTerm)
+type GetEntitiesInput struct {
+	Term string `json:"group"`
+}
+
+func (c *Client) GetGroups(input *GetEntitiesInput) ([]models.Group, error) {
+	path := fmt.Sprintf("search?type=group&term=%s", input.Term)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
@@ -44,7 +50,7 @@ func (c *Client) GetGroups(input *GetGroupsInput) ([]dto.Group, error) {
 	}
 	defer res.Body.Close()
 
-	groups := new([]dto.Group)
+	groups := new([]models.Group)
 	err = json.Unmarshal(body, groups)
 	if err != nil {
 		return nil, clients.ErrInvalidEntity
@@ -53,14 +59,8 @@ func (c *Client) GetGroups(input *GetGroupsInput) ([]dto.Group, error) {
 	return *groups, nil
 }
 
-type GetGroupScheduleInput struct {
-	GroupId   string `json:"groupId"`
-	StartDate string `json:"startDate"`
-	EndDate   string `json:"endDate"`
-}
-
-func (c *Client) GetGroupSchedule(input *GetGroupScheduleInput) ([]dto.Schedule, error) {
-	path := fmt.Sprintf("schedule/group/%s?start=%s&finish=%s&lng=1", input.GroupId, input.StartDate, input.EndDate)
+func (c *Client) GetGroupSchedule(input *GetScheduleInput) ([]models.Schedule, error) {
+	path := fmt.Sprintf("schedule/group/%s?start=%s&finish=%s&lng=1", input.Id, input.StartDate, input.EndDate)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
@@ -73,7 +73,7 @@ func (c *Client) GetGroupSchedule(input *GetGroupScheduleInput) ([]dto.Schedule,
 	}
 	defer res.Body.Close()
 
-	schedule := new([]dto.Schedule)
+	schedule := new([]models.Schedule)
 	err = json.Unmarshal(body, schedule)
 	if err != nil {
 		fmt.Print(err)
@@ -83,12 +83,8 @@ func (c *Client) GetGroupSchedule(input *GetGroupScheduleInput) ([]dto.Schedule,
 	return *schedule, nil
 }
 
-type GetTeacherInput struct {
-	TeacherTerm string `json:"teacher"`
-}
-
-func (c *Client) GetTeacher(input *GetTeacherInput) ([]dto.Teacher, error) {
-	path := fmt.Sprintf("search?type=person&term=%s", input.TeacherTerm)
+func (c *Client) GetTeacher(input *GetEntitiesInput) ([]models.Teacher, error) {
+	path := fmt.Sprintf("search?type=person&term=%s", input.Term)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
@@ -101,7 +97,7 @@ func (c *Client) GetTeacher(input *GetTeacherInput) ([]dto.Teacher, error) {
 	}
 	defer res.Body.Close()
 
-	teachers := new([]dto.Teacher)
+	teachers := new([]models.Teacher)
 	err = json.Unmarshal(body, teachers)
 	if err != nil {
 		return nil, clients.ErrInvalidEntity
@@ -110,13 +106,7 @@ func (c *Client) GetTeacher(input *GetTeacherInput) ([]dto.Teacher, error) {
 	return *teachers, nil
 }
 
-type GetTeacherScheduleInput struct {
-	Id        string `json:"teacherId"`
-	StartDate string `json:"startDate"`
-	EndDate   string `json:"endDate"`
-}
-
-func (c *Client) GetTeacherSchedule(input *GetTeacherScheduleInput) ([]dto.Schedule, error) {
+func (c *Client) GetTeacherSchedule(input *GetScheduleInput) ([]models.Schedule, error) {
 	path := fmt.Sprintf("schedule/person/%s?start=%s&finish=%s&lng=1", input.Id, input.StartDate, input.EndDate)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
 	res, err := req.Execute(c.httpClient)
@@ -130,7 +120,7 @@ func (c *Client) GetTeacherSchedule(input *GetTeacherScheduleInput) ([]dto.Sched
 	}
 	defer res.Body.Close()
 
-	scheduleTeacher := new([]dto.Schedule)
+	scheduleTeacher := new([]models.Schedule)
 	err = json.Unmarshal(body, scheduleTeacher)
 	if err != nil {
 		fmt.Print(err)
@@ -139,12 +129,8 @@ func (c *Client) GetTeacherSchedule(input *GetTeacherScheduleInput) ([]dto.Sched
 	return *scheduleTeacher, nil
 }
 
-type GetAuditoriumInput struct {
-	AuditoriumTerm string `json:"auditorium"`
-}
-
-func (c *Client) GetAuditorium(input *GetAuditoriumInput) ([]dto.Auditorium, error) {
-	path := fmt.Sprintf("search?&term=%s&type=auditorium", input.AuditoriumTerm)
+func (c *Client) GetAuditorium(input *GetEntitiesInput) ([]models.Auditorium, error) {
+	path := fmt.Sprintf("search?&term=%s&type=auditorium", input.Term)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
 	res, err := req.Execute(c.httpClient)
 	if err != nil {
@@ -157,7 +143,7 @@ func (c *Client) GetAuditorium(input *GetAuditoriumInput) ([]dto.Auditorium, err
 	}
 	defer res.Body.Close()
 
-	auditoriums := new([]dto.Auditorium)
+	auditoriums := new([]models.Auditorium)
 	err = json.Unmarshal(body, auditoriums)
 	if err != nil {
 		return nil, clients.ErrInvalidEntity
@@ -166,13 +152,7 @@ func (c *Client) GetAuditorium(input *GetAuditoriumInput) ([]dto.Auditorium, err
 	return *auditoriums, nil
 }
 
-type GetAuditoriumScheduleInput struct {
-	Id        string `json:"auditoriumId"`
-	StartDate string `json:"startDate"`
-	EndDate   string `json:"endDate"`
-}
-
-func (c *Client) GetAuditoriumSchedule(input *GetAuditoriumScheduleInput) ([]dto.Schedule, error) {
+func (c *Client) GetAuditoriumSchedule(input *GetScheduleInput) ([]models.Schedule, error) {
 	path := fmt.Sprintf("schedule/auditorium/%s?start=%s&finish=%s&lng=1", input.Id, input.StartDate, input.EndDate)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).Build()
 	res, err := req.Execute(c.httpClient)
@@ -188,7 +168,7 @@ func (c *Client) GetAuditoriumSchedule(input *GetAuditoriumScheduleInput) ([]dto
 	fmt.Println(res.StatusCode)
 	defer res.Body.Close()
 
-	scheduleAuditorium := new([]dto.Schedule)
+	scheduleAuditorium := new([]models.Schedule)
 	err = json.Unmarshal(body, scheduleAuditorium)
 	if err != nil {
 		fmt.Print(err)

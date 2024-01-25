@@ -1,4 +1,4 @@
-package dto
+package models
 
 type Error struct {
 	Error string `json:"error"`

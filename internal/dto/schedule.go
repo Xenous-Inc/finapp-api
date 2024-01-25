@@ -3,6 +3,8 @@ package dto
 import (
 	"fmt"
 	"time"
+
+	"github.com/Xenous-Inc/finapp-api/internal/clients/ruzfaclient/models"
 )
 
 type Date string
@@ -36,6 +38,34 @@ type ScheduleItem struct {
 	Date    string `json:"date" example:"2023.11.27"`
 	WeekDay uint8  `json:"weekDay" example:"0"`
 } //@name ScheduleItem
+
+func ScheduleItemFromClientModel(m *models.Schedule) ScheduleItem {
+	return ScheduleItem{
+		ClassroomNumber:   m.Auditorium,
+		StartsAt:          m.BeginLesson,
+		EndsAt:            m.EndLesson,
+		Address:           m.Building,
+		Lesson:            m.Discipline,
+		LessonType:        m.KindOfWork,
+		LessonNumberStart: m.LessonNumberStart,
+		LessonNumberEnd:   m.LessonNumberEnd,
+		Lecturer:          m.Lecturer,
+		Date:              m.Date,
+		WeekDay:           m.DayOfWeek,
+	}
+}
+
+type MiniScheduleItem struct {
+	Date       string `json:"date" example:"2023.11.27"`
+	LessonType string `json:"lessonType" example:"Лекции"`
+} //@name MiniScheduleItem
+
+func MiniScheduleItemFromClientModel(m *models.Schedule) MiniScheduleItem {
+	return MiniScheduleItem{
+		Date:       m.Date,
+		LessonType: m.KindOfWork,
+	}
+}
 
 // * Keep it for best times when SWAGGO begins enum support * //
 
