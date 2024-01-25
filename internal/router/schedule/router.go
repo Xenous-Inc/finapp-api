@@ -9,6 +9,7 @@ import (
 	"github.com/Xenous-Inc/finapp-api/internal/router/constants"
 	"github.com/Xenous-Inc/finapp-api/internal/router/utils/responser"
 	"github.com/go-chi/chi"
+	"golang.org/x/sync/errgroup"
 	"gopkg.in/go-playground/validator.v9"
 )
 
@@ -25,9 +26,9 @@ func NewRouter(client *ruzfaclient.Client) *Router {
 }
 
 func (s *Router) Route(r chi.Router) {
-	r.Post("/group", s.HandleGetGroupSchedule)
-	r.Post("/teacher", s.HandleGetTeacherSchedule)
-	r.Post("/auditorium", s.HandleGetTeacherSchedule)
+	r.Get("/group", s.HandleGetGroupSchedule)
+	r.Get("/teacher", s.HandleGetTeacherSchedule)
+	r.Get("/classroom", s.HandleGetTeacherSchedule)
 }
 
 // @Summary Return schedule for provided group
@@ -37,10 +38,10 @@ func (s *Router) Route(r chi.Router) {
 // @Param from query string true "Group ID"
 // @Param to query string true "Group ID"
 // @Produce json
-// @Success 200 {object} []dto.Group
+// @Success 200 {object} []dto.ScheduleItem
 // @Failure 400 {object} dto.ApiError
 // @Failure 500 {object} dto.ApiError
-// @Router /groups/ [get]
+// @Router /schedule/group [get]
 func (s *Router) HandleGetGroupSchedule(w http.ResponseWriter, r *http.Request) {
 	input := &dto.GetScheduleRequest{
 		EntityId:  r.URL.Query().Get(constants.QUERY_ID),
@@ -49,25 +50,33 @@ func (s *Router) HandleGetGroupSchedule(w http.ResponseWriter, r *http.Request) 
 	}
 
 	err := s.validator.Struct(input)
-
 	if err != nil {
-		responser.BadRequset(w, r, "Password and login must be provided")
+		responser.BadRequset(w, r, "All required parameters must be provided")
+
+		return
+	}
+
+	eg := errgroup.Group{}
+	eg.Go(func() error { return input.StartDate.Validate() })
+	eg.Go(func() error { return input.EndDate.Validate() })
+	if err = eg.Wait(); err != nil {
+		responser.BadRequset(w, r, err.Error())
 
 		return
 	}
 
 	groupsSchedule, err := s.client.GetGroupSchedule(&ruzfaclient.GetGroupScheduleInput{
 		GroupId:   input.EntityId,
-		StartDate: input.StartDate.String(),
-		EndDate:   input.EndDate.String(),
+		StartDate: string(input.StartDate),
+		EndDate:   string(input.EndDate),
 	})
 
 	if err != nil {
 		switch err {
 		case clients.ErrRequest:
-			responser.BadRequset(w, r, "Invalid request")
+			responser.Internal(w, r, "Invalid request")
 		case clients.ErrInvalidEntity:
-			responser.BadRequset(w, r, "Invalid entity")
+			responser.Internal(w, r, "Invalid entity")
 		case clients.ErrValidation:
 			responser.BadRequset(w, r, "Error validation")
 		default:
@@ -77,9 +86,38 @@ func (s *Router) HandleGetGroupSchedule(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	responser.Success(w, r, groupsSchedule)
+	items := make([]dto.ScheduleItem, 0)
+
+	for _, schedule := range groupsSchedule {
+		items = append(items, dto.ScheduleItem{
+			ClassroomNumber:   schedule.Auditorium,
+			StartsAt:          schedule.BeginLesson,
+			EndsAt:            schedule.EndLesson,
+			Address:           schedule.Building,
+			Lesson:            schedule.Discipline,
+			LessonType:        schedule.KindOfWork,
+			LessonNumberStart: schedule.LessonNumberStart,
+			LessonNumberEnd:   schedule.LessonNumberEnd,
+			Date:              schedule.Date,
+			WeekDay:           schedule.DayOfWeek,
+			Lecturer:          schedule.Lecturer,
+		})
+	}
+
+	responser.Success(w, r, items)
 }
 
+// @Summary Return schedule for provided teacher
+// @Description Returns schedule for provided teacher Id and time interval
+// @Tags schedule
+// @Param id query string true "Teacher ID"
+// @Param from query string true "Start date"
+// @Param to query string true "End date"
+// @Produce json
+// @Success 200 {object} []dto.ScheduleItem
+// @Failure 400 {object} dto.ApiError
+// @Failure 500 {object} dto.ApiError
+// @Router /schedule/teacher [get]
 func (s *Router) HandleGetTeacherSchedule(w http.ResponseWriter, r *http.Request) {
 	input := &dto.GetScheduleRequest{
 		EntityId:  r.URL.Query().Get(constants.QUERY_ID),
@@ -88,25 +126,38 @@ func (s *Router) HandleGetTeacherSchedule(w http.ResponseWriter, r *http.Request
 	}
 
 	err := s.validator.Struct(input)
-
 	if err != nil {
-		responser.BadRequset(w, r, "Password and login must be provided")
+		responser.BadRequset(w, r, "All required parameters must be provided")
+
+		return
+	}
+	if err != nil {
+		responser.BadRequset(w, r, "All required parameters must be provided")
+
+		return
+	}
+
+	eg := errgroup.Group{}
+	eg.Go(func() error { return input.StartDate.Validate() })
+	eg.Go(func() error { return input.EndDate.Validate() })
+	if err = eg.Wait(); err != nil {
+		responser.BadRequset(w, r, err.Error())
 
 		return
 	}
 
 	teacherSchedule, err := s.client.GetTeacherSchedule(&ruzfaclient.GetTeacherScheduleInput{
 		Id:        input.EntityId,
-		StartDate: input.StartDate.String(),
-		EndDate:   input.EndDate.String(),
+		StartDate: string(input.StartDate),
+		EndDate:   string(input.EndDate),
 	})
 
 	if err != nil {
 		switch err {
 		case clients.ErrRequest:
-			responser.BadRequset(w, r, "Invalid request")
+			responser.Internal(w, r, "Invalid request")
 		case clients.ErrInvalidEntity:
-			responser.BadRequset(w, r, "Invalid entity")
+			responser.Internal(w, r, "Invalid entity")
 		case clients.ErrValidation:
 			responser.BadRequset(w, r, "Error validation")
 		default:
@@ -116,9 +167,38 @@ func (s *Router) HandleGetTeacherSchedule(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	responser.Success(w, r, teacherSchedule)
+	items := make([]dto.ScheduleItem, 0)
+
+	for _, schedule := range teacherSchedule {
+		items = append(items, dto.ScheduleItem{
+			ClassroomNumber:   schedule.Auditorium,
+			StartsAt:          schedule.BeginLesson,
+			EndsAt:            schedule.EndLesson,
+			Address:           schedule.Building,
+			Lesson:            schedule.Discipline,
+			LessonType:        schedule.KindOfWork,
+			LessonNumberStart: schedule.LessonNumberStart,
+			LessonNumberEnd:   schedule.LessonNumberEnd,
+			Date:              schedule.Date,
+			WeekDay:           schedule.DayOfWeek,
+			Lecturer:          schedule.Lecturer,
+		})
+	}
+
+	responser.Success(w, r, items)
 }
 
+// @Summary Return schedule for provided classroom
+// @Description Returns schedule for provided classroom Id and time interval
+// @Tags schedule
+// @Param id query string true "Classroom ID"
+// @Param from query string true "Start date"
+// @Param to query string true "End date"
+// @Produce json
+// @Success 200 {object} []dto.ScheduleItem
+// @Failure 400 {object} dto.ApiError
+// @Failure 500 {object} dto.ApiError
+// @Router /schedule/classroom [get]
 func (s *Router) HandleGetAuditoriumSchedule(w http.ResponseWriter, r *http.Request) {
 	input := &dto.GetScheduleRequest{
 		EntityId:  r.URL.Query().Get(constants.QUERY_ID),
@@ -127,25 +207,38 @@ func (s *Router) HandleGetAuditoriumSchedule(w http.ResponseWriter, r *http.Requ
 	}
 
 	err := s.validator.Struct(input)
-
 	if err != nil {
-		responser.BadRequset(w, r, "Password and login must be provided")
+		responser.BadRequset(w, r, "All required parameters must be provided")
+
+		return
+	}
+	if err != nil {
+		responser.BadRequset(w, r, "All required parameters must be provided")
+
+		return
+	}
+
+	eg := errgroup.Group{}
+	eg.Go(func() error { return input.StartDate.Validate() })
+	eg.Go(func() error { return input.EndDate.Validate() })
+	if err = eg.Wait(); err != nil {
+		responser.BadRequset(w, r, err.Error())
 
 		return
 	}
 
 	auditoriumSchedule, err := s.client.GetGroupSchedule(&ruzfaclient.GetGroupScheduleInput{
 		GroupId:   input.EntityId,
-		StartDate: input.StartDate.String(),
-		EndDate:   input.EndDate.String(),
+		StartDate: string(input.StartDate),
+		EndDate:   string(input.EndDate),
 	})
 
 	if err != nil {
 		switch err {
 		case clients.ErrRequest:
-			responser.BadRequset(w, r, "Invalid request")
+			responser.Internal(w, r, "Invalid request")
 		case clients.ErrInvalidEntity:
-			responser.BadRequset(w, r, "Invalid entity")
+			responser.Internal(w, r, "Invalid entity")
 		case clients.ErrValidation:
 			responser.BadRequset(w, r, "Error validation")
 		default:
@@ -155,5 +248,23 @@ func (s *Router) HandleGetAuditoriumSchedule(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	responser.Success(w, r, auditoriumSchedule)
+	items := make([]dto.ScheduleItem, 0)
+
+	for _, schedule := range auditoriumSchedule {
+		items = append(items, dto.ScheduleItem{
+			ClassroomNumber:   schedule.Auditorium,
+			StartsAt:          schedule.BeginLesson,
+			EndsAt:            schedule.EndLesson,
+			Address:           schedule.Building,
+			Lesson:            schedule.Discipline,
+			LessonType:        schedule.KindOfWork,
+			LessonNumberStart: schedule.LessonNumberStart,
+			LessonNumberEnd:   schedule.LessonNumberEnd,
+			Date:              schedule.Date,
+			WeekDay:           schedule.DayOfWeek,
+			Lecturer:          schedule.Lecturer,
+		})
+	}
+
+	responser.Success(w, r, items)
 }

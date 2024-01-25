@@ -9,6 +9,7 @@ import (
 	"github.com/Xenous-Inc/finapp-api/internal/router/auth"
 	"github.com/Xenous-Inc/finapp-api/internal/router/classrooms"
 	"github.com/Xenous-Inc/finapp-api/internal/router/groups"
+	"github.com/Xenous-Inc/finapp-api/internal/router/schedule"
 	"github.com/Xenous-Inc/finapp-api/internal/router/teachers"
 	"github.com/Xenous-Inc/finapp-api/internal/router/user"
 	"github.com/Xenous-Inc/finapp-api/internal/utils/config"
@@ -28,6 +29,7 @@ type RootRouter struct {
 	groupsRouter    *groups.Router
 	techersRouter   *teachers.Router
 	userRouter      *user.Router
+	schedule        *schedule.Router
 }
 
 func NewRootRouter(ruzfaClient *ruzfaclient.Client, orgfaClient *orgfaclient.Client, cfg *config.Config) *RootRouter {
@@ -40,6 +42,7 @@ func NewRootRouter(ruzfaClient *ruzfaclient.Client, orgfaClient *orgfaclient.Cli
 		classroomRouter: classrooms.NewRouter(ruzfaClient),
 		groupsRouter:    groups.NewRouter(ruzfaClient),
 		techersRouter:   teachers.NewRouter(ruzfaClient),
+		schedule:        schedule.NewRouter(ruzfaClient),
 	}
 }
 
@@ -47,11 +50,13 @@ func (s *RootRouter) RegisterRoutes() http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
+	r.Route("/schedule", s.schedule.Route)
 	r.Route("/auth", s.authRouter.Route)
 	r.Route("/user", s.userRouter.Route)
 	r.Route("/classrooms", s.classroomRouter.Route)
 	r.Route("/groups", s.groupsRouter.Route)
 	r.Route("/teachers", s.techersRouter.Route)
+
 	r.Get("/swagger/*", httpSwagger.Handler(
 		httpSwagger.URL("http://localhost:5051/swagger/doc.json"), //The url pointing to API definition
 	))

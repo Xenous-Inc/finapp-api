@@ -22,6 +22,10 @@ type Schedule struct {
 	Date string `json:"date"`
 	//DayOfWeek string `json:"dayOfWeek"`
 	DayOfWeekString string `json:"dayOfWeekString"`
+	DayOfWeek       uint8  `json:"dayofWeek"`
+
+	LessonNumberStart uint8 `json:"lessonNumberStart"`
+	LessonNumberEnd   uint8 `json:"lessonNumberEnd"`
 
 	// type lesson
 	KindOfWork    string `json:"kindOfWork"`

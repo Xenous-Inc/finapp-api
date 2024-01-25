@@ -11,7 +11,7 @@ const docTemplate = `{
         "title": "{{.Title}}",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
-            "name": "API Support",
+            "name": "https://web.telegram.org/a/#488960669",
             "url": "http://www.swagger.io/support",
             "email": "support@swagger.io"
         },
@@ -164,6 +164,180 @@ const docTemplate = `{
                 }
             }
         },
+        "/schedule/classroom": {
+            "get": {
+                "description": "Returns schedule for provided classroom Id and time interval",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "summary": "Return schedule for provided classroom",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Classroom ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start date",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "End date",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ScheduleItem"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/schedule/group": {
+            "get": {
+                "description": "Returns schedule for provided group Id and time interval",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "summary": "Return schedule for provided group",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Group ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Group ID",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Group ID",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ScheduleItem"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/schedule/teacher": {
+            "get": {
+                "description": "Returns schedule for provided teacher Id and time interval",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "schedule"
+                ],
+                "summary": "Return schedule for provided teacher",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Teacher ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start date",
+                        "name": "from",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "End date",
+                        "name": "to",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ScheduleItem"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    }
+                }
+            }
+        },
         "/teachers/": {
             "get": {
                 "description": "Return list of teachers which found by provided query term",
@@ -279,6 +453,55 @@ const docTemplate = `{
                 }
             }
         },
+        "ScheduleItem": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string",
+                    "example": "ул. Олеко Дундича, 23"
+                },
+                "classroom": {
+                    "type": "string",
+                    "example": "ОД/341"
+                },
+                "date": {
+                    "type": "string",
+                    "example": "2023.11.27"
+                },
+                "endsAt": {
+                    "type": "string",
+                    "example": "11:40"
+                },
+                "lecturer": {
+                    "type": "string",
+                    "example": "Бердышев Александр Валентинович"
+                },
+                "lesson": {
+                    "type": "string",
+                    "example": "Иностранный язык"
+                },
+                "lessonNumberEnd": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "lessonNumberStart": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "lessonType": {
+                    "type": "string",
+                    "example": "Лекции"
+                },
+                "startsAt": {
+                    "type": "string",
+                    "example": "10:10"
+                },
+                "weekDay": {
+                    "type": "integer",
+                    "example": 0
+                }
+            }
+        },
         "Teacher": {
             "type": "object",
             "properties": {
@@ -314,8 +537,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:5051/",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "Swagger Example API",
-	Description:      "This is a sample server celler server.",
+	Title:            "Finapp-api",
+	Description:      "This is a server finapp-api.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

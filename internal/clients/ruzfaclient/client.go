@@ -71,8 +71,6 @@ func (c *Client) GetGroupSchedule(input *GetGroupScheduleInput) ([]dto.Schedule,
 	if err != nil {
 		return nil, clients.ErrInvalidEntity
 	}
-
-	fmt.Println(res.StatusCode)
 	defer res.Body.Close()
 
 	schedule := new([]dto.Schedule)
@@ -130,8 +128,6 @@ func (c *Client) GetTeacherSchedule(input *GetTeacherScheduleInput) ([]dto.Sched
 	if err != nil {
 		return nil, clients.ErrInvalidEntity
 	}
-
-	fmt.Println(res.StatusCode)
 	defer res.Body.Close()
 
 	scheduleTeacher := new([]dto.Schedule)

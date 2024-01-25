@@ -1,37 +1,45 @@
 package dto
 
 import (
-	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 )
 
 type Date string
 
-func (d *Date) UnmarshalJSON(bytes []byte) error {
-	date, err := time.Parse(`"2006-01-02T15:04:05.000-0700"`, string(bytes))
+func (d Date) Validate() error {
+	_, err := time.Parse("2006.01.02", string(d))
 	if err != nil {
-		return err
+		return fmt.Errorf("Date Format is invalid")
 	}
-	*d = Date(date.Format("2024.12.01"))
+
 	return nil
-}
-
-func (d *Date) String() string {
-	if d == nil {
-		return ""
-	}
-
-	return string(*d)
 }
 
 type GetScheduleRequest struct {
 	EntityId  string `json:"id" validate:"required"`
-	StartDate Date   `json:"startDate"`
-	EndDate   Date   `json:"endDate"`
-}
+	StartDate Date   `json:"startDate" example:"2023.09.02"`
+	EndDate   Date   `json:"endDate" example:"2023.09.11"`
+} //@name GetScheduleRequest
 
+type ScheduleItem struct {
+	ClassroomNumber   string `json:"classroom" example:"ОД/341"`
+	StartsAt          string `json:"startsAt" example:"10:10"`
+	EndsAt            string `json:"endsAt" example:"11:40"`
+	Address           string `json:"address" example:"ул. Олеко Дундича, 23"`
+	Lesson            string `json:"lesson" example:"Иностранный язык"`
+	LessonType        string `json:"lessonType" example:"Лекции"`
+	LessonNumberStart uint8  `json:"lessonNumberStart" example:"1"`
+	LessonNumberEnd   uint8  `json:"lessonNumberEnd" example:"1"`
+	Lecturer          string `json:"lecturer" example:"Бердышев Александр Валентинович"`
+
+	Date    string `json:"date" example:"2023.11.27"`
+	WeekDay uint8  `json:"weekDay" example:"0"`
+} //@name ScheduleItem
+
+// * Keep it for best times when SWAGGO begins enum support * //
+
+/*
 type LessonType uint8
 
 const (
@@ -160,38 +168,4 @@ func ParseWeekDay(s string) (WeekDay, error) {
 
 	return WeekDay(value), nil
 }
-
-type ScheduleItem struct {
-	ClassroomNumber string     `json:"classroom"`
-	StartsAt        string     `json:"startsAt"`
-	EndsAt          string     `json:"endsAt"`
-	Building        string     `json:"building"`
-	Lesson          string     `json:"lesson"`
-	LessonType      LessonType `json:"lessonType"`
-}
-
-// type Date string
-
-// func (d *Date) UnmarshalJSON(bytes []byte) error {
-// 	date, err := time.Parse(`"2006-01-02T15:04:05.000-0700"`, string(bytes))
-// 	if err != nil {
-// 		return err
-// 	}
-// 	*d = Date(date.Format("2024.12.01"))
-
-// 	return nil
-// }
-
-// func (d *Date) String() string {
-// 	if d == nil {
-// 		return ""
-// 	}
-
-// 	return string(*d)
-// }
-
-// type GetScheduleRequest struct {
-// 	EntityId   string `json:"id"`
-// 	StartDate string `json:"startDate"`
-// 	EndDate   string `json:"endDate"`
-// }
+*/

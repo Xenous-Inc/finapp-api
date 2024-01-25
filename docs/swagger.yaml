@@ -47,6 +47,42 @@ definitions:
         example: eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9
         type: string
     type: object
+  ScheduleItem:
+    properties:
+      address:
+        example: ул. Олеко Дундича, 23
+        type: string
+      classroom:
+        example: ОД/341
+        type: string
+      date:
+        example: 2023.11.27
+        type: string
+      endsAt:
+        example: "11:40"
+        type: string
+      lecturer:
+        example: Бердышев Александр Валентинович
+        type: string
+      lesson:
+        example: Иностранный язык
+        type: string
+      lessonNumberEnd:
+        example: 1
+        type: integer
+      lessonNumberStart:
+        example: 1
+        type: integer
+      lessonType:
+        example: Лекции
+        type: string
+      startsAt:
+        example: "10:10"
+        type: string
+      weekDay:
+        example: 0
+        type: integer
+    type: object
   Teacher:
     properties:
       desc:
@@ -66,14 +102,14 @@ host: localhost:5051/
 info:
   contact:
     email: support@swagger.io
-    name: API Support
+    name: https://web.telegram.org/a/#488960669
     url: http://www.swagger.io/support
-  description: This is a sample server celler server.
+  description: This is a server finapp-api.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: Swagger Example API
+  title: Finapp-api
   version: "1.0"
 paths:
   /auth/login:
@@ -168,6 +204,123 @@ paths:
       summary: Return List of groups
       tags:
       - groups
+  /schedule/classroom:
+    get:
+      description: Returns schedule for provided classroom Id and time interval
+      parameters:
+      - description: Classroom ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Start date
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: End date
+        in: query
+        name: to
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/ScheduleItem'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiError'
+      summary: Return schedule for provided classroom
+      tags:
+      - schedule
+  /schedule/group:
+    get:
+      description: Returns schedule for provided group Id and time interval
+      parameters:
+      - description: Group ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Group ID
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: Group ID
+        in: query
+        name: to
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/ScheduleItem'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiError'
+      summary: Return schedule for provided group
+      tags:
+      - schedule
+  /schedule/teacher:
+    get:
+      description: Returns schedule for provided teacher Id and time interval
+      parameters:
+      - description: Teacher ID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Start date
+        in: query
+        name: from
+        required: true
+        type: string
+      - description: End date
+        in: query
+        name: to
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/ScheduleItem'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiError'
+      summary: Return schedule for provided teacher
+      tags:
+      - schedule
   /teachers/:
     get:
       description: Return list of teachers which found by provided query term
