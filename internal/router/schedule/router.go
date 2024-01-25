@@ -57,8 +57,8 @@ func (s *Router) HandleGetGroupSchedule(w http.ResponseWriter, r *http.Request) 
 	}
 
 	eg := errgroup.Group{}
-	eg.Go(func() error { return input.StartDate.Validate() })
-	eg.Go(func() error { return input.EndDate.Validate() })
+	eg.Go(input.StartDate.Validate)
+	eg.Go(input.EndDate.Validate)
 	if err = eg.Wait(); err != nil {
 		responser.BadRequset(w, r, err.Error())
 
@@ -138,8 +138,8 @@ func (s *Router) HandleGetTeacherSchedule(w http.ResponseWriter, r *http.Request
 	}
 
 	eg := errgroup.Group{}
-	eg.Go(func() error { return input.StartDate.Validate() })
-	eg.Go(func() error { return input.EndDate.Validate() })
+	eg.Go(input.StartDate.Validate)
+	eg.Go(input.EndDate.Validate)
 	if err = eg.Wait(); err != nil {
 		responser.BadRequset(w, r, err.Error())
 
@@ -219,8 +219,8 @@ func (s *Router) HandleGetAuditoriumSchedule(w http.ResponseWriter, r *http.Requ
 	}
 
 	eg := errgroup.Group{}
-	eg.Go(func() error { return input.StartDate.Validate() })
-	eg.Go(func() error { return input.EndDate.Validate() })
+	eg.Go(input.StartDate.Validate)
+	eg.Go(input.EndDate.Validate)
 	if err = eg.Wait(); err != nil {
 		responser.BadRequset(w, r, err.Error())
 
