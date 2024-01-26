@@ -60,6 +60,18 @@ func (s *Router) HandleAuth(w http.ResponseWriter, r *http.Request) {
 		Password: input.Password,
 	})
 
+	if err != nil {
+		if errors.Is(err, clients.ErrUnauthorized) {
+			responser.Unauthorized(w, r)
+
+			return
+		}
+
+		responser.Internal(w, r, err.Error())
+
+		return
+	}
+
 	token, err := jwtservice.NewToken(sessionId, s.client.Cfg.JwtSecret)
 	if err != nil {
 		log.Warn("Unauthorized, Error generate Token", "orgfaclient login")
