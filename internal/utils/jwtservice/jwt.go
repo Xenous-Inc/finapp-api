@@ -1,9 +1,9 @@
 package jwtservice
 
 import (
+	"errors"
 	"strings"
 
-	"github.com/Xenous-Inc/finapp-api/internal/clients"
 	"github.com/Xenous-Inc/finapp-api/internal/utils/logger/log"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -16,7 +16,7 @@ func NewToken(sessionId string, jwtSecret string) (string, error) {
 	tokenString, err := token.SignedString(key)
 	if err != nil {
 		log.Error(err, "InternalServer, error signature JWT token", "jwtservice NewToken")
-		return "", clients.ErrInternal
+		return "", errors.New("Unathorized")
 	}
 
 	return tokenString, nil
@@ -25,13 +25,13 @@ func NewToken(sessionId string, jwtSecret string) (string, error) {
 func GetDecodeToken(tokenString string, jwtSecret string) (*jwt.Token, error) {
 	if tokenString == "" {
 		log.Warn("Authorization header is empty")
-		return nil, clients.ErrUnauthorized
+		return nil, errors.New("Unathorized")
 	}
 
 	tokenSlice := strings.Split(tokenString, "Bearer ")
 	if len(tokenSlice) != 2 {
 		log.Warn("Invalid Authorization header format")
-		return nil, clients.ErrUnauthorized
+		return nil, errors.New("Unathorized")
 	}
 
 	tokenString = tokenSlice[1]
@@ -41,7 +41,7 @@ func GetDecodeToken(tokenString string, jwtSecret string) (*jwt.Token, error) {
 	})
 
 	if err != nil {
-		return nil, clients.ErrUnauthorized
+		return nil, errors.New("Unathorized")
 	}
 
 	return token, err
