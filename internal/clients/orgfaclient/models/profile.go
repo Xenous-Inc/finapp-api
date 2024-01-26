@@ -1,12 +1,11 @@
 package models
 
 type MiniProfile struct {
-	Id       int    `json:"id"`
-	Type     string `json:"type"`
-	TypeName string `json:"type_name"`
-	Name     string `json:"name"`
-	Href     string `json:"href"`
-	Extra    string `json:"extra"`
+	Id       int      `json:"id"`
+	Type     string   `json:"type"`
+	MiniUser MiniUser `json:"user"`
+	Faculty  Faculty  `json:"faculty"`
+	EduGroup EduGroup `json:"edu_group"`
 }
 
 type ProfileDetails struct {
@@ -28,6 +27,16 @@ type ProfileDetails struct {
 	Faculty          Faculty          `json:"faculty"`
 	EduGroup         EduGroup         `json:"edu_group"`
 	EduQualification EduQualification `json:"edu_qualification"`
+}
+
+type MiniUser struct {
+	Id       int    `json:"id"`
+	Login    string `json:"login"`
+	FullName string `json:"fullname"`
+	LastName string `json:"lastname"`
+	Name     string `json:"name"`
+	Surname  string `json:"surname"`
+	Photo    Photo  `json:"photo"`
 }
 
 type User struct {

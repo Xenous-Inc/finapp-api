@@ -198,8 +198,8 @@ type GetMiniProfileInput struct {
 	*AuthSession
 }
 
-func (c *Client) GetProfile(input *GetMiniProfileInput) ([]models.MiniProfile, error) {
-	path := "bitrix/vuz/api/profile/"
+func (c *Client) GetProfile(input *GetMiniProfileInput) (*models.MiniProfile, error) {
+	path := "bitrix/vuz/api/profile/bootstrap"
 	phpSessionId := fmt.Sprintf("PHPSESSID=%s", input.SessionId)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).AddHeader("Cookie", phpSessionId).Build()
 
@@ -226,7 +226,7 @@ func (c *Client) GetProfile(input *GetMiniProfileInput) ([]models.MiniProfile, e
 
 	defer res.Body.Close()
 
-	miniProfile := make([]models.MiniProfile, 0)
+	miniProfile := new(models.MiniProfile)
 	err = json.Unmarshal(body, &miniProfile)
 
 	if err != nil {
