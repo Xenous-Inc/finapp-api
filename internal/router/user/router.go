@@ -35,6 +35,16 @@ func (s *Router) Route(r chi.Router) {
 	r.Get("/studyplan", s.HandlerGetStudyPlan)
 }
 
+// @Summary Try to get group in user
+// @Description In success case returns group
+// @Tags user
+// @Param data body dto.
+// @Produce json
+// @Success 200 {object} dto.
+// @Failure 401 {object} dto.ApiError
+// @Failure 400 {object} dto.ApiError
+// @Failure 500 {object} dto.ApiError
+// @Router /user/group [get]
 func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 	tokenString := r.Header.Get("Authorization")
 
@@ -54,7 +64,7 @@ func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	myGroup, err := s.client.GetMyGroup(&orgfaclient.GetMyGroupInput{
+	response, err := s.client.GetMyGroup(&orgfaclient.GetMyGroupInput{
 		AuthSession: &orgfaclient.AuthSession{
 			SessionId: sessionId,
 		},
@@ -63,28 +73,44 @@ func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case clients.ErrRequest:
-			log.Error(err, "BadRequest", "schedule HandleGetGroup")
+			log.Error(err, "BadRequest", "user HandleGetGroup")
 			responser.BadRequset(w, r, "Invalid request")
 		case clients.ErrInvalidEntity:
-			log.Error(err, "Invalid Entity", "schedule HandleGetGroup")
+			log.Error(err, "Invalid Entity", "user HandleGetGroup")
 			responser.BadRequset(w, r, "Invalid entity")
 		case clients.ErrValidation:
-			log.Error(err, "Error Validation", "schedule HandleGetGroup")
+			log.Error(err, "Error Validation", "user HandleGetGroup")
 			responser.BadRequset(w, r, "Error validation")
 		case clients.ErrUnauthorized:
 			log.Error(err, "Unauthorized", "user HandleGetGroup")
 			responser.Unauthorized(w, r)
 		default:
-			log.Error(err, "Internal", "schedule HandleGetGroup")
+			log.Error(err, "Internal", "user HandleGetGroup")
 			responser.Internal(w, r, err.Error())
 		}
 
 		return
 	}
 
-	responser.Success(w, r, myGroup)
+	// items := make([]dto.MyGroup, 0)
+
+	// for _, group := range response {
+	// 	items = append(items, dto.MyGroupFromClientModel(&group))
+	// }
+
+	responser.Success(w, r, response)
 }
 
+// @Summary Try to get record book in user
+// @Description In success case returns record book
+// @Tags user
+// @Param data body dto.
+// @Produce json
+// @Success 200 {object} dto.
+// @Failure 401 {object} dto.ApiError
+// @Failure 400 {object} dto.ApiError
+// @Failure 500 {object} dto.ApiError
+// @Router /user/recordbook [get]
 func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
 	tokenString := r.Header.Get("Authorization")
 
@@ -104,7 +130,7 @@ func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	recordBook, err := s.client.GetRecordBook(&orgfaclient.GetRecordBookInput{
+	response, err := s.client.GetRecordBook(&orgfaclient.GetRecordBookInput{
 		AuthSession: &orgfaclient.AuthSession{
 			SessionId: sessionId,
 		},
@@ -113,28 +139,38 @@ func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case clients.ErrRequest:
-			log.Error(err, "BadRequest", "schedule HandleGetRecordBook")
+			log.Error(err, "BadRequest", "user HandleGetRecordBook")
 			responser.BadRequset(w, r, "Invalid request")
 		case clients.ErrInvalidEntity:
-			log.Error(err, "Invalid Entity", "schedule HandleGetRecordBook")
+			log.Error(err, "Invalid Entity", "user HandleGetRecordBook")
 			responser.BadRequset(w, r, "Invalid entity")
 		case clients.ErrValidation:
-			log.Error(err, "Error Validation", "schedule HandleGetRecordBook")
+			log.Error(err, "Error Validation", "user HandleGetRecordBook")
 			responser.BadRequset(w, r, "Error validation")
 		case clients.ErrUnauthorized:
 			log.Error(err, "Unauthorized", "user HandleGetRecordBook")
 			responser.Unauthorized(w, r)
 		default:
-			log.Error(err, "Internal", "schedule HandleGetRecordBook")
+			log.Error(err, "Internal", "user HandleGetRecordBook")
 			responser.Internal(w, r, err.Error())
 		}
 
 		return
 	}
 
-	responser.Success(w, r, recordBook)
+	responser.Success(w, r, response)
 }
 
+// @Summary Try to get profile in user
+// @Description In success case returns profile
+// @Tags user
+// @Param data body dto.
+// @Produce json
+// @Success 200 {object} dto.
+// @Failure 401 {object} dto.ApiError
+// @Failure 400 {object} dto.ApiError
+// @Failure 500 {object} dto.ApiError
+// @Router /user/profile [get]
 func (s *Router) HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 	tokenString := r.Header.Get("Authorization")
 
@@ -154,7 +190,7 @@ func (s *Router) HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	miniProfile, err := s.client.GetProfile(&orgfaclient.GetMiniProfileInput{
+	response, err := s.client.GetProfile(&orgfaclient.GetMiniProfileInput{
 		AuthSession: &orgfaclient.AuthSession{
 			SessionId: sessionId,
 		},
@@ -163,28 +199,40 @@ func (s *Router) HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case clients.ErrRequest:
-			log.Error(err, "BadRequest", "schedule HandleGetProfile")
+			log.Error(err, "BadRequest", "user HandleGetProfile")
 			responser.BadRequset(w, r, "Invalid request")
 		case clients.ErrInvalidEntity:
-			log.Error(err, "Invalid Entity", "schedule HandleGetProfile")
+			log.Error(err, "Invalid Entity", "user HandleGetProfile")
 			responser.BadRequset(w, r, "Invalid entity")
 		case clients.ErrValidation:
-			log.Error(err, "Error Validation", "schedule HandleGetProfile")
+			log.Error(err, "Error Validation", "user HandleGetProfile")
 			responser.BadRequset(w, r, "Error validation")
 		case clients.ErrUnauthorized:
 			log.Error(err, "Unauthorized", "user HandleGetProfile")
 			responser.Unauthorized(w, r)
 		default:
-			log.Error(err, "Internal", "schedule HandleGetProfile")
+			log.Error(err, "Internal", "user HandleGetProfile")
 			responser.Internal(w, r, err.Error())
 		}
 
 		return
 	}
 
-	responser.Success(w, r, miniProfile)
+	//profile := dto.ProfileFromClientModel(response)
+
+	responser.Success(w, r, response)
 }
 
+// @Summary Try to get profile details in user
+// @Description In success case profile details
+// @Tags user
+// @Param data body dto.
+// @Produce json
+// @Success 200 {object} dto.
+// @Failure 401 {object} dto.ApiError
+// @Failure 400 {object} dto.ApiError
+// @Failure 500 {object} dto.ApiError
+// @Router /user/profile/details [get]
 func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request) {
 	tokenString := r.Header.Get("Authorization")
 
@@ -213,19 +261,19 @@ func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		switch err {
 		case clients.ErrRequest:
-			log.Error(err, "BadRequest", "schedule HandleGetProfileDetails")
+			log.Error(err, "BadRequest", "user HandleGetProfileDetails")
 			responser.BadRequset(w, r, "Invalid request")
 		case clients.ErrInvalidEntity:
-			log.Error(err, "Invalid Entity", "schedule HandleGetProfileDetails")
+			log.Error(err, "Invalid Entity", "user HandleGetProfileDetails")
 			responser.BadRequset(w, r, "Invalid entity")
 		case clients.ErrValidation:
-			log.Error(err, "Error Validation", "schedule HandleGetProfileDetails")
+			log.Error(err, "Error Validation", "user HandleGetProfileDetails")
 			responser.BadRequset(w, r, "Error validation")
 		case clients.ErrUnauthorized:
 			log.Error(err, "Unauthorized", "user HandleGetProfileDetails")
 			responser.Unauthorized(w, r)
 		default:
-			log.Error(err, "Internal", "schedule HandleGetProfileDetails")
+			log.Error(err, "Internal", "user HandleGetProfileDetails")
 			responser.Internal(w, r, err.Error())
 		}
 
@@ -236,6 +284,16 @@ func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request)
 
 }
 
+// @Summary Try to get order in user
+// @Description In success case returns order
+// @Tags user
+// @Param data body dto.
+// @Produce json
+// @Success 200 {object} dto.
+// @Failure 401 {object} dto.ApiError
+// @Failure 400 {object} dto.ApiError
+// @Failure 500 {object} dto.ApiError
+// @Router /user/order [get]
 func (s *Router) HandleGetOrder(w http.ResponseWriter, r *http.Request) {
 	tokenString := r.Header.Get("Authorization")
 
@@ -264,28 +322,44 @@ func (s *Router) HandleGetOrder(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case clients.ErrRequest:
-			log.Error(err, "BadRequest", "schedule HandleGetOrder")
+			log.Error(err, "BadRequest", "user HandleGetOrder")
 			responser.BadRequset(w, r, "Invalid request")
 		case clients.ErrInvalidEntity:
-			log.Error(err, "Invalid Entity", "schedule HandleGetOrder")
+			log.Error(err, "Invalid Entity", "user HandleGetOrder")
 			responser.BadRequset(w, r, "Invalid entity")
 		case clients.ErrValidation:
-			log.Error(err, "Error Validation", "schedule HandleGetOrder")
+			log.Error(err, "Error Validation", "user HandleGetOrder")
 			responser.BadRequset(w, r, "Error validation")
 		case clients.ErrUnauthorized:
 			log.Error(err, "Unauthorized", "user HandleGetOrder")
 			responser.Unauthorized(w, r)
 		default:
-			log.Error(err, "Internal", "schedule HandleGetOrder")
+			log.Error(err, "Internal", "user HandleGetOrder")
 			responser.Internal(w, r, err.Error())
 		}
 
 		return
 	}
 
+	// items := make([]dto.ScheduleItem, 0)
+
+	// for _, schedule := range groupsSchedule {
+	// 	items = append(items, dto.ScheduleItemFromClientModel(&schedule))
+	// }
+
 	responser.Success(w, r, order)
 }
 
+// @Summary Try to get student card in user
+// @Description In success case returns student card
+// @Tags user
+// @Param data body dto.
+// @Produce json
+// @Success 200 {object} dto.
+// @Failure 401 {object} dto.ApiError
+// @Failure 400 {object} dto.ApiError
+// @Failure 500 {object} dto.ApiError
+// @Router /user/studentcard/{profileId} [get]
 func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
 	url := chi.URLParam(r, "profileId")
 
@@ -316,19 +390,19 @@ func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case clients.ErrRequest:
-			log.Error(err, "BadRequest", "schedule HandleGetStudentCard")
+			log.Error(err, "BadRequest", "user HandleGetStudentCard")
 			responser.BadRequset(w, r, "Invalid request")
 		case clients.ErrInvalidEntity:
-			log.Error(err, "Invalid Entity", "schedule HandleGetStudentCard")
+			log.Error(err, "Invalid Entity", "user HandleGetStudentCard")
 			responser.BadRequset(w, r, "Invalid entity")
 		case clients.ErrValidation:
-			log.Error(err, "Error Validation", "schedule HandleGetStudentCard")
+			log.Error(err, "Error Validation", "user HandleGetStudentCard")
 			responser.BadRequset(w, r, "Error validation")
 		case clients.ErrUnauthorized:
 			log.Error(err, "Unauthorized", "user HandleGetStudentCard")
 			responser.Unauthorized(w, r)
 		default:
-			log.Error(err, "Internal", "schedule HandleGetStudentCard")
+			log.Error(err, "Internal", "user HandleGetStudentCard")
 			responser.Internal(w, r, err.Error())
 		}
 
@@ -338,6 +412,16 @@ func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
 	responser.Success(w, r, studentCard)
 }
 
+// @Summary Try to get study plan in user
+// @Description In success case returns study plan
+// @Tags user
+// @Param data body dto.
+// @Produce json
+// @Success 200 {object} dto.
+// @Failure 401 {object} dto.ApiError
+// @Failure 400 {object} dto.ApiError
+// @Failure 500 {object} dto.ApiError
+// @Router /user/studyplan [get]
 func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
 	tokenString := r.Header.Get("Authorization")
 
@@ -366,24 +450,30 @@ func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		switch err {
 		case clients.ErrRequest:
-			log.Error(err, "BadRequest", "schedule HandlerGetStudyPlan")
+			log.Error(err, "BadRequest", "user HandlerGetStudyPlan")
 			responser.BadRequset(w, r, "Invalid request")
 		case clients.ErrInvalidEntity:
-			log.Error(err, "Invalid Entity", "schedule HandlerGetStudyPlan")
+			log.Error(err, "Invalid Entity", "user HandlerGetStudyPlan")
 			responser.BadRequset(w, r, "Invalid entity")
 		case clients.ErrValidation:
-			log.Error(err, "Error Validation", "schedule HandlerGetStudyPlan")
+			log.Error(err, "Error Validation", "user HandlerGetStudyPlan")
 			responser.BadRequset(w, r, "Error validation")
 		case clients.ErrUnauthorized:
 			log.Error(err, "Unauthorized", "user HandlerGetStudyPlan")
 			responser.Unauthorized(w, r)
 		default:
-			log.Error(err, "Internal", "schedule HandlerGetStudyPlan")
+			log.Error(err, "Internal", "user HandlerGetStudyPlan")
 			responser.Internal(w, r, err.Error())
 		}
 
 		return
 	}
+
+	// items := make([]dto.ScheduleItem, 0)
+
+	// for _, schedule := range groupsSchedule {
+	// 	items = append(items, dto.ScheduleItemFromClientModel(&schedule))
+	// }
 
 	responser.Success(w, r, studyPlan)
 }
