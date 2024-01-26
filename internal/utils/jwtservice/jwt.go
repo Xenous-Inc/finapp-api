@@ -2,6 +2,7 @@ package jwtservice
 
 import (
 	"errors"
+	"net/http"
 	"strings"
 
 	"github.com/Xenous-Inc/finapp-api/internal/utils/logger/log"
@@ -22,7 +23,8 @@ func NewToken(sessionId string, jwtSecret string) (string, error) {
 	return tokenString, nil
 }
 
-func GetDecodeToken(tokenString string, jwtSecret string) (*jwt.Token, error) {
+func GetDecodeToken(r *http.Request, jwtSecret string) (*jwt.Token, error) {
+	tokenString := r.Header.Get("Authorization")
 	if tokenString == "" {
 		log.Warn("Authorization header is empty")
 		return nil, errors.New("Unathorized")

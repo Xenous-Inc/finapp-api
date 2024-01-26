@@ -31,7 +31,7 @@ func (s *Router) Route(r chi.Router) {
 	r.Get("/profile/details", s.HandleGetProfileDetails)
 	r.Get("/order", s.HandleGetOrder)
 	r.Get("/recordbook", s.HandleGetRecordBook)
-	r.Get("/studentcard/{profileId}", s.HandleGetStudentCard)
+	r.Get("/studentcard", s.HandleGetStudentCard)
 	r.Get("/studyplan", s.HandlerGetStudyPlan)
 }
 
@@ -46,9 +46,7 @@ func (s *Router) Route(r chi.Router) {
 // @Failure 500 {object} dto.ApiError
 // @Router /user/group [get]
 func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
-	tokenString := r.Header.Get("Authorization")
-
-	token, err := jwtservice.GetDecodeToken(tokenString, s.client.Cfg.JwtSecret)
+	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
 
 	if err != nil {
 		log.Error(err, "Unauthorized", "user HandleGetGroup")
@@ -112,9 +110,7 @@ func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} dto.ApiError
 // @Router /user/recordbook [get]
 func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
-	tokenString := r.Header.Get("Authorization")
-
-	token, err := jwtservice.GetDecodeToken(tokenString, s.client.Cfg.JwtSecret)
+	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
 
 	if err != nil {
 		log.Error(err, "Unauthorized", "user HandleGetRecordBook")
@@ -172,9 +168,7 @@ func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} dto.ApiError
 // @Router /user/profile [get]
 func (s *Router) HandleGetProfile(w http.ResponseWriter, r *http.Request) {
-	tokenString := r.Header.Get("Authorization")
-
-	token, err := jwtservice.GetDecodeToken(tokenString, s.client.Cfg.JwtSecret)
+	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
 
 	if err != nil {
 		log.Error(err, "Unauthorized", "user HandleGetProfile")
@@ -234,9 +228,7 @@ func (s *Router) HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} dto.ApiError
 // @Router /user/profile/details [get]
 func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request) {
-	tokenString := r.Header.Get("Authorization")
-
-	token, err := jwtservice.GetDecodeToken(tokenString, s.client.Cfg.JwtSecret)
+	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
 
 	if err != nil {
 		log.Error(err, "Unauthorized", "user HandleGetProfileDetails")
@@ -295,9 +287,7 @@ func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request)
 // @Failure 500 {object} dto.ApiError
 // @Router /user/order [get]
 func (s *Router) HandleGetOrder(w http.ResponseWriter, r *http.Request) {
-	tokenString := r.Header.Get("Authorization")
-
-	token, err := jwtservice.GetDecodeToken(tokenString, s.client.Cfg.JwtSecret)
+	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
 
 	if err != nil {
 		log.Error(err, "Unauthorized", "user HandleGetOrder")
@@ -359,13 +349,18 @@ func (s *Router) HandleGetOrder(w http.ResponseWriter, r *http.Request) {
 // @Failure 401 {object} dto.ApiError
 // @Failure 400 {object} dto.ApiError
 // @Failure 500 {object} dto.ApiError
-// @Router /user/studentcard/{profileId} [get]
+// @Router /user/studentcard [get]
 func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
-	url := chi.URLParam(r, "profileId")
+	profileId := r.URL.Query().Get("profileId")
+	err := s.validator.Var(profileId, "required")
+	if err != nil {
+		log.Error(err, "BadRequest", "teachers HandleGetTeacher")
+		responser.BadRequset(w, r, "Query parameter `term` must be provided")
 
-	tokenString := r.Header.Get("Authorization")
+		return
+	}
 
-	token, err := jwtservice.GetDecodeToken(tokenString, s.client.Cfg.JwtSecret)
+	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
 
 	if err != nil {
 		log.Error(err, "Unauthorized", "user HandleGetStudentCard")
@@ -384,7 +379,7 @@ func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
 	studentCard, err := s.client.GetStudentCard(&orgfaclient.GetStudentCardInput{
 		AuthSession: &orgfaclient.AuthSession{
 			SessionId: sessionId,
-		}, ProfileId: url,
+		}, ProfileId: profileId,
 	})
 
 	if err != nil {
@@ -423,9 +418,7 @@ func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
 // @Failure 500 {object} dto.ApiError
 // @Router /user/studyplan [get]
 func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
-	tokenString := r.Header.Get("Authorization")
-
-	token, err := jwtservice.GetDecodeToken(tokenString, s.client.Cfg.JwtSecret)
+	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
 
 	if err != nil {
 		log.Error(err, "Unauthorized", "user HandlerGetStudyPlan")
