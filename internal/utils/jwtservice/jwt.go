@@ -46,3 +46,14 @@ func GetDecodeToken(tokenString string, jwtSecret string) (*jwt.Token, error) {
 
 	return token, err
 }
+
+func GetSessionIdFromToken(token *jwt.Token) (string, error) {
+	claims, ok := token.Claims.(jwt.MapClaims)
+
+	if !ok && !token.Valid {
+		log.Warn("Invalid token")
+		return "", errors.New("Invalid Token")
+	}
+
+	return claims["sessionId"].(string), nil
+}

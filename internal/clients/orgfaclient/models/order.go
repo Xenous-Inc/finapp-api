@@ -1,7 +1,7 @@
 package models
 
 type Order struct {
-	Id          string `json:"id"`
+	Id          int    `json:"id"`
 	ExternalId  string `json:"external_id"`
 	Number      string `json:"number"`
 	Date        string `json:"date"`

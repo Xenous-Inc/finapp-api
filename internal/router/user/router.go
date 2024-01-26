@@ -10,7 +10,6 @@ import (
 
 	"github.com/Xenous-Inc/finapp-api/internal/utils/logger/log"
 	"github.com/go-chi/chi"
-	"github.com/golang-jwt/jwt/v5"
 	"gopkg.in/go-playground/validator.v9"
 )
 
@@ -47,40 +46,43 @@ func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+	sessionId, err := jwtservice.GetSessionIdFromToken(token)
 
-		sessionId := claims["sessionId"]
+	if err != nil {
+		log.Error(err, "Unauthorized", "user HandleGetGroup")
+		responser.Unauthorized(w, r)
+		return
+	}
 
-		myGroup, err := s.client.GetMyGroup(&orgfaclient.GetMyGroupInput{
-			AuthSession: &orgfaclient.AuthSession{
-				SessionId: sessionId.(string),
-			},
-		})
+	myGroup, err := s.client.GetMyGroup(&orgfaclient.GetMyGroupInput{
+		AuthSession: &orgfaclient.AuthSession{
+			SessionId: sessionId,
+		},
+	})
 
-		if err != nil {
-			switch err {
-			case clients.ErrRequest:
-				log.Error(err, "BadRequest", "schedule HandleGetGroup")
-				responser.BadRequset(w, r, "Invalid request")
-			case clients.ErrInvalidEntity:
-				log.Error(err, "Invalid Entity", "schedule HandleGetGroup")
-				responser.BadRequset(w, r, "Invalid entity")
-			case clients.ErrValidation:
-				log.Error(err, "Error Validation", "schedule HandleGetGroup")
-				responser.BadRequset(w, r, "Error validation")
-			case clients.ErrUnauthorized:
-				log.Error(err, "Unauthorized", "user HandleGetGroup")
-				responser.Unauthorized(w, r)
-			default:
-				log.Error(err, "Internal", "schedule HandleGetGroup")
-				responser.Internal(w, r, err.Error())
-			}
-
-			return
+	if err != nil {
+		switch err {
+		case clients.ErrRequest:
+			log.Error(err, "BadRequest", "schedule HandleGetGroup")
+			responser.BadRequset(w, r, "Invalid request")
+		case clients.ErrInvalidEntity:
+			log.Error(err, "Invalid Entity", "schedule HandleGetGroup")
+			responser.BadRequset(w, r, "Invalid entity")
+		case clients.ErrValidation:
+			log.Error(err, "Error Validation", "schedule HandleGetGroup")
+			responser.BadRequset(w, r, "Error validation")
+		case clients.ErrUnauthorized:
+			log.Error(err, "Unauthorized", "user HandleGetGroup")
+			responser.Unauthorized(w, r)
+		default:
+			log.Error(err, "Internal", "schedule HandleGetGroup")
+			responser.Internal(w, r, err.Error())
 		}
 
-		responser.Success(w, r, myGroup)
+		return
 	}
+
+	responser.Success(w, r, myGroup)
 }
 
 func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
@@ -94,40 +96,43 @@ func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+	sessionId, err := jwtservice.GetSessionIdFromToken(token)
 
-		sessionId := claims["sessionId"]
+	if err != nil {
+		log.Error(err, "Unauthorized", "user HandleGetRecordBook")
+		responser.Unauthorized(w, r)
+		return
+	}
 
-		recordBook, err := s.client.GetRecordBook(&orgfaclient.GetRecordBookInput{
-			AuthSession: &orgfaclient.AuthSession{
-				SessionId: sessionId.(string),
-			},
-		})
+	recordBook, err := s.client.GetRecordBook(&orgfaclient.GetRecordBookInput{
+		AuthSession: &orgfaclient.AuthSession{
+			SessionId: sessionId,
+		},
+	})
 
-		if err != nil {
-			switch err {
-			case clients.ErrRequest:
-				log.Error(err, "BadRequest", "schedule HandleGetRecordBook")
-				responser.BadRequset(w, r, "Invalid request")
-			case clients.ErrInvalidEntity:
-				log.Error(err, "Invalid Entity", "schedule HandleGetRecordBook")
-				responser.BadRequset(w, r, "Invalid entity")
-			case clients.ErrValidation:
-				log.Error(err, "Error Validation", "schedule HandleGetRecordBook")
-				responser.BadRequset(w, r, "Error validation")
-			case clients.ErrUnauthorized:
-				log.Error(err, "Unauthorized", "user HandleGetRecordBook")
-				responser.Unauthorized(w, r)
-			default:
-				log.Error(err, "Internal", "schedule HandleGetRecordBook")
-				responser.Internal(w, r, err.Error())
-			}
-
-			return
+	if err != nil {
+		switch err {
+		case clients.ErrRequest:
+			log.Error(err, "BadRequest", "schedule HandleGetRecordBook")
+			responser.BadRequset(w, r, "Invalid request")
+		case clients.ErrInvalidEntity:
+			log.Error(err, "Invalid Entity", "schedule HandleGetRecordBook")
+			responser.BadRequset(w, r, "Invalid entity")
+		case clients.ErrValidation:
+			log.Error(err, "Error Validation", "schedule HandleGetRecordBook")
+			responser.BadRequset(w, r, "Error validation")
+		case clients.ErrUnauthorized:
+			log.Error(err, "Unauthorized", "user HandleGetRecordBook")
+			responser.Unauthorized(w, r)
+		default:
+			log.Error(err, "Internal", "schedule HandleGetRecordBook")
+			responser.Internal(w, r, err.Error())
 		}
 
-		responser.Success(w, r, recordBook)
+		return
 	}
+
+	responser.Success(w, r, recordBook)
 }
 
 func (s *Router) HandleGetProfile(w http.ResponseWriter, r *http.Request) {
@@ -141,40 +146,43 @@ func (s *Router) HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+	sessionId, err := jwtservice.GetSessionIdFromToken(token)
 
-		sessionId := claims["sessionId"]
+	if err != nil {
+		log.Error(err, "Unauthorized", "user HandleGetProfile")
+		responser.Unauthorized(w, r)
+		return
+	}
 
-		miniProfile, err := s.client.GetProfile(&orgfaclient.GetMiniProfileInput{
-			AuthSession: &orgfaclient.AuthSession{
-				SessionId: sessionId.(string),
-			},
-		})
+	miniProfile, err := s.client.GetProfile(&orgfaclient.GetMiniProfileInput{
+		AuthSession: &orgfaclient.AuthSession{
+			SessionId: sessionId,
+		},
+	})
 
-		if err != nil {
-			switch err {
-			case clients.ErrRequest:
-				log.Error(err, "BadRequest", "schedule HandleGetProfile")
-				responser.BadRequset(w, r, "Invalid request")
-			case clients.ErrInvalidEntity:
-				log.Error(err, "Invalid Entity", "schedule HandleGetProfile")
-				responser.BadRequset(w, r, "Invalid entity")
-			case clients.ErrValidation:
-				log.Error(err, "Error Validation", "schedule HandleGetProfile")
-				responser.BadRequset(w, r, "Error validation")
-			case clients.ErrUnauthorized:
-				log.Error(err, "Unauthorized", "user HandleGetProfile")
-				responser.Unauthorized(w, r)
-			default:
-				log.Error(err, "Internal", "schedule HandleGetProfile")
-				responser.Internal(w, r, err.Error())
-			}
-
-			return
+	if err != nil {
+		switch err {
+		case clients.ErrRequest:
+			log.Error(err, "BadRequest", "schedule HandleGetProfile")
+			responser.BadRequset(w, r, "Invalid request")
+		case clients.ErrInvalidEntity:
+			log.Error(err, "Invalid Entity", "schedule HandleGetProfile")
+			responser.BadRequset(w, r, "Invalid entity")
+		case clients.ErrValidation:
+			log.Error(err, "Error Validation", "schedule HandleGetProfile")
+			responser.BadRequset(w, r, "Error validation")
+		case clients.ErrUnauthorized:
+			log.Error(err, "Unauthorized", "user HandleGetProfile")
+			responser.Unauthorized(w, r)
+		default:
+			log.Error(err, "Internal", "schedule HandleGetProfile")
+			responser.Internal(w, r, err.Error())
 		}
 
-		responser.Success(w, r, miniProfile)
+		return
 	}
+
+	responser.Success(w, r, miniProfile)
 }
 
 func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request) {
@@ -188,41 +196,44 @@ func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+	sessionId, err := jwtservice.GetSessionIdFromToken(token)
 
-		sessionId := claims["sessionId"]
+	if err != nil {
+		log.Error(err, "Unauthorized", "user HandleGetProfileDetails")
+		responser.Unauthorized(w, r)
+		return
+	}
 
-		profile, err := s.client.GetProfileDetails(&orgfaclient.GetProfileInput{
-			AuthSession: &orgfaclient.AuthSession{
-				SessionId: sessionId.(string),
-			},
-		})
+	profile, err := s.client.GetProfileDetails(&orgfaclient.GetProfileInput{
+		AuthSession: &orgfaclient.AuthSession{
+			SessionId: sessionId,
+		},
+	})
 
-		if err != nil {
-			switch err {
-			case clients.ErrRequest:
-				log.Error(err, "BadRequest", "schedule HandleGetProfileDetails")
-				responser.BadRequset(w, r, "Invalid request")
-			case clients.ErrInvalidEntity:
-				log.Error(err, "Invalid Entity", "schedule HandleGetProfileDetails")
-				responser.BadRequset(w, r, "Invalid entity")
-			case clients.ErrValidation:
-				log.Error(err, "Error Validation", "schedule HandleGetProfileDetails")
-				responser.BadRequset(w, r, "Error validation")
-			case clients.ErrUnauthorized:
-				log.Error(err, "Unauthorized", "user HandleGetProfileDetails")
-				responser.Unauthorized(w, r)
-			default:
-				log.Error(err, "Internal", "schedule HandleGetProfileDetails")
-				responser.Internal(w, r, err.Error())
-			}
-
-			return
+	if err != nil {
+		switch err {
+		case clients.ErrRequest:
+			log.Error(err, "BadRequest", "schedule HandleGetProfileDetails")
+			responser.BadRequset(w, r, "Invalid request")
+		case clients.ErrInvalidEntity:
+			log.Error(err, "Invalid Entity", "schedule HandleGetProfileDetails")
+			responser.BadRequset(w, r, "Invalid entity")
+		case clients.ErrValidation:
+			log.Error(err, "Error Validation", "schedule HandleGetProfileDetails")
+			responser.BadRequset(w, r, "Error validation")
+		case clients.ErrUnauthorized:
+			log.Error(err, "Unauthorized", "user HandleGetProfileDetails")
+			responser.Unauthorized(w, r)
+		default:
+			log.Error(err, "Internal", "schedule HandleGetProfileDetails")
+			responser.Internal(w, r, err.Error())
 		}
 
-		responser.Success(w, r, profile)
-
+		return
 	}
+
+	responser.Success(w, r, profile)
+
 }
 
 func (s *Router) HandleGetOrder(w http.ResponseWriter, r *http.Request) {
@@ -236,40 +247,43 @@ func (s *Router) HandleGetOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+	sessionId, err := jwtservice.GetSessionIdFromToken(token)
 
-		sessionId := claims["sessionId"]
+	if err != nil {
+		log.Error(err, "Unauthorized", "user HandleGetOrder")
+		responser.Unauthorized(w, r)
+		return
+	}
 
-		order, err := s.client.GetOrder(&orgfaclient.GetOrderInput{
-			AuthSession: &orgfaclient.AuthSession{
-				SessionId: sessionId.(string),
-			},
-		})
+	order, err := s.client.GetOrder(&orgfaclient.GetOrderInput{
+		AuthSession: &orgfaclient.AuthSession{
+			SessionId: sessionId,
+		},
+	})
 
-		if err != nil {
-			switch err {
-			case clients.ErrRequest:
-				log.Error(err, "BadRequest", "schedule HandleGetOrder")
-				responser.BadRequset(w, r, "Invalid request")
-			case clients.ErrInvalidEntity:
-				log.Error(err, "Invalid Entity", "schedule HandleGetOrder")
-				responser.BadRequset(w, r, "Invalid entity")
-			case clients.ErrValidation:
-				log.Error(err, "Error Validation", "schedule HandleGetOrder")
-				responser.BadRequset(w, r, "Error validation")
-			case clients.ErrUnauthorized:
-				log.Error(err, "Unauthorized", "user HandleGetOrder")
-				responser.Unauthorized(w, r)
-			default:
-				log.Error(err, "Internal", "schedule HandleGetOrder")
-				responser.Internal(w, r, err.Error())
-			}
-
-			return
+	if err != nil {
+		switch err {
+		case clients.ErrRequest:
+			log.Error(err, "BadRequest", "schedule HandleGetOrder")
+			responser.BadRequset(w, r, "Invalid request")
+		case clients.ErrInvalidEntity:
+			log.Error(err, "Invalid Entity", "schedule HandleGetOrder")
+			responser.BadRequset(w, r, "Invalid entity")
+		case clients.ErrValidation:
+			log.Error(err, "Error Validation", "schedule HandleGetOrder")
+			responser.BadRequset(w, r, "Error validation")
+		case clients.ErrUnauthorized:
+			log.Error(err, "Unauthorized", "user HandleGetOrder")
+			responser.Unauthorized(w, r)
+		default:
+			log.Error(err, "Internal", "schedule HandleGetOrder")
+			responser.Internal(w, r, err.Error())
 		}
 
-		responser.Success(w, r, order)
+		return
 	}
+
+	responser.Success(w, r, order)
 }
 
 func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
@@ -285,40 +299,43 @@ func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+	sessionId, err := jwtservice.GetSessionIdFromToken(token)
 
-		sessionId := claims["sessionId"]
+	if err != nil {
+		log.Error(err, "Unauthorized", "user HandleGetStudentCard")
+		responser.Unauthorized(w, r)
+		return
+	}
 
-		studentCard, err := s.client.GetStudentCard(&orgfaclient.GetStudentCardInput{
-			AuthSession: &orgfaclient.AuthSession{
-				SessionId: sessionId.(string),
-			}, ProfileId: url,
-		})
+	studentCard, err := s.client.GetStudentCard(&orgfaclient.GetStudentCardInput{
+		AuthSession: &orgfaclient.AuthSession{
+			SessionId: sessionId,
+		}, ProfileId: url,
+	})
 
-		if err != nil {
-			switch err {
-			case clients.ErrRequest:
-				log.Error(err, "BadRequest", "schedule HandleGetStudentCard")
-				responser.BadRequset(w, r, "Invalid request")
-			case clients.ErrInvalidEntity:
-				log.Error(err, "Invalid Entity", "schedule HandleGetStudentCard")
-				responser.BadRequset(w, r, "Invalid entity")
-			case clients.ErrValidation:
-				log.Error(err, "Error Validation", "schedule HandleGetStudentCard")
-				responser.BadRequset(w, r, "Error validation")
-			case clients.ErrUnauthorized:
-				log.Error(err, "Unauthorized", "user HandleGetStudentCard")
-				responser.Unauthorized(w, r)
-			default:
-				log.Error(err, "Internal", "schedule HandleGetStudentCard")
-				responser.Internal(w, r, err.Error())
-			}
-
-			return
+	if err != nil {
+		switch err {
+		case clients.ErrRequest:
+			log.Error(err, "BadRequest", "schedule HandleGetStudentCard")
+			responser.BadRequset(w, r, "Invalid request")
+		case clients.ErrInvalidEntity:
+			log.Error(err, "Invalid Entity", "schedule HandleGetStudentCard")
+			responser.BadRequset(w, r, "Invalid entity")
+		case clients.ErrValidation:
+			log.Error(err, "Error Validation", "schedule HandleGetStudentCard")
+			responser.BadRequset(w, r, "Error validation")
+		case clients.ErrUnauthorized:
+			log.Error(err, "Unauthorized", "user HandleGetStudentCard")
+			responser.Unauthorized(w, r)
+		default:
+			log.Error(err, "Internal", "schedule HandleGetStudentCard")
+			responser.Internal(w, r, err.Error())
 		}
 
-		responser.Success(w, r, studentCard)
+		return
 	}
+
+	responser.Success(w, r, studentCard)
 }
 
 func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
@@ -332,38 +349,41 @@ func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+	sessionId, err := jwtservice.GetSessionIdFromToken(token)
 
-		sessionId := claims["sessionId"]
+	if err != nil {
+		log.Error(err, "Unauthorized", "user HandlerGetStudyPlan")
+		responser.Unauthorized(w, r)
+		return
+	}
 
-		studyPlan, err := s.client.GetStudyPlan(&orgfaclient.GetStudyPlanInput{
-			AuthSession: &orgfaclient.AuthSession{
-				SessionId: sessionId.(string),
-			},
-		})
+	studyPlan, err := s.client.GetStudyPlan(&orgfaclient.GetStudyPlanInput{
+		AuthSession: &orgfaclient.AuthSession{
+			SessionId: sessionId,
+		},
+	})
 
-		if err != nil {
-			switch err {
-			case clients.ErrRequest:
-				log.Error(err, "BadRequest", "schedule HandlerGetStudyPlan")
-				responser.BadRequset(w, r, "Invalid request")
-			case clients.ErrInvalidEntity:
-				log.Error(err, "Invalid Entity", "schedule HandlerGetStudyPlan")
-				responser.BadRequset(w, r, "Invalid entity")
-			case clients.ErrValidation:
-				log.Error(err, "Error Validation", "schedule HandlerGetStudyPlan")
-				responser.BadRequset(w, r, "Error validation")
-			case clients.ErrUnauthorized:
-				log.Error(err, "Unauthorized", "user HandlerGetStudyPlan")
-				responser.Unauthorized(w, r)
-			default:
-				log.Error(err, "Internal", "schedule HandlerGetStudyPlan")
-				responser.Internal(w, r, err.Error())
-			}
-
-			return
+	if err != nil {
+		switch err {
+		case clients.ErrRequest:
+			log.Error(err, "BadRequest", "schedule HandlerGetStudyPlan")
+			responser.BadRequset(w, r, "Invalid request")
+		case clients.ErrInvalidEntity:
+			log.Error(err, "Invalid Entity", "schedule HandlerGetStudyPlan")
+			responser.BadRequset(w, r, "Invalid entity")
+		case clients.ErrValidation:
+			log.Error(err, "Error Validation", "schedule HandlerGetStudyPlan")
+			responser.BadRequset(w, r, "Error validation")
+		case clients.ErrUnauthorized:
+			log.Error(err, "Unauthorized", "user HandlerGetStudyPlan")
+			responser.Unauthorized(w, r)
+		default:
+			log.Error(err, "Internal", "schedule HandlerGetStudyPlan")
+			responser.Internal(w, r, err.Error())
 		}
 
-		responser.Success(w, r, studyPlan)
+		return
 	}
+
+	responser.Success(w, r, studyPlan)
 }
