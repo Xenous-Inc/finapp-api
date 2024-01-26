@@ -1,4 +1,4 @@
-package dto
+package models
 
 type RecordBookItem struct {
 	Year     int                      `json:"year"`

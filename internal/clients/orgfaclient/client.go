@@ -10,7 +10,7 @@ import (
 	"net/url"
 
 	"github.com/Xenous-Inc/finapp-api/internal/clients"
-	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient/dto"
+	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient/models"
 	"github.com/Xenous-Inc/finapp-api/internal/utils/config"
 	"github.com/Xenous-Inc/finapp-api/internal/utils/logger/log"
 	requestbuidler "github.com/dr3dnought/request_builder"
@@ -39,10 +39,10 @@ func (c *Client) Login(input *LoginInput) (string, error) {
 	path := "app/interaction/?login=yes"
 
 	data := url.Values{}
-	data.Set(dto.AUTH_TYPE, dto.Y)
-	data.Set(dto.TYPE, dto.AUTH)
-	data.Set(dto.USER_LOGIN, input.Login)
-	data.Set(dto.USER_PASSWORD, input.Password)
+	data.Set(models.AUTH_TYPE, models.Y)
+	data.Set(models.TYPE, models.AUTH)
+	data.Set(models.USER_LOGIN, input.Login)
+	data.Set(models.USER_PASSWORD, input.Password)
 
 	req := c.reqBuilder.SetMethod("POST").SetPath(path).SetBody([]byte(data.Encode())).SetContentURLEncoded().Build()
 
@@ -106,7 +106,7 @@ type GetMyGroupInput struct {
 	*AuthSession
 }
 
-func (c *Client) GetMyGroup(input *GetMyGroupInput) ([]dto.Student, error) {
+func (c *Client) GetMyGroup(input *GetMyGroupInput) ([]models.Student, error) {
 	path := "bitrix/vuz/api/interaction/myGroup"
 	phpSessionId := fmt.Sprintf("PHPSESSID=%s", input.SessionId)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).AddHeader("Cookie", phpSessionId).Build()
@@ -135,7 +135,7 @@ func (c *Client) GetMyGroup(input *GetMyGroupInput) ([]dto.Student, error) {
 
 	defer res.Body.Close()
 
-	student := new(dto.Data)
+	student := new(models.Data)
 	err = json.Unmarshal(body, student)
 
 	if err != nil {
@@ -155,7 +155,7 @@ type GetRecordBookInput struct {
 	*AuthSession
 }
 
-func (c *Client) GetRecordBook(input *GetRecordBookInput) ([]dto.RecordBookItem, error) {
+func (c *Client) GetRecordBook(input *GetRecordBookInput) ([]models.RecordBookItem, error) {
 	path := "bitrix/vuz/api/marks2/"
 	phpSessionId := fmt.Sprintf("PHPSESSID=%s", input.SessionId)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).AddHeader("Cookie", phpSessionId).Build()
@@ -183,7 +183,7 @@ func (c *Client) GetRecordBook(input *GetRecordBookInput) ([]dto.RecordBookItem,
 
 	defer res.Body.Close()
 
-	recordBookList := make([]dto.RecordBookItem, 0)
+	recordBookList := make([]models.RecordBookItem, 0)
 	err = json.Unmarshal(body, &recordBookList)
 
 	if err != nil {
@@ -198,7 +198,7 @@ type GetMiniProfileInput struct {
 	*AuthSession
 }
 
-func (c *Client) GetProfile(input *GetMiniProfileInput) ([]dto.MiniProfile, error) {
+func (c *Client) GetProfile(input *GetMiniProfileInput) ([]models.MiniProfile, error) {
 	path := "bitrix/vuz/api/profile/"
 	phpSessionId := fmt.Sprintf("PHPSESSID=%s", input.SessionId)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).AddHeader("Cookie", phpSessionId).Build()
@@ -226,7 +226,7 @@ func (c *Client) GetProfile(input *GetMiniProfileInput) ([]dto.MiniProfile, erro
 
 	defer res.Body.Close()
 
-	miniProfile := make([]dto.MiniProfile, 0)
+	miniProfile := make([]models.MiniProfile, 0)
 	err = json.Unmarshal(body, &miniProfile)
 
 	if err != nil {
@@ -241,7 +241,7 @@ type GetProfileInput struct {
 	*AuthSession
 }
 
-func (c *Client) GetProfileDetails(input *GetProfileInput) (*dto.ProfileDetails, error) {
+func (c *Client) GetProfileDetails(input *GetProfileInput) (*models.ProfileDetails, error) {
 	path := "bitrix/vuz/api/profile/current"
 	phpSessionId := fmt.Sprintf("PHPSESSID=%s", input.SessionId)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).AddHeader("Cookie", phpSessionId).Build()
@@ -269,7 +269,7 @@ func (c *Client) GetProfileDetails(input *GetProfileInput) (*dto.ProfileDetails,
 
 	defer res.Body.Close()
 
-	profile := new(dto.ProfileDetails)
+	profile := new(models.ProfileDetails)
 	err = json.Unmarshal(body, &profile)
 
 	if err != nil {
@@ -284,7 +284,7 @@ type GetOrderInput struct {
 	*AuthSession
 }
 
-func (c *Client) GetOrder(input *GetOrderInput) ([]dto.Order, error) {
+func (c *Client) GetOrder(input *GetOrderInput) ([]models.Order, error) {
 	path := "bitrix/vuz/api/orders/"
 	phpSessionId := fmt.Sprintf("PHPSESSID=%s", input.SessionId)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).AddHeader("Cookie", phpSessionId).Build()
@@ -312,7 +312,7 @@ func (c *Client) GetOrder(input *GetOrderInput) ([]dto.Order, error) {
 
 	defer res.Body.Close()
 
-	order := make([]dto.Order, 0)
+	order := make([]models.Order, 0)
 	err = json.Unmarshal(body, &order)
 
 	if err != nil {
@@ -328,7 +328,7 @@ type GetStudentCardInput struct {
 	ProfileId string
 }
 
-func (c *Client) GetStudentCard(input *GetStudentCardInput) (*dto.StudentCard, error) {
+func (c *Client) GetStudentCard(input *GetStudentCardInput) (*models.StudentCard, error) {
 	phpSessionId := fmt.Sprintf("PHPSESSID=%s", input.SessionId)
 	path := fmt.Sprintf("bitrix/vuz/api/profiles/studentCard/%s", input.ProfileId)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).AddHeader("Cookie", phpSessionId).Build()
@@ -356,7 +356,7 @@ func (c *Client) GetStudentCard(input *GetStudentCardInput) (*dto.StudentCard, e
 
 	defer res.Body.Close()
 
-	studentCard := new(dto.StudentCard)
+	studentCard := new(models.StudentCard)
 	err = json.Unmarshal(body, &studentCard)
 
 	if err != nil {
@@ -371,7 +371,7 @@ type GetStudyPlanInput struct {
 	*AuthSession
 }
 
-func (c *Client) GetStudyPlan(input *GetStudyPlanInput) ([]dto.StudyPlan, error) {
+func (c *Client) GetStudyPlan(input *GetStudyPlanInput) ([]models.StudyPlan, error) {
 	path := "bitrix/vuz/api/rups/"
 	phpSessionId := fmt.Sprintf("PHPSESSID=%s", input.SessionId)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).AddHeader("Cookie", phpSessionId).Build()
@@ -399,7 +399,7 @@ func (c *Client) GetStudyPlan(input *GetStudyPlanInput) ([]dto.StudyPlan, error)
 
 	defer res.Body.Close()
 
-	studyPlan := make([]dto.StudyPlan, 0)
+	studyPlan := make([]models.StudyPlan, 0)
 	err = json.Unmarshal(body, &studyPlan)
 
 	if err != nil {

@@ -1,4 +1,4 @@
-package dto
+package models
 
 type StudentCard struct {
 	Error       int    `json:"error"`

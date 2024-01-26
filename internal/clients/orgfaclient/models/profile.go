@@ -1,4 +1,4 @@
-package dto
+package models
 
 type MiniProfile struct {
 	Id       int    `json:"id"`
