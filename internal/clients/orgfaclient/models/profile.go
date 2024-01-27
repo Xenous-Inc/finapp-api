@@ -1,5 +1,9 @@
 package models
 
+type AllDataMiniProfile struct {
+	MiniProfile MiniProfile `json:"profile"`
+}
+
 type MiniProfile struct {
 	Id       int      `json:"id"`
 	Type     string   `json:"type"`
