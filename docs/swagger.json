@@ -545,16 +545,176 @@
                 }
             }
         },
-        "/user/profile": {
+        "/user/card": {
             "get": {
-                "description": "In success case returns profile",
+                "description": "In success case returns user student card",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "user"
                 ],
-                "summary": "Try to get profile in user",
+                "summary": "Try to get user student card",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "2262777",
+                        "name": "profileId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/StudentCard"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/group": {
+            "get": {
+                "description": "In success case returns user group",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Try to get user group",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.Student"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ApiError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/orders": {
+            "get": {
+                "description": "In success case returns user orders list",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Try to get user orders",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Order"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/profile": {
+            "get": {
+                "description": "In success case returns user profile",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Try to get user profile",
                 "parameters": [
                     {
                         "type": "string",
@@ -570,6 +730,54 @@
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/Profile"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/profile/details": {
+            "get": {
+                "description": "In success case returns detailed user profile",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Try to get detailed user profile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ProfileDetails"
                         }
                     },
                     "400": {
@@ -677,6 +885,31 @@
                 }
             }
         },
+        "Order": {
+            "type": "object",
+            "properties": {
+                "approveDate": {
+                    "type": "string",
+                    "example": "2023.09.01"
+                },
+                "date": {
+                    "type": "string",
+                    "example": "2023.09.01"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 192754
+                },
+                "number": {
+                    "type": "string",
+                    "example": "3569/у-с"
+                },
+                "title": {
+                    "type": "string",
+                    "example": "О переводе обучающихся на следующий курс (безусловно, условно)"
+                }
+            }
+        },
         "Profile": {
             "type": "object",
             "properties": {
@@ -699,6 +932,51 @@
                 "name": {
                     "type": "string",
                     "example": "Дредноут Александр Дмитриевич"
+                },
+                "ticket": {
+                    "type": "string",
+                    "example": "226299"
+                }
+            }
+        },
+        "ProfileDetails": {
+            "type": "object",
+            "properties": {
+                "course": {
+                    "type": "integer",
+                    "example": 2
+                },
+                "direction": {
+                    "type": "string",
+                    "example": "Экономика"
+                },
+                "faculty": {
+                    "type": "string",
+                    "example": "Финансовый факультет"
+                },
+                "form": {
+                    "type": "string",
+                    "example": "Очная"
+                },
+                "group": {
+                    "type": "string",
+                    "example": "ФФ22-4"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 93492
+                },
+                "level": {
+                    "type": "string",
+                    "example": "Бакалавр"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Дредноут Александр Дмитриевич"
+                },
+                "semester": {
+                    "type": "integer",
+                    "example": 3
                 },
                 "ticket": {
                     "type": "string",
@@ -755,6 +1033,15 @@
                 }
             }
         },
+        "StudentCard": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "example": "https://org.fa.ru/upload/temp/49e6475a8dedba8800cbb8170f5fab30.pdf"
+                }
+            }
+        },
         "Teacher": {
             "type": "object",
             "properties": {
@@ -769,6 +1056,27 @@
                 "title": {
                     "type": "string",
                     "example": "Махаматов Таир"
+                }
+            }
+        },
+        "github_com_Xenous-Inc_finapp-api_internal_dto.Student": {
+            "type": "object",
+            "properties": {
+                "cover": {
+                    "type": "string",
+                    "example": "https://org.fa.ru/bitrix/galaktika/galaktika.vuzapi/public/files/users/83066/25001.281474976821736_optimized.jpg"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 87436
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Шереметьев Александр Дмитриевич"
+                },
+                "userId": {
+                    "type": "integer",
+                    "example": 83066
                 }
             }
         }

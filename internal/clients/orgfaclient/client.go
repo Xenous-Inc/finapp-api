@@ -135,7 +135,12 @@ func (c *Client) GetMyGroup(input *GetMyGroupInput) ([]models.Student, error) {
 
 	defer res.Body.Close()
 
-	student := new(models.Data)
+	type dataToParse struct {
+		Students []models.Student `json:"data"`
+		Error    int              `json:"error"`
+	}
+
+	student := new(dataToParse)
 	err = json.Unmarshal(body, student)
 
 	if err != nil {
@@ -148,7 +153,7 @@ func (c *Client) GetMyGroup(input *GetMyGroupInput) ([]models.Student, error) {
 		return nil, fmt.Errorf("Unknown error got from ORG.FA.RU: ErrorCode: %d", student.Error)
 	}
 
-	return student.Student, nil
+	return student.Students, nil
 }
 
 type GetRecordBookInput struct {
@@ -198,7 +203,7 @@ type GetMiniProfileInput struct {
 	*AuthSession
 }
 
-func (c *Client) GetProfile(input *GetMiniProfileInput) (*models.MiniProfile, error) {
+func (c *Client) GetProfile(input *GetMiniProfileInput) (*models.Profile, error) {
 	path := "bitrix/vuz/api/profile/bootstrap"
 	phpSessionId := fmt.Sprintf("PHPSESSID=%s", input.SessionId)
 	req := c.reqBuilder.SetMethod("GET").SetPath(path).AddHeader("Cookie", phpSessionId).Build()
@@ -226,7 +231,11 @@ func (c *Client) GetProfile(input *GetMiniProfileInput) (*models.MiniProfile, er
 
 	defer res.Body.Close()
 
-	data := new(models.AllDataMiniProfile)
+	type dataToParse struct {
+		Profile models.Profile `json:"profile"`
+	}
+
+	data := new(dataToParse)
 	err = json.Unmarshal(body, &data)
 
 	if err != nil {
@@ -234,7 +243,7 @@ func (c *Client) GetProfile(input *GetMiniProfileInput) (*models.MiniProfile, er
 		return nil, clients.ErrInvalidEntity
 	}
 
-	return &data.MiniProfile, nil
+	return &data.Profile, nil
 }
 
 type GetProfileInput struct {

@@ -15,11 +15,6 @@ type Photo struct {
 	Small     string `json:"small"`
 }
 
-type Data struct {
-	Error   int       `json:"error"`
-	Student []Student `json:"data"`
-}
-
 func (s *Student) String() string {
 	return jsoner.Jsonify(s)
 }

@@ -11,7 +11,7 @@ type Profile struct {
 	ImageURL     string `json:"image" example:"https://org.fa.ru/bitrix/galaktika/galaktika.vuzapi/public/files/users/89105/ctn-25001.281474976824101_optimized.jpg"`
 } //@name Profile
 
-func ProfileFromClientModel(m *models.MiniProfile) Profile {
+func ProfileFromClientModel(m *models.Profile) Profile {
 	return Profile{
 		Id:           m.Id,
 		TicketNumber: m.MiniUser.Login,
@@ -34,3 +34,18 @@ type ProfileDetails struct {
 	CourseNumber       uint8  `json:"course" example:"2"`
 	SemesterNumber     uint8  `json:"semester" example:"3"`
 } //@name ProfileDetails
+
+func ProfileDetailsFromClientModel(m *models.ProfileDetails) ProfileDetails {
+	return ProfileDetails{
+		Id:                 m.Id,
+		TicketNumber:       m.User.Login,
+		Name:               m.User.FullName,
+		Group:              m.EduGroup.Title,
+		FacultyName:        m.Faculty.Title,
+		EducationDirection: m.EduQualification.Title,
+		EducationForm:      m.EduForm,
+		EducationLevel:     m.EduMarkBookNum,
+		CourseNumber:       uint8(m.EduCourse),
+		SemesterNumber:     uint8(m.EduSemester),
+	}
+}

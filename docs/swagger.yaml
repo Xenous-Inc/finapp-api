@@ -56,6 +56,24 @@ definitions:
         example: Лекции
         type: string
     type: object
+  Order:
+    properties:
+      approveDate:
+        example: 2023.09.01
+        type: string
+      date:
+        example: 2023.09.01
+        type: string
+      id:
+        example: 192754
+        type: integer
+      number:
+        example: 3569/у-с
+        type: string
+      title:
+        example: О переводе обучающихся на следующий курс (безусловно, условно)
+        type: string
+    type: object
   Profile:
     properties:
       faculty:
@@ -73,6 +91,39 @@ definitions:
       name:
         example: Дредноут Александр Дмитриевич
         type: string
+      ticket:
+        example: "226299"
+        type: string
+    type: object
+  ProfileDetails:
+    properties:
+      course:
+        example: 2
+        type: integer
+      direction:
+        example: Экономика
+        type: string
+      faculty:
+        example: Финансовый факультет
+        type: string
+      form:
+        example: Очная
+        type: string
+      group:
+        example: ФФ22-4
+        type: string
+      id:
+        example: 93492
+        type: integer
+      level:
+        example: Бакалавр
+        type: string
+      name:
+        example: Дредноут Александр Дмитриевич
+        type: string
+      semester:
+        example: 3
+        type: integer
       ticket:
         example: "226299"
         type: string
@@ -113,6 +164,12 @@ definitions:
         example: 0
         type: integer
     type: object
+  StudentCard:
+    properties:
+      url:
+        example: https://org.fa.ru/upload/temp/49e6475a8dedba8800cbb8170f5fab30.pdf
+        type: string
+    type: object
   Teacher:
     properties:
       desc:
@@ -124,6 +181,21 @@ definitions:
       title:
         example: Махаматов Таир
         type: string
+    type: object
+  github_com_Xenous-Inc_finapp-api_internal_dto.Student:
+    properties:
+      cover:
+        example: https://org.fa.ru/bitrix/galaktika/galaktika.vuzapi/public/files/users/83066/25001.281474976821736_optimized.jpg
+        type: string
+      id:
+        example: 87436
+        type: integer
+      name:
+        example: Шереметьев Александр Дмитриевич
+        type: string
+      userId:
+        example: 83066
+        type: integer
     type: object
 host: localhost:5051/
 info:
@@ -495,9 +567,116 @@ paths:
       summary: Return List of teachers
       tags:
       - teachers
+  /user/card:
+    get:
+      description: In success case returns user student card
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: "2262777"
+        in: query
+        name: profileId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/StudentCard'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ApiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiError'
+      summary: Try to get user student card
+      tags:
+      - user
+  /user/group:
+    get:
+      description: In success case returns user group
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.Student'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiError'
+        "401":
+          description: Unauthorized
+          schema:
+            items:
+              $ref: '#/definitions/ApiError'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiError'
+      summary: Try to get user group
+      tags:
+      - user
+  /user/orders:
+    get:
+      description: In success case returns user orders list
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/Order'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ApiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiError'
+      summary: Try to get user orders
+      tags:
+      - user
   /user/profile:
     get:
-      description: In success case returns profile
+      description: In success case returns user profile
       parameters:
       - default: Bearer <Add access token here>
         description: Insert your access token
@@ -524,7 +703,39 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/ApiError'
-      summary: Try to get profile in user
+      summary: Try to get user profile
+      tags:
+      - user
+  /user/profile/details:
+    get:
+      description: In success case returns detailed user profile
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ProfileDetails'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ApiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiError'
+      summary: Try to get detailed user profile
       tags:
       - user
 securityDefinitions:

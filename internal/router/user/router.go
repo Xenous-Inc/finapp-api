@@ -36,6 +36,16 @@ func (s *Router) Route(r chi.Router) {
 	r.Get("/studyplan", s.HandlerGetStudyPlan)
 }
 
+// @Summary Try to get user group
+// @Description In success case returns user group
+// @Tags user
+// @Produce json
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Success 200 {object} []dto.Student
+// @Failure 401 {object} []dto.ApiError
+// @Failure 400 {object} dto.ApiError
+// @Failure 500 {object} dto.ApiError
+// @Router /user/group [get]
 func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
 
@@ -81,13 +91,13 @@ func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// items := make([]dto.MyGroup, 0)
+	items := make([]dto.Student, len(response))
 
-	// for _, group := range response {
-	// 	items = append(items, dto.MyGroupFromClientModel(&group))
-	// }
+	for i, item := range response {
+		items[i] = dto.StudentFromClientModel(&item)
+	}
 
-	responser.Success(w, r, response)
+	responser.Success(w, r, items)
 }
 
 func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
@@ -138,8 +148,8 @@ func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
 	responser.Success(w, r, response)
 }
 
-// @Summary Try to get profile in user
-// @Description In success case returns profile
+// @Summary Try to get user profile
+// @Description In success case returns user profile
 // @Tags user
 // @Produce json
 // @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
@@ -193,11 +203,19 @@ func (s *Router) HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	profile := dto.ProfileFromClientModel(response)
-
-	responser.Success(w, r, profile)
+	responser.Success(w, r, dto.ProfileFromClientModel(response))
 }
 
+// @Summary Try to get detailed user profile
+// @Description In success case returns detailed user profile
+// @Tags user
+// @Produce json
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Success 200 {object} dto.ProfileDetails
+// @Failure 401 {object} dto.ApiError
+// @Failure 400 {object} dto.ApiError
+// @Failure 500 {object} dto.ApiError
+// @Router /user/profile/details [get]
 func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request) {
 	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
 
@@ -215,7 +233,7 @@ func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	profile, err := s.client.GetProfileDetails(&orgfaclient.GetProfileInput{
+	response, err := s.client.GetProfileDetails(&orgfaclient.GetProfileInput{
 		AuthSession: &orgfaclient.AuthSession{
 			SessionId: sessionId,
 		},
@@ -243,10 +261,19 @@ func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	responser.Success(w, r, profile)
-
+	responser.Success(w, r, dto.ProfileDetailsFromClientModel(response))
 }
 
+// @Summary Try to get user orders
+// @Description In success case returns user orders list
+// @Tags user
+// @Produce json
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Success 200 {object} []dto.Order
+// @Failure 401 {object} dto.ApiError
+// @Failure 400 {object} dto.ApiError
+// @Failure 500 {object} dto.ApiError
+// @Router /user/orders [get]
 func (s *Router) HandleGetOrder(w http.ResponseWriter, r *http.Request) {
 	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
 
@@ -264,7 +291,7 @@ func (s *Router) HandleGetOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	order, err := s.client.GetOrder(&orgfaclient.GetOrderInput{
+	response, err := s.client.GetOrder(&orgfaclient.GetOrderInput{
 		AuthSession: &orgfaclient.AuthSession{
 			SessionId: sessionId,
 		},
@@ -292,15 +319,26 @@ func (s *Router) HandleGetOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// items := make([]dto.ScheduleItem, 0)
+	items := make([]dto.Order, len(response))
 
-	// for _, schedule := range groupsSchedule {
-	// 	items = append(items, dto.ScheduleItemFromClientModel(&schedule))
-	// }
+	for i, item := range response {
+		items[i] = dto.OrderFromClientModel(&item)
+	}
 
-	responser.Success(w, r, order)
+	responser.Success(w, r, items)
 }
 
+// @Summary Try to get user student card
+// @Description In success case returns user student card
+// @Tags user
+// @Produce json
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Param profileId query string true "2262777"
+// @Success 200 {object} dto.StudentCard
+// @Failure 401 {object} dto.ApiError
+// @Failure 400 {object} dto.ApiError
+// @Failure 500 {object} dto.ApiError
+// @Router /user/card [get]
 func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
 	profileId := r.URL.Query().Get("profileId")
 	err := s.validator.Var(profileId, "required")
@@ -327,7 +365,7 @@ func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	studentCard, err := s.client.GetStudentCard(&orgfaclient.GetStudentCardInput{
+	response, err := s.client.GetStudentCard(&orgfaclient.GetStudentCardInput{
 		AuthSession: &orgfaclient.AuthSession{
 			SessionId: sessionId,
 		}, ProfileId: profileId,
@@ -355,7 +393,7 @@ func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responser.Success(w, r, studentCard)
+	responser.Success(w, r, dto.StudentCardFromClientModel(response))
 }
 
 func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
@@ -375,7 +413,7 @@ func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	studyPlan, err := s.client.GetStudyPlan(&orgfaclient.GetStudyPlanInput{
+	response, err := s.client.GetStudyPlan(&orgfaclient.GetStudyPlanInput{
 		AuthSession: &orgfaclient.AuthSession{
 			SessionId: sessionId,
 		},
@@ -409,5 +447,5 @@ func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
 	// 	items = append(items, dto.ScheduleItemFromClientModel(&schedule))
 	// }
 
-	responser.Success(w, r, studyPlan)
+	responser.Success(w, r, response)
 }
