@@ -56,6 +56,27 @@ definitions:
         example: Лекции
         type: string
     type: object
+  Profile:
+    properties:
+      faculty:
+        example: Финансовый факультет
+        type: string
+      group:
+        example: ФФ22-4
+        type: string
+      id:
+        example: 93492
+        type: integer
+      image:
+        example: https://org.fa.ru/bitrix/galaktika/galaktika.vuzapi/public/files/users/89105/ctn-25001.281474976824101_optimized.jpg
+        type: string
+      name:
+        example: Дредноут Александр Дмитриевич
+        type: string
+      ticket:
+        example: "226299"
+        type: string
+    type: object
   ScheduleItem:
     properties:
       address:
@@ -474,6 +495,38 @@ paths:
       summary: Return List of teachers
       tags:
       - teachers
+  /user/profile:
+    get:
+      description: In success case returns profile
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/Profile'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiError'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/ApiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiError'
+      summary: Try to get profile in user
+      tags:
+      - user
 securityDefinitions:
   BasicAuth:
     type: basic

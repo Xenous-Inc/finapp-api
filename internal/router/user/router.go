@@ -5,6 +5,7 @@ import (
 
 	"github.com/Xenous-Inc/finapp-api/internal/clients"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient"
+	"github.com/Xenous-Inc/finapp-api/internal/dto"
 	"github.com/Xenous-Inc/finapp-api/internal/router/utils/responser"
 	"github.com/Xenous-Inc/finapp-api/internal/utils/jwtservice"
 
@@ -35,16 +36,6 @@ func (s *Router) Route(r chi.Router) {
 	r.Get("/studyplan", s.HandlerGetStudyPlan)
 }
 
-// @Summary Try to get group in user
-// @Description In success case returns group
-// @Tags user
-// @Param data body dto.
-// @Produce json
-// @Success 200 {object} dto.
-// @Failure 401 {object} dto.ApiError
-// @Failure 400 {object} dto.ApiError
-// @Failure 500 {object} dto.ApiError
-// @Router /user/group [get]
 func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
 
@@ -99,16 +90,6 @@ func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 	responser.Success(w, r, response)
 }
 
-// @Summary Try to get record book in user
-// @Description In success case returns record book
-// @Tags user
-// @Param data body dto.
-// @Produce json
-// @Success 200 {object} dto.
-// @Failure 401 {object} dto.ApiError
-// @Failure 400 {object} dto.ApiError
-// @Failure 500 {object} dto.ApiError
-// @Router /user/recordbook [get]
 func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
 	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
 
@@ -160,9 +141,9 @@ func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
 // @Summary Try to get profile in user
 // @Description In success case returns profile
 // @Tags user
-// @Param data body dto.
 // @Produce json
-// @Success 200 {object} dto.
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Success 200 {object} dto.Profile
 // @Failure 401 {object} dto.ApiError
 // @Failure 400 {object} dto.ApiError
 // @Failure 500 {object} dto.ApiError
@@ -212,21 +193,11 @@ func (s *Router) HandleGetProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//profile := dto.ProfileFromClientModel(response)
+	profile := dto.ProfileFromClientModel(response)
 
-	responser.Success(w, r, response)
+	responser.Success(w, r, profile)
 }
 
-// @Summary Try to get profile details in user
-// @Description In success case profile details
-// @Tags user
-// @Param data body dto.
-// @Produce json
-// @Success 200 {object} dto.
-// @Failure 401 {object} dto.ApiError
-// @Failure 400 {object} dto.ApiError
-// @Failure 500 {object} dto.ApiError
-// @Router /user/profile/details [get]
 func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request) {
 	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
 
@@ -276,16 +247,6 @@ func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request)
 
 }
 
-// @Summary Try to get order in user
-// @Description In success case returns order
-// @Tags user
-// @Param data body dto.
-// @Produce json
-// @Success 200 {object} dto.
-// @Failure 401 {object} dto.ApiError
-// @Failure 400 {object} dto.ApiError
-// @Failure 500 {object} dto.ApiError
-// @Router /user/order [get]
 func (s *Router) HandleGetOrder(w http.ResponseWriter, r *http.Request) {
 	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
 
@@ -340,16 +301,6 @@ func (s *Router) HandleGetOrder(w http.ResponseWriter, r *http.Request) {
 	responser.Success(w, r, order)
 }
 
-// @Summary Try to get student card in user
-// @Description In success case returns student card
-// @Tags user
-// @Param data body dto.
-// @Produce json
-// @Success 200 {object} dto.
-// @Failure 401 {object} dto.ApiError
-// @Failure 400 {object} dto.ApiError
-// @Failure 500 {object} dto.ApiError
-// @Router /user/studentcard [get]
 func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
 	profileId := r.URL.Query().Get("profileId")
 	err := s.validator.Var(profileId, "required")
@@ -407,16 +358,6 @@ func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
 	responser.Success(w, r, studentCard)
 }
 
-// @Summary Try to get study plan in user
-// @Description In success case returns study plan
-// @Tags user
-// @Param data body dto.
-// @Produce json
-// @Success 200 {object} dto.
-// @Failure 401 {object} dto.ApiError
-// @Failure 400 {object} dto.ApiError
-// @Failure 500 {object} dto.ApiError
-// @Router /user/studyplan [get]
 func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
 	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
 

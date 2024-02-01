@@ -1,7 +1,13 @@
 package models
 
+import "github.com/Xenous-Inc/finapp-api/internal/utils/jsoner"
+
 type AllDataMiniProfile struct {
 	MiniProfile MiniProfile `json:"profile"`
+}
+
+func (a *AllDataMiniProfile) String() string {
+	return jsoner.Jsonify(a)
 }
 
 type MiniProfile struct {

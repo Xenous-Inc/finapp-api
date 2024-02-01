@@ -551,6 +551,54 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/user/profile": {
+            "get": {
+                "description": "In success case returns profile",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Try to get profile in user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/Profile"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -633,6 +681,35 @@ const docTemplate = `{
                 "lessonType": {
                     "type": "string",
                     "example": "Лекции"
+                }
+            }
+        },
+        "Profile": {
+            "type": "object",
+            "properties": {
+                "faculty": {
+                    "type": "string",
+                    "example": "Финансовый факультет"
+                },
+                "group": {
+                    "type": "string",
+                    "example": "ФФ22-4"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 93492
+                },
+                "image": {
+                    "type": "string",
+                    "example": "https://org.fa.ru/bitrix/galaktika/galaktika.vuzapi/public/files/users/89105/ctn-25001.281474976824101_optimized.jpg"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Дредноут Александр Дмитриевич"
+                },
+                "ticket": {
+                    "type": "string",
+                    "example": "226299"
                 }
             }
         },
