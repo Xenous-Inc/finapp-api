@@ -18,7 +18,7 @@ func ProfileFromClientModel(m *models.Profile) Profile {
 		Name:         m.MiniUser.FullName,
 		Group:        m.EduGroup.Title,
 		FacultyName:  m.Faculty.Title,
-		ImageURL:     models.BASE_URL + m.MiniUser.Photo.Small,
+		ImageURL:     models.BASE_URL + m.MiniUser.Photo.Thumbnail,
 	}
 }
 
