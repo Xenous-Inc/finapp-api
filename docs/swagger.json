@@ -800,6 +800,114 @@
                     }
                 }
             }
+        },
+        "/user/recordbook": {
+            "get": {
+                "description": "In success case returns user recordBookItem",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Try to get user recordBookItem",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookItem"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ApiError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/studyplan": {
+            "get": {
+                "description": "In success case returns user studyPlan",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Try to get user studyPlan",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "default": "Bearer \u003cAdd access token here\u003e",
+                        "description": "Insert your access token",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.StudyPlan"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ApiError"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/ApiError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1059,6 +1167,74 @@
                 }
             }
         },
+        "github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookItem": {
+            "type": "object",
+            "properties": {
+                "semesters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookSemesterItem"
+                    }
+                }
+            }
+        },
+        "github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookSemesterItem": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookSemesterItemData"
+                    }
+                },
+                "semester": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookSemesterItemData": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "itog": {
+                    "type": "integer"
+                },
+                "lecturers": {
+                    "type": "string"
+                },
+                "mark": {
+                    "type": "integer"
+                },
+                "subject": {
+                    "type": "string"
+                },
+                "t1": {
+                    "type": "integer"
+                },
+                "t2": {
+                    "type": "integer"
+                },
+                "uo": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_Xenous-Inc_finapp-api_internal_dto.Section": {
+            "type": "object",
+            "properties": {
+                "terms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.Term"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "github_com_Xenous-Inc_finapp-api_internal_dto.Student": {
             "type": "object",
             "properties": {
@@ -1077,6 +1253,57 @@
                 "userId": {
                     "type": "integer",
                     "example": 83066
+                }
+            }
+        },
+        "github_com_Xenous-Inc_finapp-api_internal_dto.StudyPlan": {
+            "type": "object",
+            "properties": {
+                "semesters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.StudyPlanSemester"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_Xenous-Inc_finapp-api_internal_dto.StudyPlanSemester": {
+            "type": "object",
+            "properties": {
+                "sections": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.Section"
+                    }
+                },
+                "semester": {
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_Xenous-Inc_finapp-api_internal_dto.Term": {
+            "type": "object",
+            "properties": {
+                "exam": {
+                    "type": "integer"
+                },
+                "external_id": {
+                    "type": "string"
+                },
+                "kp": {
+                    "type": "integer"
+                },
+                "kr": {
+                    "type": "integer"
+                },
+                "num": {
+                    "type": "integer"
+                },
+                "test": {
+                    "type": "integer"
                 }
             }
         }

@@ -182,6 +182,50 @@ definitions:
         example: Махаматов Таир
         type: string
     type: object
+  github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookItem:
+    properties:
+      semesters:
+        items:
+          $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookSemesterItem'
+        type: array
+    type: object
+  github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookSemesterItem:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookSemesterItemData'
+        type: array
+      semester:
+        type: integer
+    type: object
+  github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookSemesterItemData:
+    properties:
+      date:
+        type: string
+      itog:
+        type: integer
+      lecturers:
+        type: string
+      mark:
+        type: integer
+      subject:
+        type: string
+      t1:
+        type: integer
+      t2:
+        type: integer
+      uo:
+        type: integer
+    type: object
+  github_com_Xenous-Inc_finapp-api_internal_dto.Section:
+    properties:
+      terms:
+        items:
+          $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.Term'
+        type: array
+      title:
+        type: string
+    type: object
   github_com_Xenous-Inc_finapp-api_internal_dto.Student:
     properties:
       cover:
@@ -195,6 +239,39 @@ definitions:
         type: string
       userId:
         example: 83066
+        type: integer
+    type: object
+  github_com_Xenous-Inc_finapp-api_internal_dto.StudyPlan:
+    properties:
+      semesters:
+        items:
+          $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.StudyPlanSemester'
+        type: array
+      title:
+        type: string
+    type: object
+  github_com_Xenous-Inc_finapp-api_internal_dto.StudyPlanSemester:
+    properties:
+      sections:
+        items:
+          $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.Section'
+        type: array
+      semester:
+        type: integer
+    type: object
+  github_com_Xenous-Inc_finapp-api_internal_dto.Term:
+    properties:
+      exam:
+        type: integer
+      external_id:
+        type: string
+      kp:
+        type: integer
+      kr:
+        type: integer
+      num:
+        type: integer
+      test:
         type: integer
     type: object
 host: localhost:5051/
@@ -736,6 +813,78 @@ paths:
           schema:
             $ref: '#/definitions/ApiError'
       summary: Try to get detailed user profile
+      tags:
+      - user
+  /user/recordbook:
+    get:
+      description: In success case returns user recordBookItem
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookItem'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiError'
+        "401":
+          description: Unauthorized
+          schema:
+            items:
+              $ref: '#/definitions/ApiError'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiError'
+      summary: Try to get user recordBookItem
+      tags:
+      - user
+  /user/studyplan:
+    get:
+      description: In success case returns user studyPlan
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.StudyPlan'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiError'
+        "401":
+          description: Unauthorized
+          schema:
+            items:
+              $ref: '#/definitions/ApiError'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiError'
+      summary: Try to get user studyPlan
       tags:
       - user
 securityDefinitions:

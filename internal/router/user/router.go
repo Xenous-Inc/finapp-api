@@ -100,6 +100,16 @@ func (s *Router) HandleGetGroup(w http.ResponseWriter, r *http.Request) {
 	responser.Success(w, r, items)
 }
 
+// @Summary Try to get user recordBookItem
+// @Description In success case returns user recordBookItem
+// @Tags user
+// @Produce json
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Success 200 {object} []dto.RecordBookItem
+// @Failure 401 {object} []dto.ApiError
+// @Failure 400 {object} dto.ApiError
+// @Failure 500 {object} dto.ApiError
+// @Router /user/recordbook [get]
 func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
 	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
 
@@ -145,7 +155,7 @@ func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responser.Success(w, r, response)
+	responser.Success(w, r, dto.RecordBookItemFromClientModel(response))
 }
 
 // @Summary Try to get user profile
@@ -396,6 +406,16 @@ func (s *Router) HandleGetStudentCard(w http.ResponseWriter, r *http.Request) {
 	responser.Success(w, r, dto.StudentCardFromClientModel(response))
 }
 
+// @Summary Try to get user studyPlan
+// @Description In success case returns user studyPlan
+// @Tags user
+// @Produce json
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Success 200 {object} []dto.StudyPlan
+// @Failure 401 {object} []dto.ApiError
+// @Failure 400 {object} dto.ApiError
+// @Failure 500 {object} dto.ApiError
+// @Router /user/studyplan [get]
 func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
 	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
 
@@ -441,11 +461,5 @@ func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// items := make([]dto.ScheduleItem, 0)
-
-	// for _, schedule := range groupsSchedule {
-	// 	items = append(items, dto.ScheduleItemFromClientModel(&schedule))
-	// }
-
-	responser.Success(w, r, response)
+	responser.Success(w, r, dto.StudyPlanFromClientModel(response) )
 }
