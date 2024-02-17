@@ -62,7 +62,7 @@ func (s *Router) HandleAuth(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		if errors.Is(err, clients.ErrUnauthorized) {
-			responser.Unauthorized(w, r)
+			responser.BadRequset(w, r, "Invalid Credentials")
 
 			return
 		}

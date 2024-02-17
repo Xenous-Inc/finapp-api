@@ -5,6 +5,7 @@ import (
 
 	"github.com/Xenous-Inc/finapp-api/internal/clients"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/ruzfaclient"
+	"github.com/Xenous-Inc/finapp-api/internal/clients/ruzfaclient/models"
 	"github.com/Xenous-Inc/finapp-api/internal/dto"
 	"github.com/Xenous-Inc/finapp-api/internal/router/constants"
 	"github.com/Xenous-Inc/finapp-api/internal/router/utils/responser"
@@ -315,12 +316,7 @@ func (s *Router) HandleGetGroupMiniSchedule(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	items := make([]dto.MiniScheduleItem, 0)
-	for _, schedule := range groupsSchedule {
-		items = append(items, dto.MiniScheduleItemFromClientModel(&schedule))
-	}
-
-	responser.Success(w, r, items)
+	responser.Success(w, r, s.filterMiniSchedule(groupsSchedule))
 }
 
 // @Summary Return mini schedule for provided classroom
@@ -357,7 +353,7 @@ func (s *Router) HandleGetClassroomMiniSchedule(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	groupsSchedule, err := s.client.GetAuditoriumSchedule(&ruzfaclient.GetScheduleInput{
+	schedule, err := s.client.GetAuditoriumSchedule(&ruzfaclient.GetScheduleInput{
 		Id:        input.EntityId,
 		StartDate: string(input.StartDate),
 		EndDate:   string(input.EndDate),
@@ -378,12 +374,7 @@ func (s *Router) HandleGetClassroomMiniSchedule(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	items := make([]dto.MiniScheduleItem, 0)
-	for _, schedule := range groupsSchedule {
-		items = append(items, dto.MiniScheduleItemFromClientModel(&schedule))
-	}
-
-	responser.Success(w, r, items)
+	responser.Success(w, r, s.filterMiniSchedule(schedule))
 }
 
 // @Summary Return mini schedule for provided teacher
@@ -420,7 +411,7 @@ func (s *Router) HandleGetTeacherMiniSchedule(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	groupsSchedule, err := s.client.GetTeacherSchedule(&ruzfaclient.GetScheduleInput{
+	schedule, err := s.client.GetTeacherSchedule(&ruzfaclient.GetScheduleInput{
 		Id:        input.EntityId,
 		StartDate: string(input.StartDate),
 		EndDate:   string(input.EndDate),
@@ -441,10 +432,17 @@ func (s *Router) HandleGetTeacherMiniSchedule(w http.ResponseWriter, r *http.Req
 		return
 	}
 
+	responser.Success(w, r, s.filterMiniSchedule(schedule))
+}
+
+func (r *Router) filterMiniSchedule(scheduleResponse []models.Schedule) []dto.MiniScheduleItem {
+
 	items := make([]dto.MiniScheduleItem, 0)
-	for _, schedule := range groupsSchedule {
-		items = append(items, dto.MiniScheduleItemFromClientModel(&schedule))
+	for i := 1; i < len(scheduleResponse); i++ {
+		if scheduleResponse[i].Discipline != scheduleResponse[i-1].Discipline && scheduleResponse[i].LessonNumberStart != scheduleResponse[i-1].LessonNumberStart {
+			items = append(items, dto.MiniScheduleItemFromClientModel(&scheduleResponse[i-1]))
+		}
 	}
 
-	responser.Success(w, r, items)
+	return items
 }
