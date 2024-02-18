@@ -34,6 +34,7 @@ func (s *Router) Route(r chi.Router) {
 	r.Get("/recordbook", s.HandleGetRecordBook)
 	r.Get("/studentcard", s.HandleGetStudentCard)
 	r.Get("/studyplan", s.HandlerGetStudyPlan)
+	r.Get("/teacherGroup", s.HandleGetTeacherGroup)
 }
 
 // @Summary Try to get user group
@@ -461,5 +462,69 @@ func (s *Router) HandlerGetStudyPlan(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responser.Success(w, r, dto.StudyPlanFromClientModel(response) )
+	responser.Success(w, r, dto.StudyPlanFromClientModel(response))
+}
+
+// @Summary Try to get user teacher group
+// @Description In success case returns user teacher group
+// @Tags user
+// @Produce json
+// @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
+// @Success 200 {object} []dto.TeacherGroup
+// @Failure 401 {object} []dto.ApiError
+// @Failure 400 {object} dto.ApiError
+// @Failure 500 {object} dto.ApiError
+// @Router /user/teacherGroup [get]
+func (s *Router) HandleGetTeacherGroup(w http.ResponseWriter, r *http.Request) {
+	token, err := jwtservice.GetDecodeToken(r, s.client.Cfg.JwtSecret)
+
+	if err != nil {
+		log.Error(err, "Unauthorized", "user HandleGetTeacherGroup")
+		responser.Unauthorized(w, r)
+		return
+	}
+
+	sessionId, err := jwtservice.GetSessionIdFromToken(token)
+
+	if err != nil {
+		log.Error(err, "Unauthorized", "user HandleGetTeacherGroup")
+		responser.Unauthorized(w, r)
+		return
+	}
+
+	response, err := s.client.GetTeacherGroup(&orgfaclient.GetTeacherGroupInput{
+		AuthSession: &orgfaclient.AuthSession{
+			SessionId: sessionId,
+		},
+	})
+
+	if err != nil {
+		switch err {
+		case clients.ErrRequest:
+			log.Error(err, "BadRequest", "user HandleGetTeacherGroup")
+			responser.BadRequset(w, r, "Invalid request")
+		case clients.ErrInvalidEntity:
+			log.Error(err, "Invalid Entity", "user HandleGetTeacherGroup")
+			responser.BadRequset(w, r, "Invalid entity")
+		case clients.ErrValidation:
+			log.Error(err, "Error Validation", "user HandleGetTeacherGroup")
+			responser.BadRequset(w, r, "Error validation")
+		case clients.ErrUnauthorized:
+			log.Error(err, "Unauthorized", "user HandleGetTeacherGroup")
+			responser.Unauthorized(w, r)
+		default:
+			log.Error(err, "Internal", "user HandleGetTeacherGroup")
+			responser.Internal(w, r, err.Error())
+		}
+
+		return
+	}
+
+	items := make([]dto.TeacherGroup, len(response))
+
+	for i, item := range response {
+		items[i] = dto.TeacherGroupFromClientModel(&item)
+	}
+
+	responser.Success(w, r, items)
 }

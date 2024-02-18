@@ -182,6 +182,21 @@ definitions:
         example: Махаматов Таир
         type: string
     type: object
+  TeacherGroup:
+    properties:
+      cover:
+        type: string
+      disciplines:
+        items:
+          type: string
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+      userId:
+        type: integer
+    type: object
   github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookItem:
     properties:
       semesters:
@@ -885,6 +900,42 @@ paths:
           schema:
             $ref: '#/definitions/ApiError'
       summary: Try to get user studyPlan
+      tags:
+      - user
+  /user/teacherGroup:
+    get:
+      description: In success case returns user teacher group
+      parameters:
+      - default: Bearer <Add access token here>
+        description: Insert your access token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/TeacherGroup'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/ApiError'
+        "401":
+          description: Unauthorized
+          schema:
+            items:
+              $ref: '#/definitions/ApiError'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/ApiError'
+      summary: Try to get user teacher group
       tags:
       - user
 securityDefinitions:
