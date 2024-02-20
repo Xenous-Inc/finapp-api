@@ -37,7 +37,7 @@ func NewRootRouter(ruzfaClient *ruzfaclient.Client, orgfaClient *orgfaclient.Cli
 		Client:            ruzfaClient,
 		ClientOrgfaclient: orgfaClient,
 
-		userRouter:      user.NewRouter(orgfaClient),
+		userRouter:      user.NewRouter(orgfaClient, ruzfaClient),
 		authRouter:      auth.NewRouter(orgfaClient),
 		classroomRouter: classrooms.NewRouter(ruzfaClient),
 		groupsRouter:    groups.NewRouter(ruzfaClient),

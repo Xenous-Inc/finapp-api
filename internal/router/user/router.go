@@ -5,6 +5,7 @@ import (
 
 	"github.com/Xenous-Inc/finapp-api/internal/clients"
 	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient"
+	"github.com/Xenous-Inc/finapp-api/internal/clients/ruzfaclient"
 	"github.com/Xenous-Inc/finapp-api/internal/dto"
 	"github.com/Xenous-Inc/finapp-api/internal/router/utils/responser"
 	"github.com/Xenous-Inc/finapp-api/internal/utils/jwtservice"
@@ -16,12 +17,14 @@ import (
 
 type Router struct {
 	client    *orgfaclient.Client
+	clientRuz    *ruzfaclient.Client
 	validator *validator.Validate
 }
 
-func NewRouter(client *orgfaclient.Client) *Router {
+func NewRouter(client *orgfaclient.Client, clientRuz *ruzfaclient.Client) *Router {
 	return &Router{
 		client:    client,
+		clientRuz:    clientRuz,
 		validator: validator.New(),
 	}
 }
@@ -272,7 +275,36 @@ func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	responser.Success(w, r, dto.ProfileDetailsFromClientModel(response))
+	responseRuz, err := s.clientRuz.GetGroups(&ruzfaclient.GetEntitiesInput{
+		Term: response.EduGroup.Title,
+	})
+
+	if err != nil {
+		switch err {
+		case clients.ErrRequest:
+			log.Error(err, "BadRequest", "user HandleGetProfileDetails")
+			responser.BadRequset(w, r, "Invalid request")
+		case clients.ErrInvalidEntity:
+			log.Error(err, "Invalid Entity", "user HandleGetProfileDetails")
+			responser.BadRequset(w, r, "Invalid entity")
+		case clients.ErrValidation:
+			log.Error(err, "Error Validation", "user HandleGetProfileDetails")
+			responser.BadRequset(w, r, "Error validation")
+		default:
+			log.Error(err, "Internal", "user HandleGetProfileDetails")
+			responser.Internal(w, r, err.Error())
+		}
+
+		return
+	}
+
+	groupId := responseRuz[0]
+	
+	profile := dto.ProfileDetailsFromClientModel(response)
+	profile.EduGroup = groupId.Id
+	//TODO: Add groups to response
+
+	responser.Success(w, r, profile)
 }
 
 // @Summary Try to get user orders
