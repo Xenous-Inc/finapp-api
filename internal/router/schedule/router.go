@@ -439,12 +439,10 @@ func (r *Router) filterMiniSchedule(scheduleResponse []models.Schedule) []dto.Mi
 
 	items := make([]dto.MiniScheduleItem, 0)
 	for i := 1; i < len(scheduleResponse); i++ {
-		if i == 1 {
-			items = append(items, dto.MiniScheduleItemFromClientModel(&scheduleResponse[0]))
-		}
-		if scheduleResponse[i].Discipline != scheduleResponse[i-1].Discipline && scheduleResponse[i].LessonNumberStart != scheduleResponse[i-1].LessonNumberStart {
+		items = append(items, dto.MiniScheduleItemFromClientModel(&scheduleResponse[i]))
+		/* if scheduleResponse[i].Discipline != scheduleResponse[i-1].Discipline && scheduleResponse[i].LessonNumberStart != scheduleResponse[i-1].LessonNumberStart {
 			items = append(items, dto.MiniScheduleItemFromClientModel(&scheduleResponse[i-1]))
-		}
+		}*/
 
 	}
 
