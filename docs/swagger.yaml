@@ -141,9 +141,28 @@ definitions:
     properties:
       data:
         items:
-          $ref: '#/definitions/internal_dto.RecordBookSemesterItemData'
+          $ref: '#/definitions/RecordBookSemesterItemData'
         type: array
       semester:
+        type: integer
+    type: object
+  RecordBookSemesterItemData:
+    properties:
+      date:
+        type: string
+      itog:
+        type: integer
+      lecturers:
+        type: string
+      mark:
+        type: integer
+      subject:
+        type: string
+      t1:
+        type: integer
+      t2:
+        type: integer
+      uo:
         type: integer
     type: object
   ScheduleItem:
@@ -186,7 +205,7 @@ definitions:
     properties:
       terms:
         items:
-          $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.Term'
+          $ref: '#/definitions/Term'
         type: array
       title:
         type: string
@@ -257,39 +276,7 @@ definitions:
       userId:
         type: integer
     type: object
-  github_com_Xenous-Inc_finapp-api_internal_dto.Term:
-    properties:
-      exam:
-        type: integer
-      external_id:
-        type: string
-      kp:
-        type: integer
-      kr:
-        type: integer
-      num:
-        type: integer
-      test:
-        type: integer
-    type: object
-  internal_dto.RecordBookSemesterItemData:
-    properties:
-      date:
-        type: string
-      itog:
-        type: integer
-      lecturers:
-        type: string
-      mark:
-        type: integer
-      subject:
-        type: string
-      t1:
-        type: integer
-      t2:
-        type: integer
-      uo:
-        type: integer
+  Term:
     type: object
 host: localhost:5051/
 info:

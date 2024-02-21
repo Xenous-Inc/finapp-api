@@ -1173,10 +1173,39 @@ const docTemplate = `{
                 "data": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/internal_dto.RecordBookSemesterItemData"
+                        "$ref": "#/definitions/RecordBookSemesterItemData"
                     }
                 },
                 "semester": {
+                    "type": "integer"
+                }
+            }
+        },
+        "RecordBookSemesterItemData": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "itog": {
+                    "type": "integer"
+                },
+                "lecturers": {
+                    "type": "string"
+                },
+                "mark": {
+                    "type": "integer"
+                },
+                "subject": {
+                    "type": "string"
+                },
+                "t1": {
+                    "type": "integer"
+                },
+                "t2": {
+                    "type": "integer"
+                },
+                "uo": {
                     "type": "integer"
                 }
             }
@@ -1236,7 +1265,7 @@ const docTemplate = `{
                 "terms": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.Term"
+                        "$ref": "#/definitions/Term"
                     }
                 },
                 "title": {
@@ -1342,57 +1371,8 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_Xenous-Inc_finapp-api_internal_dto.Term": {
-            "type": "object",
-            "properties": {
-                "exam": {
-                    "type": "integer"
-                },
-                "external_id": {
-                    "type": "string"
-                },
-                "kp": {
-                    "type": "integer"
-                },
-                "kr": {
-                    "type": "integer"
-                },
-                "num": {
-                    "type": "integer"
-                },
-                "test": {
-                    "type": "integer"
-                }
-            }
-        },
-        "internal_dto.RecordBookSemesterItemData": {
-            "type": "object",
-            "properties": {
-                "date": {
-                    "type": "string"
-                },
-                "itog": {
-                    "type": "integer"
-                },
-                "lecturers": {
-                    "type": "string"
-                },
-                "mark": {
-                    "type": "integer"
-                },
-                "subject": {
-                    "type": "string"
-                },
-                "t1": {
-                    "type": "integer"
-                },
-                "t2": {
-                    "type": "integer"
-                },
-                "uo": {
-                    "type": "integer"
-                }
-            }
+        "Term": {
+            "type": "object"
         }
     },
     "securityDefinitions": {

@@ -19,7 +19,7 @@ type Section struct {
 
 // TODO: init me
 type SubTerm struct {
-}
+} //@name Term
 
 // TODO: init me
 type Subject struct {

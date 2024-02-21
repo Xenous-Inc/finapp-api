@@ -20,7 +20,7 @@ type RecordBookSemesterItemData struct {
 	T2           int    `json:"t2"`
 	Uo           int    `json:"uo"`
 	Result       int    `json:"itog"`
-}
+} //@name RecordBookSemesterItemData
 
 func RecordBookItemFromClientModel(m []models.RecordBookItem) []RecordBookItem {
 	var studyPlans []RecordBookItem
