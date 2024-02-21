@@ -5,17 +5,17 @@ import "github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient/models"
 type StudyPlan struct {
 	Title    string              `json:"title"`
 	Semester []StudyPlanSemester `json:"semesters"`
-}
+} //@name StudyPlan
 
 type StudyPlanSemester struct {
 	Semester int       `json:"semester"`
 	Section  []Section `json:"sections"`
-}
+} //@name StudyPlanSemester
 
 type Section struct {
 	Title string `json:"title"`
 	Terms []Term `json:"terms"`
-}
+} //@name SemesterSection
 
 // TODO: init me
 type SubTerm struct {

@@ -112,6 +112,8 @@ definitions:
       group:
         example: ФФ22-4
         type: string
+      group_id:
+        type: string
       id:
         example: 93492
         type: integer
@@ -127,6 +129,22 @@ definitions:
       ticket:
         example: "226299"
         type: string
+    type: object
+  RecordBookItem:
+    properties:
+      semesters:
+        items:
+          $ref: '#/definitions/RecordBookSemesterItem'
+        type: array
+    type: object
+  RecordBookSemesterItem:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/internal_dto.RecordBookSemesterItemData'
+        type: array
+      semester:
+        type: integer
     type: object
   ScheduleItem:
     properties:
@@ -164,11 +182,53 @@ definitions:
         example: 0
         type: integer
     type: object
+  SemesterSection:
+    properties:
+      terms:
+        items:
+          $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.Term'
+        type: array
+      title:
+        type: string
+    type: object
   StudentCard:
     properties:
       url:
         example: https://org.fa.ru/upload/temp/49e6475a8dedba8800cbb8170f5fab30.pdf
         type: string
+    type: object
+  StudentItem:
+    properties:
+      cover:
+        example: https://org.fa.ru/bitrix/galaktika/galaktika.vuzapi/public/files/users/83066/25001.281474976821736_optimized.jpg
+        type: string
+      id:
+        example: 87436
+        type: integer
+      name:
+        example: Шереметьев Александр Дмитриевич
+        type: string
+      userId:
+        example: 83066
+        type: integer
+    type: object
+  StudyPlan:
+    properties:
+      semesters:
+        items:
+          $ref: '#/definitions/StudyPlanSemester'
+        type: array
+      title:
+        type: string
+    type: object
+  StudyPlanSemester:
+    properties:
+      sections:
+        items:
+          $ref: '#/definitions/SemesterSection'
+        type: array
+      semester:
+        type: integer
     type: object
   Teacher:
     properties:
@@ -197,23 +257,22 @@ definitions:
       userId:
         type: integer
     type: object
-  github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookItem:
+  github_com_Xenous-Inc_finapp-api_internal_dto.Term:
     properties:
-      semesters:
-        items:
-          $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookSemesterItem'
-        type: array
-    type: object
-  github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookSemesterItem:
-    properties:
-      data:
-        items:
-          $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookSemesterItemData'
-        type: array
-      semester:
+      exam:
+        type: integer
+      external_id:
+        type: string
+      kp:
+        type: integer
+      kr:
+        type: integer
+      num:
+        type: integer
+      test:
         type: integer
     type: object
-  github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookSemesterItemData:
+  internal_dto.RecordBookSemesterItemData:
     properties:
       date:
         type: string
@@ -230,63 +289,6 @@ definitions:
       t2:
         type: integer
       uo:
-        type: integer
-    type: object
-  github_com_Xenous-Inc_finapp-api_internal_dto.Section:
-    properties:
-      terms:
-        items:
-          $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.Term'
-        type: array
-      title:
-        type: string
-    type: object
-  github_com_Xenous-Inc_finapp-api_internal_dto.Student:
-    properties:
-      cover:
-        example: https://org.fa.ru/bitrix/galaktika/galaktika.vuzapi/public/files/users/83066/25001.281474976821736_optimized.jpg
-        type: string
-      id:
-        example: 87436
-        type: integer
-      name:
-        example: Шереметьев Александр Дмитриевич
-        type: string
-      userId:
-        example: 83066
-        type: integer
-    type: object
-  github_com_Xenous-Inc_finapp-api_internal_dto.StudyPlan:
-    properties:
-      semesters:
-        items:
-          $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.StudyPlanSemester'
-        type: array
-      title:
-        type: string
-    type: object
-  github_com_Xenous-Inc_finapp-api_internal_dto.StudyPlanSemester:
-    properties:
-      sections:
-        items:
-          $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.Section'
-        type: array
-      semester:
-        type: integer
-    type: object
-  github_com_Xenous-Inc_finapp-api_internal_dto.Term:
-    properties:
-      exam:
-        type: integer
-      external_id:
-        type: string
-      kp:
-        type: integer
-      kr:
-        type: integer
-      num:
-        type: integer
-      test:
         type: integer
     type: object
 host: localhost:5051/
@@ -713,7 +715,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.Student'
+              $ref: '#/definitions/StudentItem'
             type: array
         "400":
           description: Bad Request
@@ -847,7 +849,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookItem'
+              $ref: '#/definitions/RecordBookItem'
             type: array
         "400":
           description: Bad Request
@@ -883,7 +885,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.StudyPlan'
+              $ref: '#/definitions/StudyPlan'
             type: array
         "400":
           description: Bad Request

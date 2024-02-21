@@ -7,7 +7,7 @@ type Student struct {
 	UserId   int    `json:"userId" example:"83066"`
 	FullName string `json:"name" example:"Шереметьев Александр Дмитриевич"`
 	Cover    string `json:"cover" example:"https://org.fa.ru/bitrix/galaktika/galaktika.vuzapi/public/files/users/83066/25001.281474976821736_optimized.jpg"`
-}
+} //@name StudentItem
 
 func StudentFromClientModel(m *models.Student) Student {
 	cover := ""

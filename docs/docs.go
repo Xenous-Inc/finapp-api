@@ -633,7 +633,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.Student"
+                                "$ref": "#/definitions/StudentItem"
                             }
                         }
                     },
@@ -834,7 +834,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookItem"
+                                "$ref": "#/definitions/RecordBookItem"
                             }
                         }
                     },
@@ -888,7 +888,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.StudyPlan"
+                                "$ref": "#/definitions/StudyPlan"
                             }
                         }
                     },
@@ -1131,6 +1131,9 @@ const docTemplate = `{
                     "type": "string",
                     "example": "ФФ22-4"
                 },
+                "group_id": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer",
                     "example": 93492
@@ -1150,6 +1153,31 @@ const docTemplate = `{
                 "ticket": {
                     "type": "string",
                     "example": "226299"
+                }
+            }
+        },
+        "RecordBookItem": {
+            "type": "object",
+            "properties": {
+                "semesters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/RecordBookSemesterItem"
+                    }
+                }
+            }
+        },
+        "RecordBookSemesterItem": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/internal_dto.RecordBookSemesterItemData"
+                    }
+                },
+                "semester": {
+                    "type": "integer"
                 }
             }
         },
@@ -1202,12 +1230,75 @@ const docTemplate = `{
                 }
             }
         },
+        "SemesterSection": {
+            "type": "object",
+            "properties": {
+                "terms": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.Term"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
         "StudentCard": {
             "type": "object",
             "properties": {
                 "url": {
                     "type": "string",
                     "example": "https://org.fa.ru/upload/temp/49e6475a8dedba8800cbb8170f5fab30.pdf"
+                }
+            }
+        },
+        "StudentItem": {
+            "type": "object",
+            "properties": {
+                "cover": {
+                    "type": "string",
+                    "example": "https://org.fa.ru/bitrix/galaktika/galaktika.vuzapi/public/files/users/83066/25001.281474976821736_optimized.jpg"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 87436
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Шереметьев Александр Дмитриевич"
+                },
+                "userId": {
+                    "type": "integer",
+                    "example": 83066
+                }
+            }
+        },
+        "StudyPlan": {
+            "type": "object",
+            "properties": {
+                "semesters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/StudyPlanSemester"
+                    }
+                },
+                "title": {
+                    "type": "string"
+                }
+            }
+        },
+        "StudyPlanSemester": {
+            "type": "object",
+            "properties": {
+                "sections": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/SemesterSection"
+                    }
+                },
+                "semester": {
+                    "type": "integer"
                 }
             }
         },
@@ -1251,32 +1342,30 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookItem": {
+        "github_com_Xenous-Inc_finapp-api_internal_dto.Term": {
             "type": "object",
             "properties": {
-                "semesters": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookSemesterItem"
-                    }
-                }
-            }
-        },
-        "github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookSemesterItem": {
-            "type": "object",
-            "properties": {
-                "data": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookSemesterItemData"
-                    }
+                "exam": {
+                    "type": "integer"
                 },
-                "semester": {
+                "external_id": {
+                    "type": "string"
+                },
+                "kp": {
+                    "type": "integer"
+                },
+                "kr": {
+                    "type": "integer"
+                },
+                "num": {
+                    "type": "integer"
+                },
+                "test": {
                     "type": "integer"
                 }
             }
         },
-        "github_com_Xenous-Inc_finapp-api_internal_dto.RecordBookSemesterItemData": {
+        "internal_dto.RecordBookSemesterItemData": {
             "type": "object",
             "properties": {
                 "date": {
@@ -1301,92 +1390,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "uo": {
-                    "type": "integer"
-                }
-            }
-        },
-        "github_com_Xenous-Inc_finapp-api_internal_dto.Section": {
-            "type": "object",
-            "properties": {
-                "terms": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.Term"
-                    }
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Xenous-Inc_finapp-api_internal_dto.Student": {
-            "type": "object",
-            "properties": {
-                "cover": {
-                    "type": "string",
-                    "example": "https://org.fa.ru/bitrix/galaktika/galaktika.vuzapi/public/files/users/83066/25001.281474976821736_optimized.jpg"
-                },
-                "id": {
-                    "type": "integer",
-                    "example": 87436
-                },
-                "name": {
-                    "type": "string",
-                    "example": "Шереметьев Александр Дмитриевич"
-                },
-                "userId": {
-                    "type": "integer",
-                    "example": 83066
-                }
-            }
-        },
-        "github_com_Xenous-Inc_finapp-api_internal_dto.StudyPlan": {
-            "type": "object",
-            "properties": {
-                "semesters": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.StudyPlanSemester"
-                    }
-                },
-                "title": {
-                    "type": "string"
-                }
-            }
-        },
-        "github_com_Xenous-Inc_finapp-api_internal_dto.StudyPlanSemester": {
-            "type": "object",
-            "properties": {
-                "sections": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/github_com_Xenous-Inc_finapp-api_internal_dto.Section"
-                    }
-                },
-                "semester": {
-                    "type": "integer"
-                }
-            }
-        },
-        "github_com_Xenous-Inc_finapp-api_internal_dto.Term": {
-            "type": "object",
-            "properties": {
-                "exam": {
-                    "type": "integer"
-                },
-                "external_id": {
-                    "type": "string"
-                },
-                "kp": {
-                    "type": "integer"
-                },
-                "kr": {
-                    "type": "integer"
-                },
-                "num": {
-                    "type": "integer"
-                },
-                "test": {
                     "type": "integer"
                 }
             }

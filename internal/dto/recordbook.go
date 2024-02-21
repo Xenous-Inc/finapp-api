@@ -4,12 +4,12 @@ import "github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient/models"
 
 type RecordBookItem struct {
 	Semester []RecordBookSemesterItem `json:"semesters"`
-}
+} //@name RecordBookItem
 
 type RecordBookSemesterItem struct {
 	SemesterNumber int                          `json:"semester"`
 	Data           []RecordBookSemesterItemData `json:"data"`
-}
+} //@name RecordBookSemesterItem
 
 type RecordBookSemesterItemData struct {
 	Date         string `json:"date"`
