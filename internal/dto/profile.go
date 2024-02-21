@@ -33,6 +33,7 @@ type ProfileDetails struct {
 	EducationLevel     string `json:"level" example:"Бакалавр"`
 	CourseNumber       uint8  `json:"course" example:"2"`
 	SemesterNumber     uint8  `json:"semester" example:"3"`
+	EduGroup string `json:"group_id"`
 } //@name ProfileDetails
 
 func ProfileDetailsFromClientModel(m *models.ProfileDetails) ProfileDetails {

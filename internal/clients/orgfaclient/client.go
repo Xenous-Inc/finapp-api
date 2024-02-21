@@ -418,3 +418,57 @@ func (c *Client) GetStudyPlan(input *GetStudyPlanInput) ([]models.StudyPlan, err
 
 	return studyPlan, nil
 }
+
+type GetTeacherGroupInput struct {
+	*AuthSession
+}
+
+func (c *Client) GetTeacherGroup(input *GetTeacherGroupInput) ([]models.Teacher, error) {
+	path := "bitrix/vuz/api/interaction/myLecturers"
+	phpSessionId := fmt.Sprintf("PHPSESSID=%s", input.SessionId)
+	req := c.reqBuilder.SetMethod("GET").SetPath(path).AddHeader("Cookie", phpSessionId).Build()
+
+	res, err := req.Execute(c.httpClient)
+	if err != nil {
+		log.Error(err, "BadRequest", "orgfaclient GetTeacherGroup")
+		return nil, clients.ErrRequest
+	}
+
+	if res.StatusCode != 200 {
+		if res.StatusCode == 401 {
+			log.Warn("Unauthorized", "orgfaclient GetTeacherGroup")
+			return nil, clients.ErrUnauthorized
+		}
+
+		log.Warn("BadRequest", "orgfaclient GetTeacherGroup")
+		return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Error(err, "InvalidResponse", "orgfaclient GetTeacherGroup")
+		return nil, clients.ErrInvalidResponse
+	}
+
+	defer res.Body.Close()
+
+	type dataToParse struct {
+		Teacher []models.Teacher `json:"data"`
+		Error   int              `json:"error"`
+	}
+
+	teachers := new(dataToParse)
+	err = json.Unmarshal(body, teachers)
+
+	if err != nil {
+		log.Error(err, "InvalidEntity", "orgfaclient GetTeacherGroup")
+		return nil, clients.ErrInvalidEntity
+	}
+
+	if teachers.Error != 0 {
+		log.Error(err, "InvalidResponse", "orgfaclient GetTeacherGroup")
+		return nil, fmt.Errorf("Unknown error got from ORG.FA.RU: ErrorCode: %d", teachers.Error)
+	}
+
+	return teachers.Teacher, nil
+}

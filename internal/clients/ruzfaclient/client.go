@@ -19,11 +19,11 @@ type Client struct {
 	Cfg        *config.Config
 }
 
-func NewClient(url string, cfg *config.Config) *Client {
+func NewClient(urlOrg string, cfg *config.Config) *Client {
 	return &Client{
 		Cfg:        cfg,
 		httpClient: &http.Client{},
-		reqBuilder: requestbuidler.New(url),
+		reqBuilder: requestbuidler.New(urlOrg),
 	}
 }
 
