@@ -1184,8 +1184,14 @@ const docTemplate = `{
         "RecordBookSemesterItemData": {
             "type": "object",
             "properties": {
+                "current control": {
+                    "type": "integer"
+                },
                 "date": {
                     "type": "string"
+                },
+                "exam_or_test": {
+                    "type": "integer"
                 },
                 "itog": {
                     "type": "integer"
@@ -1196,16 +1202,13 @@ const docTemplate = `{
                 "mark": {
                     "type": "integer"
                 },
+                "scale": {
+                    "type": "integer"
+                },
                 "subject": {
                     "type": "string"
                 },
-                "t1": {
-                    "type": "integer"
-                },
-                "t2": {
-                    "type": "integer"
-                },
-                "uo": {
+                "work_in_semester": {
                     "type": "integer"
                 }
             }

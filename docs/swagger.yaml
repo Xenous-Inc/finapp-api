@@ -148,21 +148,23 @@ definitions:
     type: object
   RecordBookSemesterItemData:
     properties:
+      current control:
+        type: integer
       date:
         type: string
+      exam_or_test:
+        type: integer
       itog:
         type: integer
       lecturers:
         type: string
       mark:
         type: integer
+      scale:
+        type: integer
       subject:
         type: string
-      t1:
-        type: integer
-      t2:
-        type: integer
-      uo:
+      work_in_semester:
         type: integer
     type: object
   ScheduleItem:
