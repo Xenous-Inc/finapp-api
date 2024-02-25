@@ -18,4 +18,5 @@ type RecordBookSemesterItemData struct {
 	T2           int    `json:"t2"`
 	Uo           int    `json:"uo"`
 	Result       int    `json:"itog"`
+	Scale        int    `json:"scale"`
 }

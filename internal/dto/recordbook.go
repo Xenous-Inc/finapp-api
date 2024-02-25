@@ -12,14 +12,15 @@ type RecordBookSemesterItem struct {
 } //@name RecordBookSemesterItem
 
 type RecordBookSemesterItemData struct {
-	Date         string `json:"date"`
-	Mark         int    `json:"mark"`
-	Subject      string `json:"subject"`
-	LecturerName string `json:"lecturers"`
-	T1           int    `json:"t1"`
-	T2           int    `json:"t2"`
-	Uo           int    `json:"uo"`
-	Result       int    `json:"itog"`
+	Date           string `json:"date"`
+	Mark           int    `json:"mark"`
+	Subject        string `json:"subject"`
+	LecturerName   string `json:"lecturers"`
+	CurrentControl int    `json:"current control"`
+	WorkInSemester int    `json:"work_in_semester"`
+	ExamOrTest     int    `json:"exam_or_test"`
+	Result         int    `json:"itog"`
+	Scale          int    `json:"scale"`
 } //@name RecordBookSemesterItemData
 
 func RecordBookItemFromClientModel(m []models.RecordBookItem) []RecordBookItem {
@@ -32,14 +33,15 @@ func RecordBookItemFromClientModel(m []models.RecordBookItem) []RecordBookItem {
 					data := make([]RecordBookSemesterItemData, 0)
 					for _, item := range semester.Data {
 						data = append(data, RecordBookSemesterItemData{
-							Date:         item.Date,
-							Mark:         item.Mark,
-							Subject:      item.Subject,
-							LecturerName: item.LecturerName,
-							T1:           item.T1,
-							T2:           item.T2,
-							Uo:           item.Uo,
-							Result:       item.Result,
+							Date:           item.Date,
+							Mark:           item.Mark,
+							Subject:        item.Subject,
+							LecturerName:   item.LecturerName,
+							CurrentControl: item.T1,
+							WorkInSemester: item.T2,
+							ExamOrTest:     item.Uo,
+							Result:         item.Result,
+							Scale:          item.Scale,
 						})
 					}
 					semesters = append(semesters, RecordBookSemesterItem{
