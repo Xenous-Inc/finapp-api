@@ -33,7 +33,8 @@ type ProfileDetails struct {
 	EducationLevel     string `json:"level" example:"Бакалавр"`
 	CourseNumber       uint8  `json:"course" example:"2"`
 	SemesterNumber     uint8  `json:"semester" example:"3"`
-	EduGroup string `json:"group_id"`
+	EduGroup           string `json:"group_id"`
+	ImageURL           string `json:"image" example:"https://org.fa.ru/bitrix/galaktika/galaktika.vuzapi/public/files/users/89105/ctn-25001.281474976824101_optimized.jpg"`
 } //@name ProfileDetails
 
 func ProfileDetailsFromClientModel(m *models.ProfileDetails) ProfileDetails {
@@ -48,5 +49,6 @@ func ProfileDetailsFromClientModel(m *models.ProfileDetails) ProfileDetails {
 		EducationLevel:     m.EduMarkBookNum,
 		CourseNumber:       uint8(m.EduCourse),
 		SemesterNumber:     uint8(m.EduSemester),
+		ImageURL:           models.BASE_URL + m.User.Photo.Thumbnail,
 	}
 }
