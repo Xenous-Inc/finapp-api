@@ -9,24 +9,25 @@ type Profile struct {
 }
 
 type ProfileDetails struct {
-	Id               int                    `json:"id"`
-	UserId           int                    `json:"user_id"`
-	Type             string                 `json:"type"`
-	EduForm          string                 `json:"edu_form"`
-	EduMarkBookNum   string                 `json:"edu_mark_book_num"`
-	FacultyId        int                    `json:"faculty_id"`
-	EduGroupId       int                    `json:"edu_group_id"`
-	EduCourse        int                    `json:"edu_course"`
-	EduSemester      int                    `json:"edu_semester"`
-	EduYear          int                    `json:"edu_year"`
-	Role             string                 `json:"role"`
-	TypeName         string                 `json:"type_name"`
-	BitrixLogin      string                 `json:"bitrix_login"`
-	BitrixEmail      string                 `json:"bitrix_email"`
-	User             User                   `json:"user"`
-	Faculty          Faculty                `json:"faculty"`
-	EduGroup         EducationGroup         `json:"edu_group"`
-	EduQualification EducationQualification `json:"edu_qualification"`
+	Id                 int                    `json:"id"`
+	UserId             int                    `json:"user_id"`
+	Type               string                 `json:"type"`
+	EduForm            string                 `json:"edu_form"`
+	EduMarkBookNum     string                 `json:"edu_mark_book_num"`
+	FacultyId          int                    `json:"faculty_id"`
+	EduGroupId         int                    `json:"edu_group_id"`
+	EduCourse          int                    `json:"edu_course"`
+	EduSemester        int                    `json:"edu_semester"`
+	EduYear            int                    `json:"edu_year"`
+	Role               string                 `json:"role"`
+	TypeName           string                 `json:"type_name"`
+	BitrixLogin        string                 `json:"bitrix_login"`
+	BitrixEmail        string                 `json:"bitrix_email"`
+	User               User                   `json:"user"`
+	Faculty            Faculty                `json:"faculty"`
+	EduGroup           EducationGroup         `json:"edu_group"`
+	EduQualification   EducationQualification `json:"edu_qualification"`
+	EducationDirection EducationDirection     `json:"edu_direction"`
 }
 
 type MiniUser struct {
@@ -40,18 +41,19 @@ type MiniUser struct {
 }
 
 type User struct {
-	Id        int    `json:"id"`
-	Login     string `json:"login"`
-	BitrixId  int    `json:"bitrix_id"`
-	FullName  string `json:"fullname"`
-	LastName  string `json:"lastname"`
-	Name      string `json:"name"`
-	Surname   string `json:"surname"`
-	Email     string `json:"email"`
-	Sex       string `json:"sex"`
-	Birthdate string `json:"birthdate"`
-	Phone     string `json:"phone"`
-	Photo     Photo  `json:"photo"`
+	Id              int    `json:"id"`
+	Login           string `json:"login"`
+	BitrixId        int    `json:"bitrix_id"`
+	FullName        string `json:"fullname"`
+	LastName        string `json:"lastname"`
+	Name            string `json:"name"`
+	Surname         string `json:"surname"`
+	Email           string `json:"email"`
+	Sex             string `json:"sex"`
+	Birthdate       string `json:"birthdate"`
+	Phone           string `json:"phone"`
+	Photo           Photo  `json:"photo"`
+	YearOfAdmission string `json:"prev_doc_year" example:"2022"`
 }
 
 type Faculty struct {
@@ -65,6 +67,11 @@ type EducationGroup struct {
 }
 
 type EducationQualification struct {
+	Id    int    `json:"id"`
+	Title string `json:"title"`
+}
+
+type EducationDirection struct {
 	Id    int    `json:"id"`
 	Title string `json:"title"`
 }
