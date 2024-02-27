@@ -103,6 +103,9 @@ definitions:
       direction:
         example: Экономика
         type: string
+      email:
+        example: 226292@edu.fa.ru
+        type: string
       faculty:
         example: Финансовый факультет
         type: string
@@ -125,6 +128,9 @@ definitions:
         type: string
       name:
         example: Дредноут Александр Дмитриевич
+        type: string
+      prev_doc_year:
+        example: "2022"
         type: string
       semester:
         example: 3
@@ -232,9 +238,6 @@ definitions:
       name:
         example: Шереметьев Александр Дмитриевич
         type: string
-      userId:
-        example: 83066
-        type: integer
     type: object
   StudyPlan:
     properties:
@@ -282,6 +285,19 @@ definitions:
         type: integer
     type: object
   Term:
+    properties:
+      exam:
+        type: integer
+      external_id:
+        type: string
+      kp:
+        type: integer
+      kr:
+        type: integer
+      num:
+        type: integer
+      test:
+        type: integer
     type: object
 host: localhost:5051/
 info:
@@ -663,7 +679,7 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: "2262777"
+      - description: "93491"
         in: query
         name: profileId
         required: true

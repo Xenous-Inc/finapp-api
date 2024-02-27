@@ -4,7 +4,6 @@ import "github.com/Xenous-Inc/finapp-api/internal/utils/jsoner"
 
 type Student struct {
 	Id       int    `json:"id"`
-	UserId   int    `json:"user_id"`
 	FullName string `json:"fullname"`
 	Photo    Photo  `json:"photo"`
 }

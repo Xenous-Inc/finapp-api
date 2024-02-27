@@ -573,7 +573,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "2262777",
+                        "description": "93491",
                         "name": "profileId",
                         "in": "query",
                         "required": true
@@ -1119,6 +1119,10 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Экономика"
                 },
+                "email": {
+                    "type": "string",
+                    "example": "226292@edu.fa.ru"
+                },
                 "faculty": {
                     "type": "string",
                     "example": "Финансовый факультет"
@@ -1149,6 +1153,10 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "Дредноут Александр Дмитриевич"
+                },
+                "prev_doc_year": {
+                    "type": "string",
+                    "example": "2022"
                 },
                 "semester": {
                     "type": "integer",
@@ -1303,10 +1311,6 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "example": "Шереметьев Александр Дмитриевич"
-                },
-                "userId": {
-                    "type": "integer",
-                    "example": 83066
                 }
             }
         },
@@ -1379,7 +1383,27 @@ const docTemplate = `{
             }
         },
         "Term": {
-            "type": "object"
+            "type": "object",
+            "properties": {
+                "exam": {
+                    "type": "integer"
+                },
+                "external_id": {
+                    "type": "string"
+                },
+                "kp": {
+                    "type": "integer"
+                },
+                "kr": {
+                    "type": "integer"
+                },
+                "num": {
+                    "type": "integer"
+                },
+                "test": {
+                    "type": "integer"
+                }
+            }
         }
     },
     "securityDefinitions": {

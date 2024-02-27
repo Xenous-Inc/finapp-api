@@ -33,9 +33,9 @@ func (s *Router) Route(r chi.Router) {
 	r.Get("/group", s.HandleGetGroup)
 	r.Get("/profile", s.HandleGetProfile)
 	r.Get("/profile/details", s.HandleGetProfileDetails)
-	r.Get("/order", s.HandleGetOrder)
+	r.Get("/orders", s.HandleGetOrder)
 	r.Get("/recordbook", s.HandleGetRecordBook)
-	r.Get("/studentcard", s.HandleGetStudentCard)
+	r.Get("/card", s.HandleGetStudentCard)
 	r.Get("/studyplan", s.HandlerGetStudyPlan)
 	r.Get("/teacherGroup", s.HandleGetTeacherGroup)
 }
@@ -376,7 +376,7 @@ func (s *Router) HandleGetOrder(w http.ResponseWriter, r *http.Request) {
 // @Tags user
 // @Produce json
 // @Param Authorization header string true "Insert your access token" default(Bearer <Add access token here>)
-// @Param profileId query string true "2262777"
+// @Param profileId query string true "93491"
 // @Success 200 {object} dto.StudentCard
 // @Failure 401 {object} dto.ApiError
 // @Failure 400 {object} dto.ApiError

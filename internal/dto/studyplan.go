@@ -19,7 +19,7 @@ type Section struct {
 
 // TODO: init me
 type SubTerm struct {
-} //@name Term
+} 
 
 // TODO: init me
 type Subject struct {
@@ -32,7 +32,7 @@ type Term struct {
 	Test       int    `json:"test"`
 	Kp         int    `json:"kp"`
 	Kr         int    `json:"kr"`
-}
+} //@name Term
 
 func StudyPlanFromClientModel(m []models.StudyPlan) []StudyPlan {
 
