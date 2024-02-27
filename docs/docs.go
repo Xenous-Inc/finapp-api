@@ -1138,6 +1138,10 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 93492
                 },
+                "image": {
+                    "type": "string",
+                    "example": "https://org.fa.ru/bitrix/galaktika/galaktika.vuzapi/public/files/users/89105/ctn-25001.281474976824101_optimized.jpg"
+                },
                 "level": {
                     "type": "string",
                     "example": "Бакалавр"
