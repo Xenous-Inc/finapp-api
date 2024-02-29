@@ -435,13 +435,20 @@ func (c *Client) GetTeacherGroup(input *GetTeacherGroupInput) ([]models.Teacher,
 	}
 
 	if res.StatusCode != 200 {
-		if res.StatusCode == 401 {
-			log.Warn("Unauthorized", "orgfaclient GetTeacherGroup")
-			return nil, clients.ErrUnauthorized
+		switch res.StatusCode {
+			case 401:
+				log.Warn("Unauthorized", "orgfaclient GetTeacherGroup")
+				return nil, clients.ErrUnauthorized
+			case 500:
+				log.Warn("Internal", "orgfaclient GetTeacherGroup")
+				return nil, clients.ErrInternal
+			case 502:
+				log.Warn("Internal", "orgfaclient GetTeacherGroup")
+				return nil, clients.ErrInternal
+			default:
+				log.Warn("BadRequest", "orgfaclient GetTeacherGroup")
+				return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 		}
-
-		log.Warn("BadRequest", "orgfaclient GetTeacherGroup")
-		return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 	}
 
 	body, err := io.ReadAll(res.Body)
