@@ -34,7 +34,7 @@ func (s *Router) Route(r chi.Router) {
 	})
 	r.Route("/teacher", func(r chi.Router) {
 		r.Get("/", s.HandleGetTeacherSchedule)
-		r.Get("/mini", s.HandleGetGroupMiniSchedule)
+		r.Get("/mini", s.HandleGetTeacherMiniSchedule)
 	})
 	r.Route("/classroom", func(r chi.Router) {
 		r.Get("/", s.HandleGetTeacherSchedule)
@@ -45,7 +45,7 @@ func (s *Router) Route(r chi.Router) {
 // @Summary Return schedule for provided group
 // @Description Returns schedule for provided group Id and time interval
 // @Tags schedule
-// @Param id query string true "Group ID"
+// @Param id query string true Group ID"
 // @Param from query string true "Start date"
 // @Param to query string true "End date"
 // @Produce json
@@ -227,7 +227,7 @@ func (s *Router) HandleGetAuditoriumSchedule(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	auditoriumSchedule, err := s.client.GetGroupSchedule(&ruzfaclient.GetScheduleInput{
+	auditoriumSchedule, err := s.client.GetAuditoriumSchedule(&ruzfaclient.GetScheduleInput{
 		Id:        input.EntityId,
 		StartDate: string(input.StartDate),
 		EndDate:   string(input.EndDate),
