@@ -130,6 +130,7 @@ func (c *Client) GetTeacherSchedule(input *GetScheduleInput) ([]models.Schedule,
 		log.Error(err, "InvalidResponse", "ruzfaclient teacher schedule")
 		return nil, clients.ErrInvalidResponse
 	}
+	fmt.Println(string(body))
 	defer res.Body.Close()
 
 	scheduleTeacher := new([]models.Schedule)
