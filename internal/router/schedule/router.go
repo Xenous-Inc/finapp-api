@@ -37,7 +37,7 @@ func (s *Router) Route(r chi.Router) {
 		r.Get("/mini", s.HandleGetTeacherMiniSchedule)
 	})
 	r.Route("/classroom", func(r chi.Router) {
-		r.Get("/", s.HandleGetTeacherSchedule)
+		r.Get("/", s.HandleGetClassroomSchedule)
 		r.Get("/mini", s.HandleGetClassroomMiniSchedule)
 	})
 }
@@ -197,7 +197,7 @@ func (s *Router) HandleGetTeacherSchedule(w http.ResponseWriter, r *http.Request
 // @Failure 400 {object} dto.ApiError
 // @Failure 500 {object} dto.ApiError
 // @Router /schedule/classroom [get]
-func (s *Router) HandleGetAuditoriumSchedule(w http.ResponseWriter, r *http.Request) {
+func (s *Router) HandleGetClassroomSchedule(w http.ResponseWriter, r *http.Request) {
 	input := &dto.GetScheduleRequest{
 		EntityId:  r.URL.Query().Get(constants.QUERY_ID),
 		StartDate: dto.Date(r.URL.Query().Get(constants.QUERY_START_DATE)),
