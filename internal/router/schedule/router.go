@@ -443,7 +443,7 @@ func (r *Router) filterMiniSchedule(scheduleResponse []models.Schedule) []dto.Mi
 			items = append(items, dto.MiniScheduleItemFromClientModel(&scheduleResponse[0]))
 		}
 
-		if scheduleResponse[i].Discipline != scheduleResponse[i-1].Discipline || scheduleResponse[i].LessonNumberStart != scheduleResponse[i-1].LessonNumberStart || scheduleResponse[i].Date != scheduleResponse[i-2].Date {
+		if scheduleResponse[i].LessonNumberStart != scheduleResponse[i-1].LessonNumberStart || scheduleResponse[i].Date != scheduleResponse[i-2].Date || scheduleResponse[i].LessonNumberEnd != scheduleResponse[i-1].LessonNumberEnd {
 			items = append(items, dto.MiniScheduleItemFromClientModel(&scheduleResponse[i]))
 		}
 	}
