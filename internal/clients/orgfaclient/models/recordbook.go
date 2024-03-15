@@ -1,7 +1,8 @@
 package models
 
 type RecordBookItem struct {
-	Semester []RecordBookSemesterItem `json:"semesters"`
+	Semester    []RecordBookSemesterItem `json:"semesters"`
+	AverageMark float32                      `json:"average_mark"`
 }
 
 type RecordBookSemesterItem struct {

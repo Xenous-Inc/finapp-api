@@ -14,12 +14,13 @@ type StudyPlanSemester struct {
 
 type Section struct {
 	Title string `json:"title"`
+	Hours int    `json:"hours"`
 	Terms []Term `json:"terms"`
 } //@name SemesterSection
 
 // TODO: init me
 type SubTerm struct {
-} 
+}
 
 // TODO: init me
 type Subject struct {
@@ -59,6 +60,7 @@ func StudyPlanFromClientModel(m []models.StudyPlan) []StudyPlan {
 						}
 						sections = append(sections, Section{
 							Title: section.Title,
+							Hours: section.Hours,
 							Terms: terms,
 						})
 					}

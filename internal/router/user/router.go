@@ -17,14 +17,14 @@ import (
 
 type Router struct {
 	client    *orgfaclient.Client
-	clientRuz    *ruzfaclient.Client
+	clientRuz *ruzfaclient.Client
 	validator *validator.Validate
 }
 
 func NewRouter(client *orgfaclient.Client, clientRuz *ruzfaclient.Client) *Router {
 	return &Router{
 		client:    client,
-		clientRuz:    clientRuz,
+		clientRuz: clientRuz,
 		validator: validator.New(),
 	}
 }
@@ -131,10 +131,45 @@ func (s *Router) HandleGetRecordBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err != nil {
+		log.Error(err, "Unauthorized", "user HandlerGetStudyPlan")
+		responser.Unauthorized(w, r)
+		return
+	}
+
+	responseStudyPlan, err := s.client.GetStudyPlan(&orgfaclient.GetStudyPlanInput{
+		AuthSession: &orgfaclient.AuthSession{
+			SessionId: sessionId,
+		},
+	})
+
+	if err != nil {
+		switch err {
+		case clients.ErrRequest:
+			log.Error(err, "BadRequest", "user HandlerGetStudyPlan")
+			responser.BadRequset(w, r, "Invalid request")
+		case clients.ErrInvalidEntity:
+			log.Error(err, "Invalid Entity", "user HandlerGetStudyPlan")
+			responser.BadRequset(w, r, "Invalid entity")
+		case clients.ErrValidation:
+			log.Error(err, "Error Validation", "user HandlerGetStudyPlan")
+			responser.BadRequset(w, r, "Error validation")
+		case clients.ErrUnauthorized:
+			log.Error(err, "Unauthorized", "user HandlerGetStudyPlan")
+			responser.Unauthorized(w, r)
+		default:
+			log.Error(err, "Internal", "user HandlerGetStudyPlan")
+			responser.Internal(w, r, err.Error())
+		}
+
+		return
+	}
+
 	response, err := s.client.GetRecordBook(&orgfaclient.GetRecordBookInput{
 		AuthSession: &orgfaclient.AuthSession{
 			SessionId: sessionId,
 		},
+		StudyPlan: responseStudyPlan,
 	})
 
 	if err != nil {
@@ -299,7 +334,7 @@ func (s *Router) HandleGetProfileDetails(w http.ResponseWriter, r *http.Request)
 	}
 
 	groupId := responseRuz[0]
-	
+
 	profile := dto.ProfileDetailsFromClientModel(response)
 	profile.EduGroup = groupId.Id
 	//TODO: Add groups to response

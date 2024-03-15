@@ -1,9 +1,12 @@
 package dto
 
-import "github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient/models"
+import (
+	"github.com/Xenous-Inc/finapp-api/internal/clients/orgfaclient/models"
+)
 
 type RecordBookItem struct {
-	Semester []RecordBookSemesterItem `json:"semesters"`
+	AverageMark float32                  `json:"average_mark"`
+	Semester    []RecordBookSemesterItem `json:"semesters"`
 } //@name RecordBookItem
 
 type RecordBookSemesterItem struct {
@@ -27,6 +30,7 @@ func RecordBookItemFromClientModel(m []models.RecordBookItem) []RecordBookItem {
 	var studyPlans []RecordBookItem
 	for _, stud := range m {
 		studyPlans = append(studyPlans, RecordBookItem{
+			AverageMark: stud.AverageMark,
 			Semester: func() []RecordBookSemesterItem {
 				var semesters []RecordBookSemesterItem
 				for _, semester := range stud.Semester {

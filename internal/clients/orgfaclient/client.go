@@ -3,6 +3,7 @@ package orgfaclient
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"strings"
 
 	"io"
@@ -158,6 +159,7 @@ func (c *Client) GetMyGroup(input *GetMyGroupInput) ([]models.Student, error) {
 
 type GetRecordBookInput struct {
 	*AuthSession
+	StudyPlan []models.StudyPlan
 }
 
 func (c *Client) GetRecordBook(input *GetRecordBookInput) ([]models.RecordBookItem, error) {
@@ -195,6 +197,47 @@ func (c *Client) GetRecordBook(input *GetRecordBookInput) ([]models.RecordBookIt
 		log.Error(err, "InvalidEntity", "orgfaclient recordBook")
 		return nil, clients.ErrInvalidEntity
 	}
+	
+	var a float32
+	var b float32
+	var itog float32
+
+	result1 := make([]float32, 0)
+	result2 := make([]float32, 0)
+
+	for _, record := range recordBookList {
+		for _, recordSemester := range record.Semester {
+			for _, semesterStudy := range input.StudyPlan {
+				for _, semester := range semesterStudy.Semester {
+					if recordSemester.SemesterNumber == semester.Semester {
+						for _, data := range recordSemester.Data {
+							for _, section := range semester.Section {
+								if section.Title == data.Subject {
+									a = float32(section.Hours) / 36
+
+									b = float32(data.Result) * a
+
+									result1 = append(result1, a)
+									result2 = append(result2, b)
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	for _, v := range result1 {
+		a += float32(v)
+	}
+
+	for _, v := range result2 {
+		b += float32(v)
+	}
+
+	itog = float32(b / a)
+	recordBookList[0].AverageMark = float32(math.Round(float64(itog)*1000) / 1000)
 
 	return recordBookList, nil
 }
@@ -436,18 +479,18 @@ func (c *Client) GetTeacherGroup(input *GetTeacherGroupInput) ([]models.Teacher,
 
 	if res.StatusCode != 200 {
 		switch res.StatusCode {
-			case 401:
-				log.Warn("Unauthorized", "orgfaclient GetTeacherGroup")
-				return nil, clients.ErrUnauthorized
-			case 500:
-				log.Warn("Internal", "orgfaclient GetTeacherGroup")
-				return nil, clients.ErrInternal
-			case 502:
-				log.Warn("Internal", "orgfaclient GetTeacherGroup")
-				return nil, clients.ErrInternal
-			default:
-				log.Warn("BadRequest", "orgfaclient GetTeacherGroup")
-				return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
+		case 401:
+			log.Warn("Unauthorized", "orgfaclient GetTeacherGroup")
+			return nil, clients.ErrUnauthorized
+		case 500:
+			log.Warn("Internal", "orgfaclient GetTeacherGroup")
+			return nil, clients.ErrInternal
+		case 502:
+			log.Warn("Internal", "orgfaclient GetTeacherGroup")
+			return nil, clients.ErrInternal
+		default:
+			log.Warn("BadRequest", "orgfaclient GetTeacherGroup")
+			return nil, fmt.Errorf("Unexpected status code: %d", res.StatusCode)
 		}
 	}
 

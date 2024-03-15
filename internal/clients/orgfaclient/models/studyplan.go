@@ -12,6 +12,7 @@ type StudyPlanSemester struct {
 
 type Section struct {
 	Title string `json:"title"`
+	Hours int    `json:"hours"`
 	Terms []Term `json:"terms"`
 }
 
